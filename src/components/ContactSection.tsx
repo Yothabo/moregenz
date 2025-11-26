@@ -479,7 +479,7 @@ const ContactSection: React.FC = () => {
                           required
                         />
                         <span className={styles.checkboxText}>
-                          I agree to receive security tips, updates, and promotional offers from Mbongeni Security Systems
+                          I agree to receive security tips, updates, and promotional offers from moreGenz Security Systems
                         </span>
                       </label>
                     </div>

@@ -1,8 +1,8 @@
 export const CONFIG = {
   company: {
-    name: "Mbongeni Security Systems",
+    name: "moreGenz Security Systems",
     phone: "+27-XXX-XXXX",
-    email: "info@mbongeni-security.co.za",
+    email: "info@moregenz-security.co.za",
     address: "South Africa"
   },
   colors: {

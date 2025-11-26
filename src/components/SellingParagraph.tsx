@@ -6,10 +6,10 @@ const SellingParagraph: React.FC = () => {
     <section className={styles.sellingSection} id="about">
       <div className={styles.container}>
         <div className={styles.content}>
-          <h2 className={styles.title}>Why Choose Mbongeni Security Systems?</h2>
+          <h2 className={styles.title}>Why Choose moreGenz Security Systems?</h2>
           <div className={styles.paragraphs}>
             <p className={styles.paragraph}>
-              With over a decade of experience in the security industry, <strong>Mbongeni Security Systems</strong> 
+              With over a decade of experience in the security industry, <strong>moreGenz Security Systems</strong> 
               stands as your trusted partner for comprehensive security solutions. We understand that every property 
               has unique security needs, which is why we offer customized systems designed to provide maximum 
               protection for your home or business.
@@ -31,7 +31,7 @@ const SellingParagraph: React.FC = () => {
             
             <p className={styles.paragraph}>
               Whether you're looking to protect your family, secure your business assets, or implement 
-              enterprise-level security solutions, Mbongeni Security Systems delivers professional 
+              enterprise-level security solutions, moreGenz Security Systems delivers professional 
               installation, reliable equipment, and unparalleled customer service. 
               <strong> Join hundreds of satisfied customers</strong> who trust us with their security needs.
             </p>

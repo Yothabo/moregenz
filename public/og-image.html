@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OG Image Creator</title>
+    <style>
+        body { margin: 0; padding: 20px; background: #1a1a1a; color: white; font-family: Arial; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .preview { background: #000; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .og-image { width: 100%; max-width: 600px; background: linear-gradient(135deg, #000, #333); 
+                   color: white; padding: 40px; text-align: center; border: 2px solid #fff; }
+        .logo { font-size: 48px; font-weight: bold; margin-bottom: 20px; color: #fff; }
+        .title { font-size: 32px; margin-bottom: 10px; }
+        .subtitle { font-size: 20px; margin-bottom: 30px; opacity: 0.8; }
+        .url { font-size: 16px; opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Social Media Preview Image</h1>
+        <p>This is how your OG image should look (1200x630px):</p>
+        
+        <div class="preview">
+            <div class="og-image">
+                <div class="logo">🔒 MSS</div>
+                <div class="title">moreGenz Security Systems</div>
+                <div class="subtitle">Professional Security Solutions</div>
+                <div class="url">moregenz-security-systems.netlify.app</div>
+            </div>
+        </div>
+        
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Take a screenshot of the preview above</li>
+            <li>Crop it to 1200x630 pixels</li>
+            <li>Save as <code>public/og-image.jpg</code></li>
+            <li>Redeploy your site</li>
+        </ol>
+    </div>
+</body>
+</html>

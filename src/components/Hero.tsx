@@ -88,7 +88,7 @@ const Hero: React.FC = () => {
         <div className={styles.stickyContent}>
           <img
             src={logo}
-            alt="Mbongeni Security Systems"
+            alt="moreGenz Security Systems"
             className={styles.headerLogo}
             style={{
               opacity: headerLogoOpacity,
@@ -141,7 +141,7 @@ const Hero: React.FC = () => {
                 <div className={styles.logoContainer}>
                   <img
                     src={logo}
-                    alt="Mbongeni Security Systems"
+                    alt="moreGenz Security Systems"
                     className={styles.heroLogo}
                     style={{
                       opacity: heroLogoOpacity,
@@ -152,7 +152,7 @@ const Hero: React.FC = () => {
               </div>
 
               <div className={styles.titleRow}>
-                <h1 className={styles.companyName}>Mbongeni Security Systems</h1>
+                <h1 className={styles.companyName}>moreGenz Security Systems</h1>
                 <div className={styles.certifications}>
                   Centurion <span>•</span> Gemini <span>•</span> Hikvision
                 </div>

@@ -39,7 +39,7 @@ const Gallery: React.FC = () => {
       solution: 'We implemented a comprehensive security overhaul including 32 high-definition CCTV cameras with night vision, automated license plate recognition in parking areas, biometric access control for staff entrances, and integrated alarm systems with 24/7 monitoring.',
       services: ['CCTV Installation', 'Access Control', 'Alarm Systems', '24/7 Monitoring'],
       testimonial: {
-        text: 'Mbongeni Security transformed our shopping complex from a high-risk area to one of the safest retail centers in Mpumalanga. Their professional approach and cutting-edge technology made all the difference.',
+        text: 'moreGenz Security transformed our shopping complex from a high-risk area to one of the safest retail centers in Mpumalanga. Their professional approach and cutting-edge technology made all the difference.',
         author: 'James Wilson',
         position: 'Center Manager, Nelspruit Mall'
       },
@@ -79,7 +79,7 @@ const Gallery: React.FC = () => {
       solution: 'Implemented a multi-layered security approach including thermal imaging cameras for perimeter monitoring, access control with dual authentication for restricted areas, intrusion detection systems, and a dedicated 24/7 monitoring station with direct links to port authorities.',
       services: ['Perimeter Security', 'Access Control', '24/7 Monitoring', 'Critical Infrastructure'],
       testimonial: {
-        text: 'Mbongeni Security\'s understanding of port operations and their technical expertise has significantly enhanced our security posture while maintaining operational efficiency.',
+        text: 'moreGenz Security\'s understanding of port operations and their technical expertise has significantly enhanced our security posture while maintaining operational efficiency.',
         author: 'Captain Raj Patel',
         position: 'Port Operations Manager'
       },

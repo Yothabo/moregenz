@@ -6,12 +6,16 @@ import About from './pages/About';
 import ServicesPage from './pages/ServicesPage';
 import GalleryPage from './pages/GalleryPage';
 import NotFound from './pages/NotFound';
+import MetaTags from './components/MetaTags';
 import './index.css';
 
 const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
+        {/* Global Meta Tags */}
+        <MetaTags />
+        
         <main>
           <Routes>
             <Route path="/" element={<Home />} />

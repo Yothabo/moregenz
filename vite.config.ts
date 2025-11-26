@@ -9,12 +9,14 @@ export default defineConfig({
     sourcemap: false,
     assetsDir: 'assets',
     rollupOptions: {
-      output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]'
+      input: {
+        main: './index.html'
       }
     }
   },
-  publicDir: 'public'
+  publicDir: 'public',
+  server: {
+    port: 5173,
+    host: true
+  }
 })

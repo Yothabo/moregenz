@@ -1,0 +1,42 @@
+.gallery {
+  padding: 6rem 2rem;
+  background: var(--color-off-white);
+  border: 2px solid red; /* Temporary border to see the section */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  text-align: center;
+  color: var(--color-navy);
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  font-family: var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sectionDescription {
+  text-align: center;
+  color: var(--color-grey-dark);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 auto 4rem;
+  font-weight: 300;
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+  max-width: 600px;
+}
+
+.testContent {
+  text-align: center;
+  color: var(--color-brown);
+  font-size: 1.2rem;
+  padding: 2rem;
+  background: rgba(139, 69, 19, 0.1);
+  border-radius: 8px;
+}

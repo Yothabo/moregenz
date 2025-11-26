@@ -12,17 +12,17 @@ export const socialLinks: SocialLink[] = [
   },
   {
     name: "Facebook",
-    url: "https://facebook.com/mbongeni-security",
+    url: "https://facebook.com/moregenz-security",
     icon: "Facebook"
   },
   {
     name: "Instagram",
-    url: "https://instagram.com/mbongeni-security",
+    url: "https://instagram.com/moregenz-security",
     icon: "Instagram"
   },
   {
     name: "Email",
-    url: "mailto:info@mbongeni-security.co.za",
+    url: "mailto:info@moregenz-security.co.za",
     icon: "Email"
   }
 ];

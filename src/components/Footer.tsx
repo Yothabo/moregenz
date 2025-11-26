@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.footerContent}>
           <div className={styles.footerSection}>
-            <h3 className={styles.footerTitle}>Mbongeni Security Systems</h3>
+            <h3 className={styles.footerTitle}>moreGenz Security Systems</h3>
             <p className={styles.footerDescription}>
               Professional security solutions for homes and businesses across South Africa.
             </p>
@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
         
         <div className={styles.footerBottom}>
           <p className={styles.copyright}>
-            &copy; {new Date().getFullYear()} Mbongeni Security Systems. All rights reserved.
+            &copy; {new Date().getFullYear()} moreGenz Security Systems. All rights reserved.
           </p>
         </div>
       </div>

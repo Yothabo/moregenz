@@ -75,7 +75,7 @@ export const certifications: Certification[] = [
   {
     id: 9,
     name: "Professional Security Integration",
-    provider: "Mbongeni Security Systems",
+    provider: "moreGenz Security Systems",
     description: "Expert installation and integration of leading security brands",
     height: "medium", /* Fixed from wide to normal height */
     width: "wide"

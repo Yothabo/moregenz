@@ -3,94 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
-    
-    <!-- Essential Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
-    
-    <!-- Primary Meta Tags -->
-    <title>Mbongeni Security Systems | CCTV, Electric Fencing & Access Control Experts</title>
-    <meta name="description" content="Professional security systems installation in South Africa. Certified Hikvision, Centurion & Gemini installer. CCTV cameras, electric fencing, access control, alarm systems." />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://mbongeni-security-system.netlify.app/" />
-    <meta property="og:title" content="Mbongeni Security Systems" />
-    <meta property="og:description" content="Professional CCTV, Electric Fencing & Access Control Installation in South Africa" />
-    <meta property="og:image" content="https://mbongeni-security-system.netlify.app/logo.png" />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary" />
-    <meta property="twitter:url" content="https://mbongeni-security-system.netlify.app/" />
-    <meta property="twitter:title" content="Mbongeni Security Systems" />
-    <meta property="twitter:description" content="Professional Security Solutions in South Africa" />
-    <meta property="twitter:image" content="https://mbongeni-security-system.netlify.app/logo.png" />
-    
+
+    <!-- Fallback Meta Tags (will be overridden by React components) -->
+    <title>moreGenz Security Systems | CCTV, Electric Fencing & Access Control Experts</title>
+    <meta name="description" content="Professional security systems installation in South Africa. Certified Hikvision, Centurion & Gemini installer." />
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    
+
     <!-- Safari Pinned Tab -->
     <link rel="apple-touch-icon" href="/logo.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="Mbongeni Security" />
-    
+    <meta name="apple-mobile-web-app-title" content="moreGenz Security" />
+
     <!-- Microsoft Tiles -->
     <meta name="msapplication-TileImage" content="/logo.png" />
     <meta name="msapplication-TileColor" content="#000000" />
-    
-    <!-- Preload -->
-    <link rel="preload" as="image" href="/logo.png" />
-    
-    <style>
-      .loading-fallback {
-        background: #000;
-        color: #fff;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: Arial, sans-serif;
-      }
-    </style>
-    <script type="module" crossorigin src="/assets/main-d013aca8.js"></script>
+    <script type="module" crossorigin src="/assets/main-1eb05e31.js"></script>
     <link rel="stylesheet" href="/assets/index-b0b11da2.css">
   </head>
   <body>
     <noscript>
-      <div class="loading-fallback">
+      <div style="background: #000; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif;">
         <div>
-          <h1>Mbongeni Security Systems</h1>
+          <h1>moreGenz Security Systems</h1>
           <p>Professional Security Solutions in South Africa</p>
           <p>Please enable JavaScript to view our website.</p>
         </div>
       </div>
     </noscript>
-    
     <div id="root"></div>
     
-    
-    <!-- PWA Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-              console.log('SW registration failed: ', registrationError);
-            });
-        });
-      }
-      
-      // PWA Install Prompt
-      let deferredPrompt;
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        console.log('PWA install available');
-      });
-    </script>
   </body>
 </html>

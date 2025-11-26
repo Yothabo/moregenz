@@ -5,7 +5,7 @@ const About: React.FC = () => {
   return (
     <div className={styles.about} id="about">
       <div className={styles.container}>
-        <h1 className={styles.pageTitle}>About Mbongeni Security Systems</h1>
+        <h1 className={styles.pageTitle}>About moreGenz Security Systems</h1>
         <div className={styles.content}>
           <div className={styles.profileSection}>
             <h2>Our Story</h2>
