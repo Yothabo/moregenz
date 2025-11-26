@@ -9,7 +9,7 @@ To create your social media preview image:
 Basic design:
 - Background: Dark blue or black
 - Your logo centered
-- Text: "Mbongeni Security Systems"
+- Text: "moreGenz Security Systems"
 - Subtext: "Professional Security Solutions"
 - Bottom: "moregenz-security-systems.netlify.app"
 
