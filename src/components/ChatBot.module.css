@@ -1,0 +1,827 @@
+/* Mobile Chat Styles */
+.mobileChatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #000000;
+  position: relative;
+}
+
+/* Chat Header */
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: #000000;
+  border-bottom: 1px solid #333333;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 60px;
+  flex-shrink: 0;
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+.backButton {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 0.5rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.headerCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.headerTitle {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.headerSubtitle {
+  color: #cccccc;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.restartButton {
+  background: var(--color-primary);
+  color: #000000;
+  border: none;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Main Content Area */
+.chatContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  height: calc(100% - 60px);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Chat Messages */
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+  max-height: calc(100vh - 200px);
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+.message {
+  max-width: 85%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s ease;
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.botMessage {
+  align-self: flex-start;
+  background: #1a1a1a;
+  color: #ffffff;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.userMessage {
+  align-self: flex-end;
+  background: var(--color-primary);
+  color: #000000;
+  border-bottom-right-radius: 0.25rem;
+  font-weight: 500;
+}
+
+.disclaimerMessage {
+  background: #1a1a1a !important;
+  border-left: 4px solid #ff4444;
+}
+
+.disclaimerMessage .messageContent {
+  color: #ffffff !important;
+  font-size: 0.85rem !important;
+  font-style: italic !important;
+  line-height: 1.3;
+}
+
+.disclaimerDescription {
+  color: #cccccc !important;
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.messageContent {
+  font-size: 0.95rem;
+  white-space: pre-line;
+}
+
+.messageDescription {
+  font-size: 0.8rem;
+  color: #cccccc;
+  margin-top: 0.5rem;
+  line-height: 1.3;
+  font-style: italic;
+}
+
+/* Typing Indicator */
+.typingIndicator {
+  align-self: flex-start;
+  background: #1a1a1a;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  border-bottom-left-radius: 0.25rem;
+  color: #cccccc;
+  flex-shrink: 0;
+}
+
+.typingDots {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.typingDots span {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #cccccc;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typingDots span:nth-child(1) { animation-delay: -0.32s; }
+.typingDots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+  0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Options Container */
+.optionsContainer {
+  background: #000000;
+  border-top: 1px solid #333333;
+  padding: 1rem;
+  flex-shrink: 0;
+  z-index: 5;
+  min-height: 80px;
+  max-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Options Content */
+.optionsContent {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.optionsContent::-webkit-scrollbar {
+  display: none;
+}
+
+/* Multiple Selection Styles */
+.multiSelectContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.multiSelectHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.selectMultipleText {
+  font-size: 0.8rem;
+  color: #cccccc;
+  font-style: italic;
+}
+
+.doneButton {
+  background: var(--color-primary);
+  color: #000000;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.doneButton:disabled {
+  background: #333333;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.doneButton:not(:disabled):hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Service Selection Grid */
+.multiSelectGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  align-content: flex-start;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.multiSelectGrid::-webkit-scrollbar {
+  display: none;
+}
+
+.multiSelectOption {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem;
+  background: #1a1a1a;
+  border: 2px solid #333333;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #ffffff;
+  text-align: left;
+  flex-shrink: 0;
+  min-height: 70px;
+  width: 100%;
+}
+
+.multiSelectOption:hover {
+  border-color: var(--color-primary);
+  background: #2a2a2a;
+}
+
+.multiSelectOption.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #000000;
+  font-weight: 600;
+}
+
+.optionLabel {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.optionDescription {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  text-align: left;
+  line-height: 1.3;
+  color: #cccccc;
+  font-weight: 400;
+}
+
+.multiSelectOption.selected .optionDescription {
+  color: #000000;
+  opacity: 0.9;
+}
+
+/* Single Selection Options */
+.optionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  align-content: flex-start;
+  padding: 0.25rem 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.optionsGrid::-webkit-scrollbar {
+  display: none;
+}
+
+.optionPill {
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  border: 2px solid #333333;
+  border-radius: 0.75rem;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  text-align: center;
+  min-height: 50px;
+  justify-content: center;
+}
+
+.optionPill:hover {
+  border-color: var(--color-primary);
+  background: #2a2a2a;
+}
+
+.optionPill.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #000000;
+  font-weight: 600;
+}
+
+.optionPill .optionDescription {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  text-align: center;
+  line-height: 1.2;
+  margin-top: 0.25rem;
+  color: #cccccc;
+}
+
+.optionPill.selected .optionDescription {
+  color: #000000;
+  opacity: 0.9;
+}
+
+/* Free Text Input Styles */
+.freeTextContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.freeTextInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #333333;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  background: #1a1a1a;
+  color: #ffffff;
+  flex: 1;
+}
+
+.freeTextInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: #2a2a2a;
+}
+
+.freeTextInput::placeholder {
+  color: #666666;
+}
+
+.freeTextButtons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.skipButton {
+  background: #333333 !important;
+  color: #cccccc !important;
+  order: 1;
+}
+
+.skipButton:hover {
+  background: #444444 !important;
+  transform: translateY(-1px);
+}
+
+.freeTextButtons .submitButton:not(.skipButton) {
+  order: 2;
+  margin-left: auto;
+}
+
+.validationError {
+  color: #ff4444;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #331111;
+  border-radius: 0.25rem;
+  border-left: 3px solid #ff4444;
+}
+
+.inputError {
+  border-color: #ff4444 !important;
+  background: #331111 !important;
+}
+
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: #000000;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  gap: 0.5rem;
+  min-width: 120px;
+}
+
+.submitButton:disabled {
+  background: #333333;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.submitButton:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sendIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Completed State */
+.completedContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.restartButtonLarge {
+  padding: 1rem 2rem;
+  background: var(--color-primary);
+  color: #000000;
+  border: none;
+  border-radius: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.restartButtonLarge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Empty State */
+.emptyOptions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cccccc;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+  min-height: 60px;
+  background: #1a1a1a;
+  border-radius: 0.5rem;
+  border: 1px solid #333333;
+  width: 100%;
+  height: 100%;
+}
+
+.emptyOptionsText {
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chatHeader {
+    padding: 0.75rem max(1rem, env(safe-area-inset-left));
+    min-height: 60px;
+  }
+
+  .chatContent {
+    height: calc(100% - 60px);
+  }
+
+  .chatMessages {
+    padding: 1rem max(1rem, env(safe-area-inset-left));
+    padding-bottom: 1rem;
+    max-height: calc(100vh - 200px);
+  }
+
+  .message {
+    max-width: 90%;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .optionsContainer {
+    padding: 1rem max(1rem, env(safe-area-inset-left));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    min-height: 80px;
+    max-height: 45vh;
+  }
+
+  .multiSelectGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .multiSelectOption {
+    padding: 1rem;
+    font-size: 0.9rem;
+    min-height: 80px;
+    width: 100%;
+  }
+
+  .optionLabel {
+    font-size: 0.95rem;
+  }
+
+  .optionDescription {
+    font-size: 0.75rem;
+  }
+
+  .optionPill {
+    padding: 1rem;
+    font-size: 0.9rem;
+    min-width: 100%;
+    min-height: 60px;
+  }
+
+  .optionsGrid {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .freeTextButtons {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .submitButton {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    min-width: 110px;
+  }
+
+  .emptyOptions {
+    padding: 1.5rem;
+    font-size: 0.9rem;
+    min-height: 70px;
+  }
+
+  .completedContainer {
+    padding: 1.5rem;
+  }
+}
+
+/* Landscape mode support */
+@media (max-height: 600px) and (orientation: landscape) {
+  .chatMessages {
+    max-height: calc(100vh - 150px);
+  }
+  
+  .optionsContainer {
+    max-height: 35vh;
+  }
+}
+
+/* Ensure proper scrolling on iOS */
+.chatMessages,
+.optionsContent,
+.multiSelectGrid,
+.optionsGrid {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent bounce effect on iOS */
+.mobileChatContainer {
+  overscroll-behavior: none;
+}
+
+/* Large screens */
+@media (min-width: 768px) {
+  .chatMessages {
+    max-height: calc(100vh - 180px);
+  }
+  
+  .optionsContainer {
+    max-height: 35vh;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1200px) {
+  .chatMessages {
+    max-height: calc(100vh - 160px);
+  }
+  
+  .optionsContainer {
+    max-height: 30vh;
+  }
+}
+
+/* Support for mobile browsers with dynamic toolbars */
+@supports (height: 100dvh) {
+  @media (max-width: 768px) {
+    .mobileChatContainer {
+      height: 100dvh;
+    }
+    
+    .chatContent {
+      height: calc(100dvh - 60px);
+    }
+    
+    .chatMessages {
+      max-height: calc(100dvh - 200px);
+    }
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .botMessage {
+    background: #000000;
+    border: 1px solid #ffffff;
+  }
+  
+  .userMessage {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #000000;
+  }
+  
+  .multiSelectOption {
+    border: 2px solid #ffffff;
+  }
+  
+  .optionPill {
+    border: 2px solid #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .message {
+    animation: none;
+  }
+  
+  .typingDots span {
+    animation: none;
+    opacity: 0.7;
+  }
+  
+  .doneButton:hover,
+  .submitButton:hover,
+  .restartButtonLarge:hover,
+  .multiSelectOption:hover,
+  .optionPill:hover {
+    transform: none;
+  }
+}
+
+/* Dark mode support (already dark by default) */
+@media (prefers-color-scheme: light) {
+  .mobileChatContainer {
+    background: #ffffff;
+  }
+  
+  .chatHeader {
+    background: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .headerTitle {
+    color: #000000;
+  }
+  
+  .headerSubtitle {
+    color: #666666;
+  }
+  
+  .botMessage {
+    background: #f5f5f5;
+    color: #000000;
+  }
+  
+  .userMessage {
+    background: var(--color-primary);
+    color: #000000;
+  }
+  
+  .typingIndicator {
+    background: #f5f5f5;
+    color: #666666;
+  }
+  
+  .optionsContainer {
+    background: #ffffff;
+    border-top: 1px solid #e0e0e0;
+  }
+  
+  .multiSelectOption {
+    background: #f5f5f5;
+    border: 2px solid #e0e0e0;
+    color: #000000;
+  }
+  
+  .optionDescription {
+    color: #666666;
+  }
+  
+  .optionPill {
+    background: #f5f5f5;
+    border: 2px solid #e0e0e0;
+    color: #000000;
+  }
+  
+  .freeTextInput {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    color: #000000;
+  }
+  
+  .freeTextInput::placeholder {
+    color: #999999;
+  }
+  
+  .emptyOptions {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    color: #666666;
+  }
+}

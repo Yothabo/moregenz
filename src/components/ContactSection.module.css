@@ -1,637 +1,160 @@
 .contact {
-  padding: 5rem 0;
+  padding: 4rem 1rem;
   background: var(--color-bg);
-  position: relative;
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  text-align: center;
 }
 
 .sectionTitle {
-  text-align: center;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
+  color: var(--color-text-primary);
   margin-bottom: 1rem;
-  color: #ffffff;
 }
 
 .sectionSubtitle {
-  text-align: center;
   font-size: 1.1rem;
   color: var(--color-text-secondary);
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
 }
 
-/* Form Selector */
 .formSelector {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 3rem;
-  flex-wrap: wrap;
+  margin-top: 2rem;
 }
 
 .selectorButton {
   padding: 1rem 2rem;
-  border: 2px solid #333;
-  background: #1a1a1a;
-  color: var(--color-text-secondary);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+  background: var(--color-primary);
+  color: #000000;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 160px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .selectorButton:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Modal Styles - EXACTLY like ProjectModal */
+/* Modal Overlay - Dark on desktop, full screen on mobile */
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.85); /* Very dark overlay */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 0;
-  overflow: hidden;
+  padding: 1rem;
 }
 
+/* Modal Content */
 .modalContent {
-  background: #1a1a1a;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Back Button - EXACTLY like ProjectModal */
-.backButton {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: rgba(0, 0, 0, 0.7);
-  border: none;
-  color: #ffffff;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  z-index: 10;
-  transition: all 0.3s ease;
-}
-
-.backButton:hover {
-  background: var(--color-primary);
-  color: #000000;
-}
-
-.modalBody {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Content Area - EXACTLY like ProjectModal */
-.contentArea {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.contentArea::-webkit-scrollbar {
-  display: none;
-}
-
-.sectionTitle {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #ffffff;
-}
-
-.modalDescription {
-  text-align: center;
-  color: var(--color-text-secondary);
-  margin-bottom: 2rem;
-  line-height: 1.6;
-}
-
-/* Chat Styles */
-.chatContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  height: 100%;
-}
-
-.quickQuestions {
-  background: #2a2a2a;
-  padding: 1.5rem;
-  border-radius: 12px;
-}
-
-.quickQuestions p {
-  margin-bottom: 0.5rem;
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-}
-
-.quickButtons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.quickButton {
-  background: #333;
-  border: 1px solid #444;
-  color: var(--color-text-secondary);
-  padding: 0.5rem 1rem;
+  max-width: 500px;
+  height: 85vh;
+  max-height: 700px;
+  background: #000000; /* Black background */
   border-radius: 1rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.quickButton:hover {
-  background: var(--color-primary);
-  color: var(--color-bg);
-  transform: translateY(-1px);
-}
-
-.chatMessages {
-  height: 400px; /* Tall height for good visibility */
-  overflow-y: auto;
-  background: #0f0f0f;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 1.5rem 1rem; /* Added top/bottom padding */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.message {
-  display: flex;
-  flex-direction: column;
-  max-width: 85%;
-}
-
-.userMessage {
-  align-self: flex-end;
-  align-items: flex-end;
-}
-
-.botMessage {
-  align-self: flex-start;
-  align-items: flex-start;
-}
-
-.messageContent {
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-.userMessage .messageContent {
-  background: var(--color-primary);
-  color: var(--color-bg);
-  border-bottom-right-radius: 0.25rem;
-}
-
-.botMessage .messageContent {
-  background: #333;
-  color: var(--color-text);
-  border-bottom-left-radius: 0.25rem;
-}
-
-.messageTime {
-  font-size: 0.7rem;
-  color: #666;
-  margin-top: 0.25rem;
-  padding: 0 0.5rem;
-}
-
-.typingIndicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #666;
-  font-size: 0.8rem;
-  font-style: italic;
-  padding: 0.5rem 0; /* Added top/bottom padding */
-}
-
-.typingDots {
-  display: flex;
-  gap: 0.2rem;
-}
-
-.typingDots span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #666;
-  animation: typing 1.4s infinite ease-in-out;
-}
-
-.typingDots span:nth-child(1) { animation-delay: -0.32s; }
-.typingDots span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes typing {
-  0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
-  40% { transform: scale(1); opacity: 1; }
-}
-
-.chatForm {
-  margin-top: 1rem;
-  padding-top: 0.5rem; /* Added top padding */
-}
-
-.chatInputContainer {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.chatInput {
-  flex: 1;
-  padding: 1rem;
-  border: 1px solid #333;
-  border-radius: 0.5rem;
-  background: #0f0f0f;
-  color: var(--color-text);
-  font-size: 1rem;
-}
-
-.chatInput:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.chatSendButton {
-  background: var(--color-primary);
-  color: var(--color-bg);
-  border: none;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.chatSendButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-}
-
-.contactFallback {
-  background: #2a2a2a;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-top: 1rem;
-}
-
-.contactFallback h4 {
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-}
-
-.contactFallback p {
-  color: var(--color-text-secondary);
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-
-.contactFormMini {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.contactFormMini .formInput {
-  flex: 1;
-  min-width: 150px;
-  padding: 0.75rem;
-  font-size: 0.9rem;
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 0.5rem;
-  color: var(--color-text);
-}
-
-.contactFormMini .submitButton {
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
-  margin-top: 0;
-}
-
-/* Form Styles */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.formGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-.formGroup {
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
 }
 
-.formInput,
-.formTextarea {
-  padding: 1rem;
-  border: 1px solid #333;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  background: #0f0f0f;
-  color: var(--color-text);
-  width: 100%;
-}
-
-.formInput:focus,
-.formTextarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
-}
-
-.formInput::placeholder,
-.formTextarea::placeholder {
-  color: #666;
-}
-
-.formTextarea {
-  resize: vertical;
-  min-height: 80px;
-  font-family: inherit;
-}
-
-/* Consent Checkbox - Centered for Newsletter */
-.consentGroup {
-  margin: 1rem 0;
-  text-align: center; /* Center for newsletter */
-}
-
-.checkboxLabel {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  cursor: pointer;
-  justify-content: center; /* Center for newsletter */
-}
-
-.checkboxLabel input[type="checkbox"] {
-  margin-top: 0.2rem;
-  accent-color: var(--color-primary);
-}
-
-.checkboxText {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.4;
-  text-align: left;
-}
-
-/* Submit Button */
-.submitButton {
-  background: var(--color-primary);
-  color: var(--color-bg);
-  border: none;
-  padding: 1.2rem 2rem;
-  border-radius: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-  width: 100%;
-}
-
-.submitButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.3);
-}
-
-/* Newsletter Specific Styles */
-.newsletterForm {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center everything */
-  gap: 1.5rem;
-  text-align: center; /* Center text */
-}
-
-.newsletterForm .formGrid {
-  width: 100%;
-  max-width: 400px; /* Limit width for better centering */
-}
-
-.newsletterForm .submitButton {
-  max-width: 300px; /* Increased button width */
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Consultation Form - No Scroll */
-.consultationForm {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-height: none; /* Remove max-height restriction */
-  overflow: visible; /* No scrolling */
-}
-
-.consultationForm .formGrid {
-  grid-template-columns: 1fr;
-}
-
-/* Desktop Styles - EXACTLY like ProjectModal */
-@media (min-width: 769px) {
-  .modalOverlay {
-    padding: 2rem;
-  }
-
-  .modalContent {
-    width: 90%;
-    max-width: 800px;
-    height: auto;
-    max-height: 90vh;
-    border-radius: 16px;
-    border: 1px solid #333333;
-  }
-
-  .contentArea {
-    padding: 2rem;
-  }
-
-  .chatMessages {
-    height: 450px; /* Very tall on desktop */
-    padding: 2rem 1rem; /* More padding on desktop */
-  }
-
-  .formGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
-
-  /* Consultation form - 2 columns on desktop */
-  .consultationForm .formGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  /* Newsletter - 2 columns but centered */
-  .newsletterForm .formGrid {
-    grid-template-columns: 1fr 1fr;
-    max-width: 500px;
-  }
-
-  .newsletterForm .submitButton {
-    max-width: 350px; /* Wider on desktop */
-  }
-}
-
-/* Mobile Styles - EXACTLY like ProjectModal */
+/* Mobile full screen styles */
 @media (max-width: 768px) {
-  .contact {
-    padding: 3rem 0;
-  }
-
-  .container {
-    padding: 0 1rem;
-  }
-
-  .sectionTitle {
-    font-size: 2.5rem;
-  }
-
-  .sectionSubtitle {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .formSelector {
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .selectorButton {
-    padding: 0.8rem 1.5rem;
-    min-width: 140px;
-    font-size: 0.9rem;
-  }
-
-  /* Mobile Modal - Full Screen - EXACTLY like ProjectModal */
   .modalOverlay {
     padding: 0;
+    background: #000000; /* Black background for full screen */
   }
-
+  
   .modalContent {
+    max-width: none;
+    height: 100vh;
+    max-height: none;
     border-radius: 0;
-  }
-
-  .contentArea {
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  .chatContainer {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* Important for flex children */
-    gap: 1.25rem; /* Slightly reduced gap on mobile */
-  }
-
-  .chatMessages {
-    height: auto; /* Use available space */
-    flex: 1; /* Take all available space */
-    min-height: 400px; /* Minimum height on mobile */
-    padding: 1.25rem 1rem; /* Added top/bottom padding for mobile */
-  }
-
-  .message {
-    max-width: 90%;
-  }
-
-  .quickButtons {
-    flex-direction: column;
-  }
-
-  .contactFormMini {
-    flex-direction: column;
-  }
-
-  .submitButton {
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
-  }
-
-  /* Newsletter mobile centering */
-  .newsletterForm .formGrid {
-    max-width: 100%;
-  }
-
-  .newsletterForm .submitButton {
-    max-width: 280px; /* Wider on mobile too */
+    box-shadow: none;
+    /* Safe area handling */
+    height: 100dvh; /* Dynamic viewport height */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
 
+/* Responsive adjustments */
 @media (max-width: 480px) {
+  .contact {
+    padding: 3rem 1rem;
+  }
+  
   .sectionTitle {
     font-size: 2rem;
   }
-
+  
+  .sectionSubtitle {
+    font-size: 1rem;
+  }
+  
   .selectorButton {
-    min-width: 120px;
-    padding: 0.7rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
   }
+}
 
-  .contentArea {
-    padding: 1rem;
+@media (max-width: 360px) {
+  .sectionTitle {
+    font-size: 1.75rem;
   }
+}
 
-  .chatMessages {
-    min-height: 380px; /* Still tall on very small screens */
-    padding: 1rem 0.75rem; /* Slightly less padding on very small screens */
+/* Landscape mode support */
+@media (max-height: 600px) and (orientation: landscape) {
+  .modalContent {
+    height: 95vh;
+    max-height: 500px;
   }
+}
 
-  .newsletterForm .submitButton {
-    max-width: 250px; /* Good width on very small screens */
+/* Large screens */
+@media (min-width: 768px) {
+  .modalContent {
+    max-height: 750px;
+  }
+}
+
+/* Extra large screens - even darker overlay */
+@media (min-width: 1200px) {
+  .modalOverlay {
+    background: rgba(0, 0, 0, 0.9);
+  }
+}
+
+/* Support for mobile browsers with dynamic toolbars */
+@supports (height: 100dvh) {
+  @media (max-width: 768px) {
+    .modalContent {
+      height: 100dvh;
+    }
   }
 }
