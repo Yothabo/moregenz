@@ -20,8 +20,6 @@ export const ChatFlowManager: React.FC<ChatFlowManagerProps> = ({ onClose }) => 
     showOptions,
     currentOptions,
     selectedServices,
-    serviceDetails,
-    additionalNotes,
     chatMode,
     contactInfo,
     currentContactStep,
@@ -32,7 +30,7 @@ export const ChatFlowManager: React.FC<ChatFlowManagerProps> = ({ onClose }) => 
     isMultiSelect,
     selectedOptionKeys,
     initializeChat,
-    handleServiceToggle,
+    handleServiceSelect,
     handleMultipleServicesSubmit,
     handleOptionSelect,
     handleOptionToggle,
@@ -40,8 +38,7 @@ export const ChatFlowManager: React.FC<ChatFlowManagerProps> = ({ onClose }) => 
     handleFreeTextSubmit,
     handleContactMethodSelect,
     handleContactInfoSubmit,
-    handleReferenceInputSubmit,
-    resetChat
+    handleReferenceInputSubmit
   } = useChatBot();
 
   // Render the appropriate flow based on chat mode
@@ -53,7 +50,7 @@ export const ChatFlowManager: React.FC<ChatFlowManagerProps> = ({ onClose }) => 
             showOptions={showOptions}
             currentOptions={currentOptions}
             selectedServices={selectedServices}
-            onServiceToggle={handleServiceToggle}
+            onServiceToggle={handleServiceSelect}
             onMultipleServicesSubmit={handleMultipleServicesSubmit}
           />
         );
@@ -103,7 +100,6 @@ export const ChatFlowManager: React.FC<ChatFlowManagerProps> = ({ onClose }) => 
       case 'free-text':
         return (
           <FreeTextFlow
-            additionalNotes={additionalNotes}
             onFreeTextSubmit={handleFreeTextSubmit}
           />
         );
@@ -168,7 +164,7 @@ export const ChatFlowManager: React.FC<ChatFlowManagerProps> = ({ onClose }) => 
                   } ${message.isDisclaimer ? chatStyles.disclaimerMessage : ''}`}
                 >
                   <div className={chatStyles.messageContent}>
-                    {message.text.split('\n').map((line, i) => (
+                    {message.text.split('\n').map((line: string, i: number) => (
                       <div key={i}>{line}</div>
                     ))}
                   </div>

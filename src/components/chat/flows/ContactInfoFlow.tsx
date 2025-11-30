@@ -1,15 +1,9 @@
-import React, { useState } from 'react';
-import { FaPaperPlane } from 'react-icons/fa';
-import chatStyles from '../../ChatBot.module.css';
+import React from 'react';
+import { ContactStep, ContactInfo } from '../../../data/chat/typesExtended';
 
 interface ContactInfoFlowProps {
-  currentContactStep: 'method' | 'firstName' | 'lastName' | 'contact' | 'complete';
-  contactInfo: {
-    method: string;
-    firstName: string;
-    lastName: string;
-    contact: string;
-  };
+  currentContactStep: ContactStep;
+  contactInfo: ContactInfo;
   validationError: string;
   onContactInfoSubmit: (info: string, clearInput?: () => void) => void;
 }
@@ -20,70 +14,51 @@ export const ContactInfoFlow: React.FC<ContactInfoFlowProps> = ({
   validationError,
   onContactInfoSubmit
 }) => {
-  const [inputValue, setInputValue] = useState('');
-
-  const getPlaceholder = () => {
-    switch (currentContactStep) {
-      case 'firstName':
-        return 'Enter your first name...';
-      case 'lastName':
-        return 'Enter your surname...';
-      case 'contact':
-        if (contactInfo.method === 'whatsapp') {
-          return 'Enter your WhatsApp number with country code...';
-        } else {
-          return 'Enter your email address...';
-        }
-      default:
-        return '';
-    }
-  };
-
-  const getInputType = () => {
-    if (currentContactStep === 'contact' && contactInfo.method === 'whatsapp') {
-      return 'tel';
-    } else if (currentContactStep === 'contact' && contactInfo.method === 'email') {
-      return 'email';
-    }
-    return 'text';
-  };
+  const [inputValue, setInputValue] = React.useState('');
 
   const handleSubmit = () => {
     onContactInfoSubmit(inputValue, () => setInputValue(''));
   };
 
-  const handleNameInputChange = (value: string) => {
-    if (currentContactStep === 'firstName' || currentContactStep === 'lastName') {
-      const words = value.split(' ');
-      const capitalizedWords = words.map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-      );
-      setInputValue(capitalizedWords.join(' '));
-    } else {
-      setInputValue(value);
-    }
-  };
+  let placeholder = '';
+  let inputType: 'text' | 'email' | 'tel' = 'text';
+  
+  switch (currentContactStep) {
+    case 'firstName':
+      placeholder = 'Enter your first name...';
+      break;
+    case 'lastName':
+      placeholder = 'Enter your surname...';
+      break;
+    case 'contact':
+      if (contactInfo.method === 'whatsapp') {
+        placeholder = 'Enter your WhatsApp number with country code...';
+        inputType = 'tel';
+      } else {
+        placeholder = 'Enter your email address...';
+        inputType = 'email';
+      }
+      break;
+  }
 
   return (
-    <div className={chatStyles.freeTextContainer}>
+    <div className="contact-info-flow">
       <input
-        className={`${chatStyles.freeTextInput} ${validationError ? chatStyles.inputError : ''}`}
-        placeholder={getPlaceholder()}
+        type={inputType}
         value={inputValue}
-        onChange={(e) => handleNameInputChange(e.target.value)}
-        type={getInputType()}
+        onChange={(e) => setInputValue(e.target.value)}
+        placeholder={placeholder}
+        className={validationError ? 'input-error' : ''}
       />
       {validationError && (
-        <div className={chatStyles.validationError}>
+        <div className="validation-error">
           {validationError}
         </div>
       )}
-      <button
-        className={chatStyles.submitButton}
+      <button 
         onClick={handleSubmit}
         disabled={!inputValue.trim()}
       >
-        <FaPaperPlane className={chatStyles.sendIcon} />
         Submit
       </button>
     </div>

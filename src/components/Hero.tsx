@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaTh, FaArrowRight } from 'react-icons/fa';
 import ServicesDropdown from './ServicesDropdown';
+import WaveBackground from './backgrounds/WaveBackground';
+import { useHomeModal } from '../pages/Home';
 import styles from './Hero.module.css';
 import logo from '../assets/logo.png';
 
@@ -12,6 +14,9 @@ const Hero: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Use the shared modal context from Home
+  const { openModal } = useHomeModal();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -78,6 +83,11 @@ const Hero: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Handle Get Quote Now button click - uses shared modal context
+  const handleGetQuoteClick = () => {
+    openModal();
+  };
+
   const shortDescription = "Professional security solutions for homes and businesses. Advanced technology, expert installation, and reliable protection.";
 
   const longDescription = "Your trusted partner in advanced security solutions. With certified installations, professional support, and cutting-edge technology, we protect what matters most to you. Experience peace of mind with our reliable security systems tailored for both residential and commercial properties.";
@@ -134,6 +144,7 @@ const Hero: React.FC = () => {
       </header>
 
       <section className={styles.hero} id="home">
+        <WaveBackground />
         <div className={styles.container}>
           <div className={styles.heroContent}>
             <div className={styles.textContent}>
@@ -180,8 +191,11 @@ const Hero: React.FC = () => {
                 </div>
               </div>
 
-              <button className={styles.ctaButton}>
-                Book Now <FaArrowRight className={styles.arrowIcon} />
+              <button 
+                className={styles.ctaButton}
+                onClick={handleGetQuoteClick}
+              >
+                Get Quote Now <FaArrowRight className={styles.arrowIcon} />
               </button>
             </div>
           </div>

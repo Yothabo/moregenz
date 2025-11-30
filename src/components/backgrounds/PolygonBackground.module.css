@@ -1,0 +1,81 @@
+.pentagonBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.pentagon {
+  position: absolute;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  transform-origin: center;
+  transition: opacity 0.3s ease;
+}
+
+.pentagon.lime {
+  background: rgba(0, 204, 0, 0.3);
+  border: 2px solid rgba(0, 204, 0, 0.4);
+}
+
+.pentagon.gray {
+  background: rgba(102, 102, 102, 0.2);
+  border: 2px solid rgba(102, 102, 102, 0.3);
+}
+
+.pentagon.hollow {
+  background: transparent !important;
+}
+
+.pentagon.hollow.lime {
+  border: 3px solid rgba(0, 204, 0, 0.5);
+}
+
+.pentagon.hollow.gray {
+  border: 3px solid rgba(102, 102, 102, 0.4);
+}
+
+.pentagon:hover {
+  opacity: 0.3 !important;
+}
+
+@media (max-width: 768px) {
+  .pentagon {
+    opacity: 0.7 !important;
+  }
+  
+  .pentagon:nth-child(1) { width: 120px !important; height: 120px !important; }
+  .pentagon:nth-child(2) { width: 100px !important; height: 100px !important; }
+  .pentagon:nth-child(3) { width: 90px !important; height: 90px !important; }
+  .pentagon:nth-child(4) { width: 80px !important; height: 80px !important; }
+  .pentagon:nth-child(5) { width: 70px !important; height: 70px !important; }
+  .pentagon:nth-child(6) { width: 75px !important; height: 75px !important; }
+  .pentagon:nth-child(7) { width: 60px !important; height: 60px !important; }
+  .pentagon:nth-child(8) { width: 50px !important; height: 50px !important; }
+  .pentagon:nth-child(9) { width: 65px !important; height: 65px !important; }
+  .pentagon:nth-child(10) { width: 40px !important; height: 40px !important; }
+  .pentagon:nth-child(11) { width: 35px !important; height: 35px !important; }
+  .pentagon:nth-child(12) { width: 30px !important; height: 30px !important; }
+}
+
+@media (max-width: 480px) {
+  .pentagon {
+    opacity: 0.5 !important;
+  }
+  
+  .pentagon:nth-child(1) { width: 80px !important; height: 80px !important; }
+  .pentagon:nth-child(2) { width: 70px !important; height: 70px !important; }
+  .pentagon:nth-child(3) { width: 60px !important; height: 60px !important; }
+  .pentagon:nth-child(4) { width: 55px !important; height: 55px !important; }
+  .pentagon:nth-child(5) { width: 50px !important; height: 50px !important; }
+  .pentagon:nth-child(6) { width: 45px !important; height: 45px !important; }
+  .pentagon:nth-child(7) { width: 40px !important; height: 40px !important; }
+  .pentagon:nth-child(8) { width: 35px !important; height: 35px !important; }
+  .pentagon:nth-child(9) { width: 30px !important; height: 30px !important; }
+  .pentagon:nth-child(10) { width: 25px !important; height: 25px !important; }
+  .pentagon:nth-child(11) { width: 20px !important; height: 20px !important; }
+  .pentagon:nth-child(12) { width: 15px !important; height: 15px !important; }
+}

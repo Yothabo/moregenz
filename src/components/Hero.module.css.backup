@@ -1,0 +1,593 @@
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin-top: 80px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+}
+
+.heroContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  margin-top: -3rem;
+}
+
+.textContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.logoSection {
+  margin-bottom: 1rem;
+}
+
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.heroLogo {
+  width: clamp(180px, 35vw, 320px);
+  height: auto;
+  filter: brightness(0) invert(1);
+  transition: all 0.3s ease;
+  transform: scale(1.2);
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.companyName {
+  font-family: 'Caprasimo', cursive;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  line-height: 1;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.certifications {
+  font-family: 'Roboto', sans-serif;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: var(--color-text-primary);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.certifications span {
+  color: #32CD32;
+  margin: 0 0.5rem;
+}
+
+.description {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: 0;
+  font-weight: 300;
+  font-family: 'Roboto', sans-serif;
+}
+
+.statsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+  padding: 2rem 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.statNumber {
+  font-family: 'Roboto', sans-serif;
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.statLabel {
+  font-size: clamp(0.6rem, 1vw, 0.8rem);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 400;
+  font-family: 'Roboto', sans-serif;
+}
+
+.ctaButton {
+  background: var(--color-primary);
+  color: var(--color-bg);
+  border: none;
+  padding: clamp(1.2rem, 2.5vw, 1.5rem) clamp(3rem, 7vw, 5rem);
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 1ch;
+  width: auto;
+  min-width: 240px;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.ctaButton:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.arrowIcon {
+  font-size: 0.9em;
+  transition: transform 0.3s ease;
+}
+
+.ctaButton:hover .arrowIcon {
+  transform: translateX(3px);
+}
+
+.stickyHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-bg-dark);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.5rem 0;
+  transition: all 0.4s ease;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.stickyContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.headerLogo {
+  width: 45px;
+  height: auto;
+  filter: brightness(0) invert(1);
+  transition: all 0.3s ease;
+  transform: scale(0.8);
+}
+
+.desktopNav {
+  display: flex;
+  gap: clamp(1.8rem, 2.5vw, 2.8rem);
+  align-items: center;
+  height: 100%;
+}
+
+.desktopNav a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+  padding: 0.8rem 0;
+}
+
+.desktopNav a:hover {
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.desktopNav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.desktopNav a:hover::after {
+  width: 100%;
+}
+
+.mobileMenuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 1.6rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-family: 'Roboto', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.mobileMenuButton.menuButtonActive {
+  color: var(--color-primary);
+  transform: rotate(90deg);
+}
+
+.mobileMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-bg-light);
+  backdrop-filter: blur(4px);
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobileMenuOverlay.overlayVisible {
+  visibility: visible;
+}
+
+.mobileMenu {
+  position: fixed;
+  top: 80px;
+  right: -100%;
+  width: 300px;
+  height: calc(100vh - 80px);
+  background: var(--color-bg-dark);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.mobileMenu.mobileMenuOpen {
+  right: 0;
+}
+
+.mobileMenuContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem 0 2rem 0;
+}
+
+.mobileMenu a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 1.2rem 2.5rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mobileMenu a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--color-primary-light), transparent);
+  transition: left 0.5s ease;
+}
+
+.mobileMenu a:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  padding-left: 3rem;
+}
+
+.mobileMenu a:hover::before {
+  left: 100%;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    margin-top: 70px;
+  }
+
+  .container {
+    padding: 0 2rem;
+    min-height: calc(100vh - 70px);
+  }
+
+  .heroContent {
+    margin-top: -4rem;
+  }
+
+  .textContent {
+    gap: 2rem;
+  }
+
+  .logoSection {
+    margin-bottom: 0.5rem;
+  }
+
+  .heroLogo {
+    width: clamp(160px, 40vw, 300px);
+  }
+
+  .companyName {
+    font-size: clamp(1.8rem, 4.5vw, 3.5rem);
+  }
+
+  .certifications {
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+  }
+
+  .description {
+    font-size: 1rem;
+    max-width: 500px;
+    padding: 0 1rem;
+  }
+
+  .statsRow {
+    padding: 1.5rem 0;
+    max-width: 600px;
+  }
+
+  .statNumber {
+    font-size: clamp(1rem, 2vw, 1.8rem);
+  }
+
+  .statLabel {
+    font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+  }
+
+  .ctaButton {
+    min-width: 220px;
+    padding: 1.2rem 2.5rem;
+  }
+
+  .stickyHeader {
+    padding: 1.2rem 0;
+    height: 70px;
+  }
+
+  .stickyContent {
+    padding: 0 2rem;
+  }
+
+  .headerLogo {
+    width: 38px;
+  }
+
+  .desktopNav {
+    display: none;
+  }
+
+  .mobileMenuButton {
+    display: block;
+  }
+
+  .mobileMenu {
+    top: 70px;
+    height: calc(100vh - 70px);
+    width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    margin-top: 65px;
+  }
+
+  .container {
+    padding: 0 1.5rem;
+    min-height: calc(100vh - 65px);
+  }
+
+  .heroContent {
+    margin-top: -6rem;
+  }
+
+  .textContent {
+    gap: 1.5rem;
+  }
+
+  .heroLogo {
+    width: clamp(150px, 45vw, 280px);
+  }
+
+  .companyName {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .certifications {
+    font-size: 0.75rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+    max-width: 400px;
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .statsRow {
+    gap: 0.5rem;
+    padding: 1rem 0;
+  }
+
+  .statNumber {
+    font-size: clamp(0.9rem, 1.8vw, 1.6rem);
+  }
+
+  .statLabel {
+    font-size: 0.5rem;
+  }
+
+  .ctaButton {
+    min-width: 200px;
+    padding: 1rem 2rem;
+    font-size: 0.9rem;
+  }
+
+  .stickyHeader {
+    padding: 1rem 0;
+    height: 65px;
+  }
+
+  .stickyContent {
+    padding: 0 1.5rem;
+  }
+
+  .headerLogo {
+    width: 35px;
+  }
+
+  .mobileMenu {
+    top: 65px;
+    height: calc(100vh - 65px);
+    width: 260px;
+  }
+
+  .mobileMenu a {
+    padding: 1.1rem 2rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .hero {
+    margin-top: 60px;
+  }
+
+  .container {
+    padding: 0 1rem;
+    min-height: calc(100vh - 60px);
+  }
+
+  .heroContent {
+    margin-top: -8rem;
+  }
+
+  .textContent {
+    gap: 1.2rem;
+  }
+
+  .stickyContent {
+    padding: 0 1rem;
+  }
+
+  .statsRow {
+    flex-wrap: nowrap;
+  }
+
+  .ctaButton {
+    min-width: 180px;
+    padding: 1rem 2rem;
+    font-size: 0.85rem;
+  }
+
+  .heroLogo {
+    width: clamp(140px, 50vw, 260px);
+  }
+
+  .description {
+    font-size: 0.85rem;
+    max-width: 320px;
+  }
+
+  .certifications {
+    font-size: 0.7rem;
+  }
+
+  .statNumber {
+    font-size: 0.8rem;
+  }
+
+  .statLabel {
+    font-size: 0.45rem;
+  }
+
+  .stickyHeader {
+    padding: 0.9rem 0;
+    height: 60px;
+  }
+
+  .headerLogo {
+    width: 32px;
+  }
+
+  .mobileMenu {
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 240px;
+  }
+
+  .mobileMenu a {
+    padding: 1rem 1.5rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

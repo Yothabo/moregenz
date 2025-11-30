@@ -3,12 +3,10 @@ import { FaPaperPlane } from 'react-icons/fa';
 import chatStyles from '../../ChatBot.module.css';
 
 interface FreeTextFlowProps {
-  additionalNotes: string;
   onFreeTextSubmit: (text: string) => void;
 }
 
 export const FreeTextFlow: React.FC<FreeTextFlowProps> = ({
-  additionalNotes,
   onFreeTextSubmit
 }) => {
   const [freeTextInput, setFreeTextInput] = useState('');

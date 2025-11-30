@@ -27,8 +27,8 @@ export const certifications: Certification[] = [
   {
     id: 3,
     name: "Gemini",
-    provider: "Alarm Systems",
-    description: "Wireless intruder detection and alarm systems",
+    provider: "Gate Motors",
+    description: "Home and business gate automation",
     height: "medium",
     width: "normal"
   },

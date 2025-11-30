@@ -81,13 +81,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  opacity: 1; /* CHANGED: Always visible instead of 0 */
   transition: opacity 0.3s ease;
 }
 
-.projectCard:hover .projectOverlay {
-  opacity: 1;
-}
+/* REMOVED: .projectCard:hover .projectOverlay since it's always visible now */
 
 .viewProject {
   color: var(--color-primary);
@@ -100,6 +98,7 @@
   border-radius: 6px;
   transition: all 0.3s ease;
   cursor: pointer;
+  background: rgba(0, 0, 0, 0.8); /* Added background for better visibility */
 }
 
 .viewProject:hover {
@@ -200,7 +199,7 @@
   .projectInfo {
     padding: 1.25rem;
   }
-  
+
   .statsValue {
     font-size: 0.85rem;
   }

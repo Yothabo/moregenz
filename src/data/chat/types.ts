@@ -7,8 +7,10 @@ export interface Option {
 export interface DecisionNode {
   question: string;
   description?: string;
-  options: Option[];
+  options?: Option[]; // Made optional for text input questions
   next?: { [key: string]: string };
+  multiSelect?: boolean;
+  requiresTextInput?: boolean;
 }
 
 export interface ServicePath {

@@ -25,15 +25,22 @@
   padding-right: max(1rem, env(safe-area-inset-right));
 }
 
-.backButton {
-  background: none;
+.closeButton {
+  background: #333333;
   border: none;
-  font-size: 1.2rem;
-  color: var(--color-primary);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: #ffffff;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   font-weight: 500;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #444444;
+  transform: translateY(-1px);
 }
 
 .headerCenter {
@@ -57,6 +64,40 @@
   line-height: 1.2;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.shareButton {
+  background: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333333;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.shareButton:hover {
+  background: #2a2a2a;
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.shareIcon {
+  width: 14px;
+  height: 14px;
+}
+
 .restartButton {
   background: var(--color-primary);
   color: #000000;
@@ -68,6 +109,12 @@
   cursor: pointer;
   flex-shrink: 0;
   white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.restartButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Main Content Area */
@@ -271,7 +318,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Service Selection Grid */
+/* Service Selection Grid - ALWAYS 1fr 1fr on desktop */
 .multiSelectGrid {
   display: grid;
   grid-template-columns: 1fr;
@@ -341,7 +388,7 @@
   opacity: 0.9;
 }
 
-/* Single Selection Options */
+/* Single Selection Options - Only used for contact method */
 .optionsGrid {
   display: flex;
   flex-wrap: wrap;
@@ -566,7 +613,171 @@
   font-style: italic;
 }
 
-/* Responsive adjustments */
+/* ===== DESKTOP STYLES - ALWAYS 1fr 1fr ===== */
+@media (min-width: 769px) {
+  .mobileChatContainer {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  }
+
+  .chatMessages {
+    max-height: 50vh;
+    padding: 1.5rem 2rem;
+  }
+
+  .message {
+    max-width: 70%;
+    padding: 1rem 1.5rem;
+    font-size: 1.05rem;
+  }
+
+  .messageContent {
+    font-size: 1.05rem;
+  }
+
+  .optionsContainer {
+    max-height: 35vh;
+    padding: 1.5rem 2rem;
+  }
+
+  /* ALWAYS 1fr 1fr on desktop - no exceptions */
+  .multiSelectGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  /* Custom scrollbar for desktop */
+  .multiSelectGrid::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
+
+  .multiSelectGrid::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 3px;
+  }
+
+  .multiSelectGrid::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 3px;
+  }
+
+  .multiSelectGrid::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+  }
+
+  .multiSelectOption {
+    padding: 1.5rem;
+    min-height: 100px;
+    font-size: 1rem;
+    justify-content: center;
+  }
+
+  .optionLabel {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .optionDescription {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* Options grid for contact method only - single selection */
+  .optionsGrid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  /* Custom scrollbar for options grid */
+  .optionsGrid::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
+
+  .optionsGrid::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 3px;
+  }
+
+  .optionsGrid::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 3px;
+  }
+
+  .optionsGrid::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+  }
+
+  .optionPill {
+    padding: 1.25rem 1.5rem;
+    font-size: 1rem;
+    min-width: auto !important;
+    min-height: 80px;
+    width: 100%;
+  }
+
+  .optionPill .optionDescription {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  .freeTextInput {
+    font-size: 1.05rem;
+    padding: 1.25rem;
+    min-height: 120px;
+  }
+
+  .submitButton {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+    min-width: 140px;
+  }
+
+  .closeButton {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .shareButton {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    gap: 0.5rem;
+  }
+
+  .shareIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .restartButton {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .multiSelectHeader {
+    margin-bottom: 1rem;
+  }
+
+  .selectMultipleText {
+    font-size: 0.9rem;
+  }
+
+  .doneButton {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* ===== MOBILE STYLES - Only apply on small screens ===== */
 @media (max-width: 768px) {
   .chatHeader {
     padding: 0.75rem max(1rem, env(safe-area-inset-left));
@@ -595,9 +806,11 @@
     max-height: 45vh;
   }
 
+  /* Mobile: single column */
   .multiSelectGrid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
+    max-height: none;
   }
 
   .multiSelectOption {
@@ -615,16 +828,19 @@
     font-size: 0.75rem;
   }
 
+  /* Mobile: single column for option pills */
+  .optionsGrid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: none;
+  }
+
   .optionPill {
     padding: 1rem;
     font-size: 0.9rem;
-    min-width: 100%;
+    min-width: 100% !important;
     min-height: 60px;
-  }
-
-  .optionsGrid {
-    flex-direction: column;
-    gap: 0.75rem;
   }
 
   .freeTextButtons {
@@ -654,7 +870,7 @@
   .chatMessages {
     max-height: calc(100vh - 150px);
   }
-  
+
   .optionsContainer {
     max-height: 35vh;
   }
@@ -673,25 +889,38 @@
   overscroll-behavior: none;
 }
 
-/* Large screens */
-@media (min-width: 768px) {
-  .chatMessages {
-    max-height: calc(100vh - 180px);
-  }
-  
-  .optionsContainer {
-    max-height: 35vh;
-  }
-}
-
-/* Extra large screens */
+/* Large screens - even better utilization of space */
 @media (min-width: 1200px) {
   .chatMessages {
-    max-height: calc(100vh - 160px);
+    max-height: 55vh;
+    padding: 2rem 2.5rem;
   }
-  
+
   .optionsContainer {
     max-height: 30vh;
+    padding: 2rem 2.5rem;
+  }
+
+  .multiSelectGrid {
+    gap: 1.25rem;
+    max-height: 350px;
+  }
+
+  .optionsGrid {
+    max-height: 350px;
+  }
+
+  .multiSelectOption {
+    padding: 1.75rem;
+    min-height: 120px;
+  }
+
+  .optionLabel {
+    font-size: 1.15rem;
+  }
+
+  .optionDescription {
+    font-size: 0.95rem;
   }
 }
 
@@ -701,11 +930,11 @@
     .mobileChatContainer {
       height: 100dvh;
     }
-    
+
     .chatContent {
       height: calc(100dvh - 60px);
     }
-    
+
     .chatMessages {
       max-height: calc(100dvh - 200px);
     }
@@ -718,17 +947,17 @@
     background: #000000;
     border: 1px solid #ffffff;
   }
-  
+
   .userMessage {
     background: #ffffff;
     color: #000000;
     border: 1px solid #000000;
   }
-  
+
   .multiSelectOption {
     border: 2px solid #ffffff;
   }
-  
+
   .optionPill {
     border: 2px solid #ffffff;
   }
@@ -739,12 +968,12 @@
   .message {
     animation: none;
   }
-  
+
   .typingDots span {
     animation: none;
     opacity: 0.7;
   }
-  
+
   .doneButton:hover,
   .submitButton:hover,
   .restartButtonLarge:hover,
@@ -759,66 +988,66 @@
   .mobileChatContainer {
     background: #ffffff;
   }
-  
+
   .chatHeader {
     background: #ffffff;
     border-bottom: 1px solid #e0e0e0;
   }
-  
+
   .headerTitle {
     color: #000000;
   }
-  
+
   .headerSubtitle {
     color: #666666;
   }
-  
+
   .botMessage {
     background: #f5f5f5;
     color: #000000;
   }
-  
+
   .userMessage {
     background: var(--color-primary);
     color: #000000;
   }
-  
+
   .typingIndicator {
     background: #f5f5f5;
     color: #666666;
   }
-  
+
   .optionsContainer {
     background: #ffffff;
     border-top: 1px solid #e0e0e0;
   }
-  
+
   .multiSelectOption {
     background: #f5f5f5;
     border: 2px solid #e0e0e0;
     color: #000000;
   }
-  
+
   .optionDescription {
     color: #666666;
   }
-  
+
   .optionPill {
     background: #f5f5f5;
     border: 2px solid #e0e0e0;
     color: #000000;
   }
-  
+
   .freeTextInput {
     background: #f5f5f5;
     border: 1px solid #e0e0e0;
     color: #000000;
   }
-  
+
   .freeTextInput::placeholder {
     color: #999999;
   }
-  
+
   .emptyOptions {
     background: #f5f5f5;
     border: 1px solid #e0e0e0;

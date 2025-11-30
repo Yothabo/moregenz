@@ -33,9 +33,10 @@ export const camerasService: ServicePath = {
     'equipment-description': {
       question: 'Please describe your existing camera equipment',
       description: 'What cameras, brands, models, or specific equipment do you want installed?',
-      options: [
-        { key: 'continue-after-description', label: 'Continue', description: 'Proceed after entering details' }
-      ]
+      requiresTextInput: true,
+      next: {
+        'text-input-complete': 'property-type'
+      }
     },
     'property-type': {
       question: 'What type of property needs cameras?',
@@ -77,6 +78,7 @@ export const camerasService: ServicePath = {
         { key: 'kids-room', label: 'Children\'s Room', description: 'Child monitoring' },
         { key: 'gate', label: 'Gate/Entrance', description: 'Property access point' }
       ],
+      multiSelect: true,
       next: {
         'front-door': 'camera-features-residential',
         'back-door': 'camera-features-residential',
@@ -107,6 +109,7 @@ export const camerasService: ServicePath = {
         { key: 'corridors', label: 'Corridors/Hallways', description: 'Internal passages' },
         { key: 'server-room', label: 'Server Room', description: 'IT infrastructure' }
       ],
+      multiSelect: true,
       next: {
         'entrance': 'camera-features-commercial',
         'reception': 'camera-features-commercial',
@@ -132,6 +135,7 @@ export const camerasService: ServicePath = {
         { key: 'cargo-area', label: 'Cargo Area', description: 'Load monitoring' },
         { key: 'fleet-tracking', label: 'Fleet Management', description: 'Multiple vehicle tracking' }
       ],
+      multiSelect: true,
       next: {
         'front-view': 'camera-features-vehicles',
         'rear-view': 'camera-features-vehicles',
@@ -155,6 +159,7 @@ export const camerasService: ServicePath = {
         { key: 'local-recording', label: 'Local Recording', description: 'Save footage on device' },
         { key: 'cloud-storage', label: 'Cloud Storage', description: 'Remote video backup' }
       ],
+      multiSelect: true,
       next: {
         'night-vision': 'monitoring-purpose-residential',
         'weatherproof': 'monitoring-purpose-residential',
@@ -181,6 +186,7 @@ export const camerasService: ServicePath = {
         { key: 'vandal-proof', label: 'Vandal-Proof', description: 'Tamper-resistant' },
         { key: 'remote-access', label: 'Remote Management', description: 'Multiple location access' }
       ],
+      multiSelect: true,
       next: {
         '24-7-recording': 'monitoring-purpose-commercial',
         'motion-detection': 'monitoring-purpose-commercial',
@@ -206,6 +212,7 @@ export const camerasService: ServicePath = {
         { key: 'fuel-monitoring', label: 'Fuel Monitoring', description: 'Fuel usage tracking' },
         { key: 'maintenance-alerts', label: 'Maintenance Alerts', description: 'Vehicle service reminders' }
       ],
+      multiSelect: true,
       next: {
         'gps-tracking': 'monitoring-purpose-vehicles',
         'impact-sensor': 'monitoring-purpose-vehicles',
@@ -228,6 +235,7 @@ export const camerasService: ServicePath = {
         { key: 'visitor-monitoring', label: 'Visitor Monitoring', description: 'See who comes to door' },
         { key: 'vacation-security', label: 'Vacation Security', description: 'Monitor while away' }
       ],
+      multiSelect: true,
       next: {
         'package-theft': 'budget-residential',
         'break-ins': 'budget-residential',
@@ -248,6 +256,7 @@ export const camerasService: ServicePath = {
         { key: 'customer-analytics', label: 'Customer Analytics', description: 'Business intelligence' },
         { key: 'property-protection', label: 'Property Protection', description: 'Asset security' }
       ],
+      multiSelect: true,
       next: {
         'theft-prevention': 'budget-commercial',
         'safety-compliance': 'budget-commercial',
@@ -268,6 +277,7 @@ export const camerasService: ServicePath = {
         { key: 'accident-evidence', label: 'Accident Evidence', description: 'Document incidents' },
         { key: 'fuel-efficiency', label: 'Fuel Efficiency', description: 'Monitor fuel usage' }
       ],
+      multiSelect: true,
       next: {
         'driver-safety': 'budget-vehicles',
         'fleet-management': 'budget-vehicles',
