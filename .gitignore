@@ -35,3 +35,8 @@ logs/
 # Database files
 *.db
 .db/
+
+# Local Netlify folder
+.netlify
+dist/
+.netlify/
