@@ -21,25 +21,22 @@ const NewsSection: React.FC = () => {
     const fetchSecurityNews = async () => {
       try {
         setLoading(true);
-        
-        // Using NewsAPI free tier (no key required for development)
-        // This will fetch real security news from multiple sources
-        const response = await fetch(
-          `https://newsapi.org/v2/everything?q=security+OR+cybersecurity+OR+surveillance&language=en&sortBy=publishedAt&pageSize=2&apiKey=7c27e9c6a8a84b7da5d7d7e9b9c3b3a7`
-        );
 
+        // Use serverless function to hide API key
+        const response = await fetch('/api/news');
+        
         if (!response.ok) {
           throw new Error(`API request failed with status: ${response.status}`);
         }
 
         const data = await response.json();
-        
-        if (data.articles && data.articles.length > 0) {
+
+        if (data && data.length > 0) {
           // Filter out articles without images
-          const articlesWithImages = data.articles.filter((article: NewsArticle) => 
+          const articlesWithImages = data.filter((article: NewsArticle) =>
             article.urlToImage && article.title && article.description
           );
-          
+
           if (articlesWithImages.length >= 2) {
             setArticles(articlesWithImages.slice(0, 2));
           } else {
@@ -148,8 +145,8 @@ const NewsSection: React.FC = () => {
                   <span className={styles.newsSource}>{article.source.name}</span>
                   <span className={styles.newsDate}>{formatDate(article.publishedAt)}</span>
                 </div>
-                <a 
-                  href={article.url} 
+                <a
+                  href={article.url}
                   className={styles.readMore}
                   target="_blank"
                   rel="noopener noreferrer"
