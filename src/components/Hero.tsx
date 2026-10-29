@@ -1,208 +1,129 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FaTh, FaArrowRight } from 'react-icons/fa';
-import ServicesDropdown from './ServicesDropdown';
-import WaveBackground from './backgrounds/WaveBackground';
-import { useHomeModal } from '../pages/Home';
-import styles from './Hero.module.css';
-import logo from '../assets/logo.png';
+import { Link } from 'react-router-dom';
+import { useProducts, Product } from '../hooks/useProducts';
+import { formatPrice } from '../utils/formatPrice';
+import { getCategoryTheme } from '../utils/categoryTheme';
+import ProductCardSkeleton from './ProductCardSkeleton';
+import { useState } from 'react';
+import ProductModal from './ProductModal';
 
-const Hero: React.FC = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [heroLogoOpacity, setHeroLogoOpacity] = useState(1);
-  const [headerLogoOpacity, setHeaderLogoOpacity] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
+export default function Hero() {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { products, isLoading } = useProducts();
 
-  // Use the shared modal context from Home
-  const { openModal } = useHomeModal();
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      const heroSection = document.getElementById('home');
-
-      if (heroSection) {
-        const heroRect = heroSection.getBoundingClientRect();
-        const scrollProgress = Math.max(0, Math.min(1, -heroRect.top / 100));
-
-        const heroLogoOpacity = 1 - scrollProgress;
-        const headerLogoOpacity = scrollProgress;
-
-        setHeroLogoOpacity(Math.max(0, heroLogoOpacity));
-        setHeaderLogoOpacity(Math.min(1, headerLogoOpacity));
-
-        setIsScrolled(scrollTop > 50);
+  // Trending = top 5 by add_to_cart_count, fallback to newest 5
+  const trendingProducts = [...products]
+    .sort((a, b) => {
+      if (b.order_count !== a.order_count) {
+        return b.order_count - a.order_count;
       }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuButtonRef.current && menuButtonRef.current.contains(event.target as Node)) {
-        return;
-      }
-
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    if (isMobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMobileMenuOpen]);
-
-  const handleMenuButtonClick = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
-  // Handle Get Quote Now button click - uses shared modal context
-  const handleGetQuoteClick = () => {
-    openModal();
-  };
-
-  const shortDescription = "Professional security solutions for homes and businesses. Advanced technology, expert installation, and reliable protection.";
-
-  const longDescription = "Your trusted partner in advanced security solutions. With certified installations, professional support, and cutting-edge technology, we protect what matters most to you. Experience peace of mind with our reliable security systems tailored for both residential and commercial properties.";
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    })
+    .slice(0, 5);
 
   return (
     <>
-      <header className={styles.stickyHeader}>
-        <div className={styles.stickyContent}>
-          <img
-            src={logo}
-            alt="moreGenz Security Systems"
-            className={styles.headerLogo}
-            style={{
-              opacity: headerLogoOpacity,
-              transform: `scale(${0.8 + headerLogoOpacity * 0.2})`
-            }}
-          />
-
-          <nav className={styles.desktopNav}>
-            <a href="#gallery">Gallery</a>
-            <a href="#about">About</a>
-            <a href="#bookings">Bookings</a>
-            <a href="#contact">Contact</a>
-            <ServicesDropdown variant="desktop" />
-          </nav>
-
-          <button
-            ref={menuButtonRef}
-            className={`${styles.mobileMenuButton} ${isMobileMenuOpen ? styles.menuButtonActive : ''}`}
-            onClick={handleMenuButtonClick}
-            aria-label="Toggle menu"
-          >
-            <FaTh />
-          </button>
-
-          <div
-            className={`${styles.mobileMenuOverlay} ${isMobileMenuOpen ? styles.overlayVisible : ''}`}
-            onClick={closeMenu}
-          />
-
-          <div
-            ref={mobileMenuRef}
-            className={`${styles.mobileMenu} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}
-          >
-            <div className={styles.mobileMenuContent}>
-              <a href="#gallery" onClick={closeMenu}>Gallery</a>
-              <a href="#about" onClick={closeMenu}>About</a>
-              <a href="#bookings" onClick={closeMenu}>Bookings</a>
-              <a href="#contact" onClick={closeMenu}>Contact</a>
-              <ServicesDropdown variant="mobile" onItemClick={closeMenu} />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <section className={styles.hero} id="home">
-        <WaveBackground />
-        <div className={styles.container}>
-          <div className={styles.heroContent}>
-            <div className={styles.textContent}>
-              <div className={styles.logoSection}>
-                <div className={styles.logoContainer}>
-                  <img
-                    src={logo}
-                    alt="moreGenz Security Systems"
-                    className={styles.heroLogo}
-                    style={{
-                      opacity: heroLogoOpacity,
-                      transform: `scale(${1.2 - heroLogoOpacity * 0.2})`
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.titleRow}>
-                <h1 className={styles.companyName}>moreGenz Security Systems</h1>
-                <div className={styles.certifications}>
-                  Centurion <span>•</span> Gemini <span>•</span> Hikvision
-                </div>
-                <p className={styles.description}>
-                  {isMobile ? shortDescription : longDescription}
-                </p>
-              </div>
-
-              <div className={styles.statsRow}>
-                <div className={styles.stat}>
-                  <span className={styles.statNumber}>500+</span>
-                  <span className={styles.statLabel}>Projects</span>
-                </div>
-                <div className={styles.stat}>
-                  <span className={styles.statNumber}>98%</span>
-                  <span className={styles.statLabel}>Satisfaction</span>
-                </div>
-                <div className={styles.stat}>
-                  <span className={styles.statNumber}>24/7</span>
-                  <span className={styles.statLabel}>Support</span>
-                </div>
-                <div className={styles.stat}>
-                  <span className={styles.statNumber}>5Y</span>
-                  <span className={styles.statLabel}>Warranty</span>
-                </div>
-              </div>
-
-              <button 
-                className={styles.ctaButton}
-                onClick={handleGetQuoteClick}
+      <section
+        id="home"
+        aria-label="Hero"
+        className="relative flex w-full select-none flex-col bg-white pt-16 pb-12"
+        style={{ WebkitTapHighlightColor: 'transparent', WebkitTouchCallout: 'none', userSelect: 'none' }}
+      >
+        {/* Hero Wordmark & Overlay */}
+        <div className="relative flex w-full items-center justify-center px-6 mb-12">
+          <div className="w-full max-w-[1120px]">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              style={{ display: 'block', width: '100%', height: '25vh' }}
+            >
+              <text
+                x="50"
+                y="50%"
+                dominantBaseline="middle"
+                textAnchor="middle"
+                textLength="100"
+                lengthAdjust="spacingAndGlyphs"
+                style={{ fontFamily: '"Anton", sans-serif', fontWeight: 400 }}
+                className="fill-[#8aa89b]"
+                fontSize="100"
               >
-                Get Quote Now <FaArrowRight className={styles.arrowIcon} />
-              </button>
-            </div>
+                yotaabo
+              </text>
+            </svg>
+          </div>
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+            <p className="font-accent text-[clamp(50px,10vw,130px)] tracking-[0.02em] text-black">
+              Be Remembered
+            </p>
           </div>
         </div>
+
+        {/* Trending Section */}
+        <div className="w-full">
+          {/* Left-aligned Header within the standard content container */}
+          <div className="mx-auto max-w-[1120px] px-6 sm:px-10 lg:px-12">
+            <div className="flex items-baseline justify-between">
+              <h2 className="font-heading text-3xl italic text-black">Trending</h2>
+              <Link to="/catalog" className="cursor-pointer font-heading text-sm italic tracking-wide text-black opacity-70 transition-opacity hover:opacity-100">
+                Explore Collection
+              </Link>
+            </div>
+            <p className="mt-2 max-w-md font-heading text-base leading-relaxed text-black/60">
+              The scents our community loves most.
+            </p>
+          </div>
+
+          {/* Carousel - full width to the edges */}
+          <div className="mt-8 flex gap-4 snap-x snap-mandatory overflow-x-auto pb-4 px-6 sm:px-10 lg:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex w-[45%] shrink-0 snap-start flex-col sm:w-[30%] lg:w-[22%]"
+                >
+                  <ProductCardSkeleton />
+                </div>
+              ))
+            ) : trendingProducts.map((product) => (
+              <div
+                key={product.id}
+                onClick={() => setSelectedProduct(product)}
+                className="flex w-[45%] shrink-0 snap-start flex-col cursor-pointer sm:w-[30%] lg:w-[22%]"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+              >
+                <div className={`aspect-[4/5] w-full ${getCategoryTheme(product.category).placeholderColor}`}></div>
+                <div className="mt-1 flex flex-col pt-3 pl-3">
+                  <h4
+                    className="font-heading text-base text-black"
+                    style={{ lineHeight: '1', margin: 0, padding: 0 }}
+                  >
+                    {product.name}
+                  </h4>
+                  <p
+                    className={`mt-1 font-heading text-base tracking-wide ${getCategoryTheme(product.category).accentColor}`}
+                    style={{ lineHeight: '1', margin: 0, padding: 0 }}
+                  >
+                    {formatPrice(product.price)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
       </section>
+
+      {/* Modal for Trending Products */}
+      <ProductModal
+        product={selectedProduct ? { ...selectedProduct, price: formatPrice(selectedProduct.price) } : null}
+        bgColor="bg-white"
+        placeholderColor={selectedProduct ? getCategoryTheme(selectedProduct.category).placeholderColor : 'bg-gray-200'}
+        accentColor={selectedProduct ? getCategoryTheme(selectedProduct.category).accentColor : 'text-[#8aa89b]'}
+        isDark={false}
+        onClose={() => setSelectedProduct(null)}
+      />
     </>
   );
-};
-
-export default Hero;
+}

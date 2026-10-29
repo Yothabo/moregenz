@@ -1,19 +1,16 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import Services from '../components/Services';
-import styles from './ServicesPage.module.css';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
-const ServicesPage: React.FC = () => {
+export default function ServicesPage() {
   return (
-    <div className={styles.servicesPage}>
-      <div className={styles.container}>
-        <h1 className={styles.pageTitle}>Our Services</h1>
-        <p className={styles.pageSubtitle}>
-          Comprehensive security and electrical solutions for your home or business
-        </p>
-      </div>
+    <>
+      <Header sticky={false} />
+      <main className="flex-1 bg-[#f5f5f2]">
       <Services />
-    </div>
+    <Footer />
+    </main>
+    </>
   );
-};
-
-export default ServicesPage;
+}

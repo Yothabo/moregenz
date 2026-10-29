@@ -1,5 +1,5 @@
 {
-  "name": "moregenz-security-systems",
+  "name": "yotaabo",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -17,12 +17,14 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.18.0",
+    "@supabase/supabase-js": "^2.118.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.5",
-    "react-icons": "^5.5.0",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.7.0",
     "react-router-dom": "^6.20.1"
   },
   "devDependencies": {
@@ -32,6 +34,7 @@
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.1.1",
     "autoprefixer": "^10.4.16",
+    "baseline-browser-mapping": "^2.9.19",
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
@@ -41,5 +44,13 @@
     "vite": "^4.5.0",
     "vite-plugin-babel-macros": "^1.0.6"
   },
-  "keywords": "[\"security-systems\",\"moregenz\",\"cctv\",\"access-control\",\"electric-fencing\",\"automation\",\"react\",\"typescript\",\"vite\"]"
+  "keywords": [
+    "fragrance",
+    "perfume",
+    "fragrance-collection",
+    "shopping",
+    "react",
+    "typescript",
+    "vite"
+  ]
 }

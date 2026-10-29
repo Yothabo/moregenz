@@ -5,7 +5,18 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# SPA routing
+# Functions configuration
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# API redirects for serverless functions - MUST COME FIRST
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# SPA routing - CATCH-ALL - MUST COME LAST
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -43,14 +54,3 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-
-# Functions configuration
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-
-# API redirects for serverless functions
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200

@@ -1,74 +1,51 @@
-import React from 'react';
-import { 
-  FaWhatsapp,
-  FaFacebook,
-  FaInstagram,
-  FaEnvelope
-} from 'react-icons/fa';
-import { CONFIG } from '../config';
-import { socialLinks } from '../data/socialLinks';
-import styles from './Footer.module.css';
+import { FaInstagram, FaTiktok, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
 
-const Footer: React.FC = () => {
-  const getSocialIcon = (platform: string) => {
-    switch (platform.toLowerCase()) {
-      case 'whatsapp':
-        return <FaWhatsapp className={styles.footerSocialIcon} />;
-      case 'facebook':
-        return <FaFacebook className={styles.footerSocialIcon} />;
-      case 'instagram':
-        return <FaInstagram className={styles.footerSocialIcon} />;
-      case 'email':
-        return <FaEnvelope className={styles.footerSocialIcon} />;
-      default:
-        return null;
-    }
-  };
-
+export default function Footer() {
   return (
-    <footer className={styles.footer}>
-      <div className={styles.container}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerSection}>
-            <h3 className={styles.footerTitle}>moreGenz Security Systems</h3>
-            <p className={styles.footerDescription}>
-              Professional security solutions for homes and businesses across South Africa.
-            </p>
+    <footer className="relative w-full overflow-hidden bg-white py-10 sm:py-12 lg:py-16">
+
+      {/* Content */}
+      <div className="relative z-10 flex w-full flex-col items-center">
+        {/* Huge yotaabo stretch controlled by inline height */}
+
+        {/* Socials then copyright */}
+        <div className="mt-10 flex flex-col items-center gap-5 px-6 sm:mt-12">
+          <div className="flex items-center gap-4">
+            <a
+              href="#"
+              aria-label="Instagram"
+              className="flex h-14 w-14 items-center justify-center rounded-md border border-[#4d4d4d]/10 bg-transparent text-[#4d4d4d]/70 transition-colors hover:bg-[#4d4d4d]/5 hover:text-[#4d4d4d]"
+            >
+              <FaInstagram size={26} aria-hidden="true" />
+            </a>
+            <a
+              href="#"
+              aria-label="TikTok"
+              className="flex h-14 w-14 items-center justify-center rounded-md border border-[#4d4d4d]/10 bg-transparent text-[#4d4d4d]/70 transition-colors hover:bg-[#4d4d4d]/5 hover:text-[#4d4d4d]"
+            >
+              <FaTiktok size={26} aria-hidden="true" />
+            </a>
+            <a
+              href="#"
+              aria-label="WhatsApp"
+              className="flex h-14 w-14 items-center justify-center rounded-md border border-[#4d4d4d]/10 bg-transparent text-[#4d4d4d]/70 transition-colors hover:bg-[#4d4d4d]/5 hover:text-[#4d4d4d]"
+            >
+              <FaWhatsapp size={26} aria-hidden="true" />
+            </a>
+            <a
+              href="#"
+              aria-label="Email"
+              className="flex h-14 w-14 items-center justify-center rounded-md border border-[#4d4d4d]/10 bg-transparent text-[#4d4d4d]/70 transition-colors hover:bg-[#4d4d4d]/5 hover:text-[#4d4d4d]"
+            >
+              <FaEnvelope size={26} aria-hidden="true" />
+            </a>
           </div>
-          
-          <div className={styles.footerSection}>
-            <h4 className={styles.footerSubtitle}>Contact Info</h4>
-            <p className={styles.footerText}>{CONFIG.company.phone}</p>
-            <p className={styles.footerText}>{CONFIG.company.email}</p>
-          </div>
-          
-          <div className={styles.footerSection}>
-            <h4 className={styles.footerSubtitle}>Follow Us</h4>
-            <div className={styles.footerSocials}>
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  className={styles.footerSocialLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.name}
-                >
-                  {getSocialIcon(social.name)}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        <div className={styles.footerBottom}>
-          <p className={styles.copyright}>
-            &copy; {new Date().getFullYear()} moreGenz Security Systems. All rights reserved.
+
+          <p className="mt-4 text-center font-heading text-sm tracking-[0.15em] text-[#4d4d4d] sm:text-base">
+            © {new Date().getFullYear()} yotaabo
           </p>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

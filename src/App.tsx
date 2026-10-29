@@ -1,34 +1,56 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Footer from './components/Footer';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { useTouchSelection } from './utils/useTouchSelection';
+import { CartProvider } from './context/CartContext';
+import MetaTags from './components/MetaTags';
+import ScrollToHash from './components/ScrollToHash';
 import Home from './pages/Home';
 import About from './pages/About';
 import ServicesPage from './pages/ServicesPage';
-import GalleryPage from './pages/GalleryPage';
 import NotFound from './pages/NotFound';
-import MetaTags from './components/MetaTags';
-import './index.css';
+import ViewCatalog from './pages/ViewCatalog';
+import Admin from './pages/Admin';
+import UpdatePassword from './pages/UpdatePassword';
+import CartPage from './pages/CartPage';
 
-const App: React.FC = () => {
+export default function App() {
+  useTouchSelection();
   return (
-    <Router>
-      <div className="App">
-        {/* Global Meta Tags */}
+    <BrowserRouter>
+      <CartProvider>
+        <ScrollToHash />
         <MetaTags />
-        
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/catalog" element={<ViewCatalog />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/update-password" element={<UpdatePassword />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Toaster
+          position="top-right"
+          containerStyle={{ top: 90, right: 20 }}
+          toastOptions={{
+            style: {
+              background: "#8aa89b",
+              color: "#fff",
+              borderRadius: 0,
+              fontFamily: "inherit",
+              fontSize: "14px",
+              border: 'none'
+            },
+            success: {
+              iconTheme: {
+                primary: '#ffffff',
+                secondary: '#8aa89b',
+              },
+            },
+          }}
+        />
+      </CartProvider>
+    </BrowserRouter>
   );
-};
-
-export default App;
+}

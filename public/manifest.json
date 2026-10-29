@@ -1,14 +1,17 @@
 {
-  "name": "moreGenz Security Systems",
-  "short_name": "moreGenz Security",
-  "description": "Professional CCTV, Electric Fencing & Access Control Installation",
+  "name": "Yotaabo",
+  "short_name": "Yotaabo",
+  "description": "Discover fragrances that match your mood, define your style, and leave a lasting impression.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#00ff00",
+  "theme_color": "#000000",
   "orientation": "portrait",
   "scope": "/",
-  "categories": ["business", "security"],
+  "categories": [
+    "shopping",
+    "lifestyle"
+  ],
   "icons": [
     {
       "src": "/logo.png",

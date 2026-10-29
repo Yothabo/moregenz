@@ -40,3 +40,7 @@ logs/
 .netlify
 dist/
 .netlify/
+
+# Local backups and unvalidated migration
+backups/
+migrate_products.sql

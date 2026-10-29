@@ -1,274 +1,204 @@
-import React, { useState, useRef, useCallback } from 'react';
-import {
-  FaVideo,
-  FaBolt,
-  FaKey,
-  FaShieldAlt,
-  FaFingerprint,
-  FaIdCard,
-  FaEye,
-  FaRulerVertical,
-  FaBell,
-  FaFire,
-  FaCamera,
-  FaCar,
-  FaUserLock,
-  FaSatelliteDish,
-  FaVolumeMute,
-  FaThermometer,
-  FaArrowsAlt,
-  FaPhone,
-  FaCarCrash
-} from 'react-icons/fa';
-import { services } from '../data/services';
-import styles from './Services.module.css';
+import ProductCarousel from './ProductCarousel';
 
-const Services: React.FC = () => {
-  const [expandedCard, setExpandedCard] = useState<number | null>(null);
-  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Minimum swipe distance (in pixels)
-  const minSwipeDistance = 50;
-
-  const getServiceIcon = (serviceName: string) => {
-    const name = serviceName.toLowerCase();
-    
-    // Camera Systems - All unique camera-related icons
-    if (name.includes('cctv') || name.includes('camera system')) return <FaVideo className={styles.icon} />;
-    if (name.includes('number plate') || name.includes('license plate')) return <FaCar className={styles.icon} />;
-    if (name.includes('pan-tilt') || name.includes('ptz')) return <FaArrowsAlt className={styles.icon} />;
-    if (name.includes('thermal') || name.includes('heat detection')) return <FaThermometer className={styles.icon} />;
-    
-    // Fencing - Unique fencing icons
-    if (name.includes('electric fencing') || name.includes('electric fence')) return <FaBolt className={styles.icon} />;
-    if (name.includes('razor wire')) return <FaRulerVertical className={styles.icon} />;
-    if (name.includes('palissade') || name.includes('palisade')) return <FaShieldAlt className={styles.icon} />;
-    if (name.includes('bollard') || name.includes('barrier')) return <FaCarCrash className={styles.icon} />;
-    
-    // Access Control - Unique access icons
-    if (name.includes('fingerprint')) return <FaFingerprint className={styles.icon} />;
-    if (name.includes('facial') || name.includes('face recognition')) return <FaUserLock className={styles.icon} />;
-    if (name.includes('card access') || name.includes('rfid')) return <FaIdCard className={styles.icon} />;
-    if (name.includes('intercom') || name.includes('video entry')) return <FaPhone className={styles.icon} />;
-    
-    // Alarms & Sensors - Unique sensor icons
-    if (name.includes('intruder alarm')) return <FaBell className={styles.icon} />;
-    if (name.includes('motion sensor')) return <FaSatelliteDish className={styles.icon} />;
-    if (name.includes('glass break')) return <FaVolumeMute className={styles.icon} />;
-    if (name.includes('smoke') || name.includes('fire detection')) return <FaFire className={styles.icon} />;
-    
-    // Default fallback
-    return <FaShieldAlt className={styles.icon} />;
-  };
-
-  const handleCardClick = (id: number) => {
-    if (expandedCard === id) {
-      setExpandedCard(null);
-    } else {
-      setExpandedCard(id);
-    }
-  };
-
-  const handleCloseExpanded = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedCard(null);
-  };
-
-  // Group services by category
-  const servicesByCategory = services.reduce((acc, service) => {
-    if (!acc[service.category]) {
-      acc[service.category] = [];
-    }
-    acc[service.category].push(service);
-    return acc;
-  }, {} as Record<string, typeof services>);
-
-  const categories = Object.keys(servicesByCategory);
-  const categoryTitles = {
-    'cameras': 'Cameras',
-    'fencing': 'Fencing', 
-    'access-control': 'Access Control',
-    'alarms-sensors': 'Alarms & Sensors'
-  };
-
-  const nextCategory = useCallback(() => {
-    setCurrentCategoryIndex((prev) => (prev + 1) % categories.length);
-    setExpandedCard(null);
-  }, [categories.length]);
-
-  const prevCategory = useCallback(() => {
-    setCurrentCategoryIndex((prev) => (prev - 1 + categories.length) % categories.length);
-    setExpandedCard(null);
-  }, [categories.length]);
-
-  // Touch event handlers for swipe
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (expandedCard) return;
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (expandedCard) return;
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (expandedCard) return;
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      nextCategory();
-    } else if (isRightSwipe) {
-      prevCategory();
-    }
-  };
-
-  // Mouse event handlers for desktop swipe simulation
-  const onMouseDown = (e: React.MouseEvent) => {
-    if (expandedCard) return;
-    setTouchEnd(null);
-    setTouchStart(e.clientX);
-  };
-
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (expandedCard || !touchStart) return;
-    setTouchEnd(e.clientX);
-  };
-
-  const onMouseUp = () => {
-    if (expandedCard) return;
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      nextCategory();
-    } else if (isRightSwipe) {
-      prevCategory();
-    }
-    
-    // Reset
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
+export default function Services() {
+  const categories = [
+    {
+      id: 'his',
+      title: 'His',
+      topText: 'REFINED. GROUNDED. REMEMBERED.',
+      description:
+        'Crafted for presence. Distinctive scents for the modern man, refined in character, grounded in confidence, and made to be remembered.',
+      bgColor: 'bg-white',
+      textColor: 'text-[#4d4d4d]',
+      textFill: 'fill-[#8aa89b]',
+      accentColor: 'text-[#4d4d4d]',
+      placeholderColor: 'bg-[#8aa89b]',
+      overlayColor: '#000000',
+      hasImage: true,
+      imageSrc: '/images/hero/yotaabo.png',
+      isDark: false,
+      collectionTitle: 'His Collection',
+      products: [
+        { name: 'Noir Oud', price: 'R 890' },
+        { name: 'Cedar & Smoke', price: 'R 750' },
+        { name: 'Midnight Leather', price: 'R 920' },
+        { name: 'Vetiver Storm', price: 'R 810' },
+        { name: 'Black Amber', price: 'R 850' },
+        { name: 'Smoked Rose', price: 'R 880' },
+      ],
+    },
+    {
+      id: 'hers',
+      title: 'Hers',
+      topText: 'ELEGANCE IN EVERY NOTE',
+      description:
+        'Fragrances crafted to complement elegance and individuality, whether soft and floral or bold and warm.',
+      bgColor: 'bg-white',
+      textColor: 'text-[#4d4d4d]',
+      textFill: 'fill-[#ff1493]',
+      accentColor: 'text-[#4d4d4d]',
+      placeholderColor: 'bg-[#ff1493]',
+      overlayColor: '#f2e9d8',
+      hasImage: true,
+      imageSrc: '/images/services/her.png',
+      isDark: false,
+      collectionTitle: 'Her Collection',
+      products: [
+        { name: 'Rose Éternelle', price: 'R 950' },
+        { name: 'Velvet Peony', price: 'R 880' },
+        { name: 'White Jasmine', price: 'R 910' },
+        { name: 'Amber Blush', price: 'R 840' },
+        { name: 'Silk & Vanilla', price: 'R 890' },
+        { name: 'Fleur de Nuit', price: 'R 970' },
+      ],
+    },
+    {
+      id: 'spaces',
+      title: 'Spaces',
+      topText: 'SCENTS FOR EVERY ROOM',
+      description:
+        'Extend your signature into every space. Ambient scents for the home and car, quietly shaping the atmosphere wherever you go.',
+      bgColor: 'bg-white',
+      textColor: 'text-[#4d4d4d]',
+      textFill: 'fill-[#c8ad8d]',
+      accentColor: 'text-[#4d4d4d]',
+      placeholderColor: 'bg-[#c8ad8d]',
+      overlayColor: '#e8dec9',
+      hasImage: false,
+      isDark: false,
+      collectionTitle: 'Collections',
+      products: [
+        { name: 'Amber Room', price: 'R 450' },
+        { name: 'Linen & Cedar', price: 'R 420' },
+        { name: 'Cashmere Wood', price: 'R 480' },
+        { name: 'Smoked Fig', price: 'R 460' },
+        { name: 'Velvet Rose', price: 'R 440' },
+        { name: 'Sandalwood Haze', price: 'R 490' },
+      ],
+    },
+    {
+      id: 'about',
+      title: 'about',
+      topText: 'THE STORY BEHIND THE SCENT',
+      description:
+        'Born from a simple, enduring belief: fragrance is not merely something you wear, but a reflection of who you are. We curate distinctive scents that speak quietly yet linger long, carefully designed to become an unforgettable part of how you are remembered.',
+      bgColor: 'bg-white',
+      textColor: 'text-[#4d4d4d]',
+      textFill: 'fill-[#8aa89b]',
+      accentColor: 'text-[#4d4d4d]',
+      hasImage: false,
+    },
+  ];
 
   return (
-    <section className={styles.services} id="services">
-      <div className={styles.container}>
-        <h2 className={styles.title}>Our Services</h2>
-        <p className={styles.subtitle}>
-          Comprehensive security solutions tailored to protect your home, business, and assets. 
-          From advanced surveillance to access control, we provide cutting-edge technology 
-          with professional installation and ongoing support.
-        </p>
-        
-        {/* Category Header - No arrows, just title and indicators */}
-        <div className={styles.categoryHeader}>
-          <div className={styles.categoryTitle}>
-            {categoryTitles[categories[currentCategoryIndex] as keyof typeof categoryTitles]}
-          </div>
-
-          {/* Category Indicators */}
-          <div className={styles.categoryIndicators}>
-            {categories.map((_, index) => (
-              <button
-                key={index}
-                className={`${styles.indicator} ${index === currentCategoryIndex ? styles.active : ''}`}
-                onClick={() => {
-                  setCurrentCategoryIndex(index);
-                  setExpandedCard(null);
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Carousel Container */}
-        <div
-          ref={containerRef}
-          className={styles.carouselContainer}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-          onMouseDown={onMouseDown}
-          onMouseMove={onMouseMove}
-          onMouseUp={onMouseUp}
-          onMouseLeave={onMouseUp}
-        >
-          <div 
-            className={styles.carouselTrack}
-            style={{ 
-              transform: `translateX(-${currentCategoryIndex * 100}%)` 
-            }}
+    <section id="services" className="w-full bg-white">
+      {categories.map((category) => (
+        <div key={category.id} className="flex flex-col w-full">
+          <div
+            className={`relative grid min-h-[100svh] w-full grid-rows-[auto_1fr_auto] overflow-hidden ${category.bgColor} ${category.textColor} px-6 py-12 sm:px-12 lg:px-20 lg:py-16`}
           >
-            {categories.map((category, index) => {
-              const categoryServices = servicesByCategory[category];
-              
-              return (
-                <div 
-                  key={category} 
-                  className={styles.categorySlide}
-                >
-                  <div className={styles.grid}>
-                    {categoryServices.map((service) => {
-                      const isExpanded = expandedCard === service.id;
-                      // Only hide other cards if the expanded card is in the current category
-                      const isHidden = expandedCard && 
-                        !isExpanded && 
-                        categoryServices.some(s => s.id === expandedCard);
-                      
-                      return (
-                        <div 
-                          key={service.id} 
-                          className={`${styles.card} ${isExpanded ? styles.expanded : ''} ${isHidden ? styles.hidden : ''}`}
-                          onClick={() => handleCardClick(service.id)}
-                        >
-                          {/* Close button for expanded view */}
-                          {isExpanded && (
-                            <button 
-                              className={styles.closeButton}
-                              onClick={handleCloseExpanded}
-                            >
-                              ×
-                            </button>
-                          )}
-                          
-                          <div className={styles.iconWrapper}>
-                            {getServiceIcon(service.name)}
-                          </div>
-                          <h3 className={styles.name}>{service.name}</h3>
-                          
-                          {/* Description - hidden on mobile unless expanded */}
-                          <div className={styles.descriptionWrapper}>
-                            <p className={styles.description}>{service.description}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+            {/* Top Center Text */}
+            {category.topText && (
+              <div className="relative z-20 flex h-8 w-full items-center justify-center text-center sm:h-auto">
+                <h2 className="whitespace-nowrap font-heading text-sm font-medium uppercase tracking-[0.2em] sm:text-2xl">
+                  {category.topText}
+                </h2>
+              </div>
+            )}
 
-        {/* Swipe Instruction Hint (Mobile Only) */}
-        <div className={styles.swipeHint}>
-          <span>Swipe to navigate categories</span>
+            {/* Main Content Area */}
+            <div className="relative flex h-full w-full items-center justify-center">
+              {/* Giant Background Word (Stretched) */}
+              <div
+                className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
+                style={{ height: '45vh', margin: 'auto' }}
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                  style={{ display: 'block', width: '100%', height: '100%' }}
+                >
+                  <text
+                    x="50"
+                    y="50%"
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                    textLength="100"
+                    lengthAdjust="spacingAndGlyphs"
+                    style={{ fontFamily: '"Anton", sans-serif', fontWeight: 400 }}
+                    className={category.textFill}
+                    fontSize="100"
+                  >
+                    {category.title}
+                  </text>
+                </svg>
+              </div>
+
+              {/* Decorative Script Text */}
+              <div className="pointer-events-none absolute inset-0 z-20">
+                {category.id === 'about' ? (
+                  /* About: Bottom-Right, not rotated */
+                  <div className="absolute bottom-20 right-6 sm:bottom-32 sm:right-12">
+                    <span className={`whitespace-nowrap font-accent text-[clamp(80px,12vw,160px)] font-normal leading-[0.7] tracking-normal ${category.accentColor}`}>
+                      yotaabo
+                    </span>
+                  </div>
+                ) : (
+                  /* Other sections: Rotated on the left */
+                  <>
+                    <div className="flex flex-col items-center justify-center w-full h-full lg:hidden">
+                      <span className={`absolute left-6 top-1/2 origin-left -translate-y-1/2 -rotate-90 whitespace-nowrap font-accent text-[clamp(80px,12vw,120px)] font-normal leading-[0.7] tracking-normal ${category.accentColor}`}>
+                        For
+                      </span>
+                    </div>
+                    <div className="hidden lg:flex absolute left-8 top-1/2 -translate-y-1/2 items-center justify-center">
+                      <span className={`origin-left -rotate-90 whitespace-nowrap font-accent text-[clamp(100px,16vw,200px)] font-normal leading-[0.7] tracking-normal ${category.accentColor}`}>
+                        For
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Image Overlay */}
+              {category.hasImage && (
+                <img
+                  src={category.imageSrc || "/images/hero/yotaabo.png"}
+                  alt={`${category.title} fragrance`}
+                  className="pointer-events-none absolute bottom-[15%] right-0 z-40 h-[35vh] w-auto object-contain object-right-bottom drop-shadow-2xl sm:bottom-[20%]"
+                />
+              )}
+            </div>
+
+            {/* Bottom Area — Paragraph */}
+            <div className="relative z-20 flex w-full pt-4">
+              <div className="max-w-[420px]">
+                <p className="font-heading text-lg leading-[1.6]">
+                  {category.description}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Product Carousel */}
+          {category.products && (
+            <div className={`w-full ${category.bgColor}`}>
+              <ProductCarousel
+                title={category.collectionTitle}
+                products={category.products}
+                placeholderColor={category.placeholderColor}
+                bgColor={category.bgColor}
+                overlayColor={category.overlayColor}
+                textColor={category.textColor}
+                accentColor={category.accentColor}
+                isDark={category.isDark}
+                category={category.id === 'his' ? 'His' : category.id === 'hers' ? 'Hers' : 'Spaces'}
+              />
+            </div>
+          )}
         </div>
-      </div>
+      ))}
     </section>
   );
-};
-
-export default Services;
+}
