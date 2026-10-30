@@ -5,6 +5,8 @@ export type CartItem = {
   name: string;
   price: string;
   placeholderColor: string;
+  image_url?: string | null;
+  description?: string | null;
   category: string;
   quantity: number;
 };

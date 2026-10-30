@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiX, FiMinus, FiPlus } from 'react-icons/fi';
+import { FiX, FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import RippleButton from './RippleButton';
@@ -19,12 +19,20 @@ type ProductModalProps = {
   placeholderColor: string;
   accentColor: string;
   isDark: boolean;
+  mode?: 'storefront' | 'cart';
+  cartQuantity?: number;
+  onQuantityChange?: (quantity: number) => void;
+  onRemoveFromCart?: () => void;
   onClose: () => void;
 };
 
 export default function ProductModal({
   product,
   placeholderColor,
+  mode = 'storefront',
+  cartQuantity,
+  onQuantityChange,
+  onRemoveFromCart,
   onClose
 }: ProductModalProps) {
   const [isMounted, setIsMounted] = useState(false);
@@ -37,7 +45,8 @@ export default function ProductModal({
   useEffect(() => {
     if (product) {
       setIsMounted(true);
-      setQuantity(1);
+      setQuantity(mode === 'cart' ? Math.max(1, cartQuantity ?? 1) : 1);
+      setShowDuplicateConfirm(false);
       requestAnimationFrame(() => {
         setTimeout(() => setIsOpen(true), 10);
       });
@@ -46,7 +55,7 @@ export default function ProductModal({
       const timer = setTimeout(() => setIsMounted(false), 400);
       return () => clearTimeout(timer);
     }
-  }, [product]);
+  }, [product, mode, cartQuantity]);
 
   // Lock body scroll without layout shift
   useEffect(() => {
@@ -68,7 +77,20 @@ export default function ProductModal({
 
   const cartItemId = product.name;
 
+  const handleQuantityChange = (nextQuantity: number) => {
+    const safeQuantity = Math.max(1, nextQuantity);
+    setQuantity(safeQuantity);
+
+    if (mode === 'cart') {
+      onQuantityChange?.(safeQuantity);
+    }
+  };
+
   const handleAddToCart = () => {
+    if (mode === 'cart') {
+      onRemoveFromCart?.();
+      return;
+    }
     const isAlreadyInCart = cartItems.some((item) => item.id === cartItemId);
 
     if (isAlreadyInCart) {
@@ -85,6 +107,7 @@ export default function ProductModal({
         name: product.name,
         price: product.price,
         placeholderColor: placeholderColor,
+        image_url: product.image_url ?? null,
         category: 'General',
       });
     }
@@ -145,7 +168,12 @@ export default function ProductModal({
             </span>
           </div>
           <div>
-            <span className="block font-heading text-xl leading-none text-[#8aa89b]">
+            <span
+              className="block font-heading text-xl leading-none"
+              style={{
+                color: placeholderColor.match(/\[(#[0-9a-fA-F]{3,8})\]/)?.[1] || '#8aa89b',
+              }}
+            >
               {product.price}
             </span>
           </div>
@@ -162,16 +190,16 @@ export default function ProductModal({
         <div className="flex gap-3 px-5 py-5">
           <div className="flex items-center border border-[#4d4d4d]/20">
             <RippleButton
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="flex h-12 w-10 items-center justify-center text-black/50 transition-colors hover:text-black"
+              onClick={() => handleQuantityChange(quantity - 1)}
+              className="flex h-12 w-10 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
               ariaLabel="Decrease quantity"
             >
               <FiMinus size={14} />
             </RippleButton>
             <span className="w-8 text-center font-heading text-lg text-black">{quantity}</span>
             <RippleButton
-              onClick={() => setQuantity(quantity + 1)}
-              className="flex h-12 w-10 items-center justify-center text-black/50 transition-colors hover:text-black"
+              onClick={() => handleQuantityChange(quantity + 1)}
+              className="flex h-12 w-10 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
               ariaLabel="Increase quantity"
             >
               <FiPlus size={14} />
@@ -182,9 +210,9 @@ export default function ProductModal({
             onClick={handleAddToCart}
             className="group flex h-12 flex-1 items-center justify-between border border-solid border-[#4d4d4d] bg-[#4d4d4d] px-5 text-xs font-semibold tracking-wide text-white transition-colors duration-300 hover:bg-transparent hover:text-[#4d4d4d]"
           >
-            <span>Add to Cart</span>
+            <span>{mode === 'cart' ? 'Remove from Cart' : 'Add to Cart'}</span>
             <span className="text-base transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              ↗
+              {mode === 'cart' ? <FiTrash2 size={16} /> : '↗'}
             </span>
           </button>
         </div>

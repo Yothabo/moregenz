@@ -7,12 +7,14 @@ import { FaOpencart } from 'react-icons/fa';
 import RippleButton from '../components/RippleButton';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
+import ProductModal from '../components/ProductModal';
 
 export default function CartPage() {
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal } = useCart();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
   const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<typeof cartItems[number] | null>(null);
 
   const handleRemoveClick = (id: string, name: string) => {
     setItemToDelete({ id, name });
@@ -22,6 +24,7 @@ export default function CartPage() {
     if (!itemToDelete) return;
     const { id, name } = itemToDelete;
     setItemToDelete(null);
+    setSelectedProduct(null);
     setRemovingId(id);
 
     setTimeout(() => {
@@ -74,13 +77,32 @@ export default function CartPage() {
                       : 'opacity-100 scale-100 translate-x-0'
                   }`}
                 >
-                  <div className={`h-24 w-24 shrink-0 ${item.placeholderColor}`}></div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProduct(item)}
+                    aria-label={`View ${item.name} details`}
+                    className={`h-24 w-24 shrink-0 overflow-hidden ${item.placeholderColor} cursor-pointer`}
+                  >
+                    {item.image_url && (
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        loading="lazy"
+                        className="h-full w-full object-contain p-2"
+                      />
+                    )}
+                  </button>
 
                   <div className="flex flex-1 flex-col min-w-0">
                     <div className="flex w-full items-start justify-between gap-4">
-                      <span className="font-heading text-xl text-black truncate">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedProduct(item)}
+                        className="truncate text-left font-heading text-xl text-black"
+                        aria-label={`View ${item.name} details`}
+                      >
                         {item.name}
-                      </span>
+                      </button>
                       <button
                         onClick={() => handleRemoveClick(item.id, item.name)}
                         aria-label="Remove item"
@@ -96,7 +118,7 @@ export default function CartPage() {
                       <div className="flex items-center border border-black/10">
                         <RippleButton
                           onClick={() => decreaseQuantity(item.id)}
-                          className="flex h-8 w-8 items-center justify-center text-black/50 transition-colors hover:text-black"
+                          className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
                           ariaLabel="Decrease quantity"
                         >
                           <FiMinus size={16} />
@@ -106,7 +128,7 @@ export default function CartPage() {
                         </span>
                         <RippleButton
                           onClick={() => increaseQuantity(item.id)}
-                          className="flex h-8 w-8 items-center justify-center text-black/50 transition-colors hover:text-black"
+                          className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
                           ariaLabel="Increase quantity"
                         >
                           <FiPlus size={16} />
@@ -125,7 +147,7 @@ export default function CartPage() {
                 <div className="flex gap-4">
                   <Link
                     to="/catalog"
-                    className="inline-flex min-h-12 items-center justify-center border border-solid border-[#4d4d4d] bg-transparent px-8 text-xs font-semibold tracking-wide text-[#4d4d4d] transition-colors hover:bg-[#4d4d4d] hover:text-white"
+                    className="inline-flex min-h-12 items-center justify-center bg-[#f1f1ee] px-8 text-xs font-semibold tracking-wide text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
                   >
                     Continue Shopping
                   </Link>
@@ -142,6 +164,36 @@ export default function CartPage() {
         </div>
       </main>
 
+      <ProductModal
+        product={selectedProduct}
+        bgColor="bg-white"
+        placeholderColor={selectedProduct?.placeholderColor ?? ''}
+        accentColor="text-[#8aa89b]"
+        isDark={false}
+        mode="cart"
+        cartQuantity={selectedProduct?.quantity ?? 1}
+        onQuantityChange={(nextQuantity) => {
+          if (!selectedProduct) return;
+          const currentItem = cartItems.find((item) => item.id === selectedProduct.id);
+          if (!currentItem) return;
+
+          const difference = nextQuantity - currentItem.quantity;
+          if (difference > 0) {
+            for (let i = 0; i < difference; i++) increaseQuantity(selectedProduct.id);
+          } else if (difference < 0) {
+            for (let i = 0; i < Math.abs(difference); i++) decreaseQuantity(selectedProduct.id);
+          }
+        }}
+        onRemoveFromCart={() => {
+          if (!selectedProduct) return;
+          setItemToDelete({
+            id: selectedProduct.id,
+            name: selectedProduct.name,
+          });
+        }}
+        onClose={() => setSelectedProduct(null)}
+      />
+
       <ConfirmModal
         isOpen={!!itemToDelete}
         title="Remove from cart?"
@@ -149,6 +201,7 @@ export default function CartPage() {
         confirmText="Remove"
         cancelText="Keep it"
         variant="grey"
+        reverseActions
         onConfirm={confirmDelete}
         onCancel={() => setItemToDelete(null)}
       />

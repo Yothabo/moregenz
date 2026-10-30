@@ -7,6 +7,7 @@ type ConfirmModalProps = {
   confirmText?: string;
   cancelText?: string;
   variant?: 'grey' | 'green';
+  reverseActions?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -18,6 +19,7 @@ export default function ConfirmModal({
   confirmText = 'Remove',
   cancelText = 'Cancel',
   variant = 'grey',
+  reverseActions = false,
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
@@ -31,13 +33,13 @@ export default function ConfirmModal({
 
         <div className="mt-6 flex gap-3">
           <button
-            onClick={onCancel}
-            className="flex h-11 flex-1 items-center justify-center border border-[#4d4d4d]/20 bg-transparent text-xs font-semibold text-[#4d4d4d] transition-colors hover:bg-[#4d4d4d]/5"
+            onClick={reverseActions ? onConfirm : onCancel}
+            className="flex h-11 flex-1 items-center justify-center border border-transparent bg-[#f1f1ee] text-xs font-semibold text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
           >
-            {cancelText}
+            {reverseActions ? confirmText : cancelText}
           </button>
           <button
-            onClick={onConfirm}
+            onClick={reverseActions ? onCancel : onConfirm}
             className="flex h-11 flex-1 items-center justify-center border border-solid text-xs font-semibold text-white transition-colors"
             style={{ backgroundColor: confirmColor, borderColor: confirmColor }}
             onMouseEnter={(e) => {
@@ -49,7 +51,7 @@ export default function ConfirmModal({
               e.currentTarget.style.color = '#fff';
             }}
           >
-            {confirmText}
+            {reverseActions ? cancelText : confirmText}
           </button>
         </div>
       </div>
