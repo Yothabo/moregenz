@@ -5,9 +5,16 @@ type ModalProps = {
   onClose: () => void;
   children: ReactNode;
   maxWidth?: string;
+  scrollable?: boolean;
 };
 
-export default function Modal({ isOpen, onClose, children, maxWidth = 'max-w-lg' }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  children,
+  maxWidth = 'max-w-lg',
+  scrollable = true,
+}: ModalProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -49,7 +56,9 @@ export default function Modal({ isOpen, onClose, children, maxWidth = 'max-w-lg'
 
       {/* Panel */}
       <div
-        className={`relative max-h-[85vh] w-full ${maxWidth} overflow-y-auto bg-white shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${
+        className={`relative max-h-[85vh] w-full ${maxWidth} ${
+          scrollable ? 'overflow-y-auto' : 'overflow-hidden'
+        } bg-white shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${
           isVisible ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-12 scale-95 opacity-0'
         }`}
         onClick={(e) => e.stopPropagation()}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Modal from './Modal';
+import CheckoutItemCard from './CheckoutItemCard';
 import ConfirmModal from './ConfirmModal';
 import ProductModal from './ProductModal';
 import type { CartItem } from '../context/CartContext';
@@ -156,31 +157,25 @@ export default function CheckoutModal({
 
         <div className="mt-6">
           <div className="flex max-h-72 flex-col gap-2 overflow-y-auto pr-1">
-            {cartItems.map((item, index) => (
-              <button
-                type="button"
-                key={item.id}
-                onClick={() => setSelectedProduct(item)}
-                aria-label={`View ${item.name} details`}
-                className="m-0 flex w-full flex-col gap-1 border-b border-[#4d4d4d]/20 bg-[#fafaf9] px-4 py-3 text-left leading-normal transition-colors hover:bg-[#f5f5f5]"
-              >
-                <p className="m-0 p-0 font-heading text-base leading-normal text-[#4d4d4d]">
-                  {item.name}
-                </p>
+            {cartItems.map((item) => {
+              const unitPrice = Number(item.price.replace(/[^0-9.]/g, ''));
 
-                <div className="m-0 flex items-center justify-between gap-4 p-0 leading-normal">
-                  <p className="m-0 p-0 text-base leading-normal text-[#4d4d4d]/60">
-                    <span className="font-heading tabular-nums">{item.quantity}</span>
-                    {' × '}
-                    <span className="font-heading tabular-nums">R {Number(item.price.replace(/[^0-9.]/g, '')).toFixed(2)}</span>
-                  </p>
-
-                  <p className="m-0 shrink-0 whitespace-nowrap p-0 text-right font-heading text-base leading-normal tabular-nums text-[#4d4d4d]/60">
-                    R {(Number(item.price.replace(/[^0-9.]/g, '')) * item.quantity).toFixed(2)}
-                  </p>
-                </div>
-              </button>
-            ))}
+              return (
+                <CheckoutItemCard
+                  key={item.id}
+                  name={item.name}
+                  leftContent={
+                    <>
+                      <span className="font-heading tabular-nums">{item.quantity}</span>
+                      {' × '}
+                      <span className="font-heading tabular-nums">R {unitPrice.toFixed(2)}</span>
+                    </>
+                  }
+                  rightContent={`R ${(unitPrice * item.quantity).toFixed(2)}`}
+                  onClick={() => setSelectedProduct(item)}
+                />
+              );
+            })}
           </div>
 
           <div className="flex items-center justify-between py-4">

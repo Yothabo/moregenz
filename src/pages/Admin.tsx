@@ -1,19 +1,20 @@
 import { useState, useEffect, useMemo } from 'react';
+import type * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabase';
 import AdminProductForm, { AdminProduct } from '../components/AdminProductForm';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import ConfirmModal from '../components/ConfirmModal';
 import OrderDetailsModal from '../components/OrderDetailsModal';
+import OrderItemCard from '../components/OrderItemCard';
 import AdminProductDetailsModal from '../components/AdminProductDetailsModal';
-import { FiPlus, FiEdit2, FiTrash2, FiLogOut, FiEye, FiEyeOff, FiSearch, FiRotateCcw, FiX } from 'react-icons/fi';
-import MenuIcon from '../components/MenuIcon';
+import { FiPlus, FiEdit2, FiTrash2, FiLogOut, FiEye, FiEyeOff, FiSearch, FiRotateCcw, FiX, FiPackage, FiShoppingBag, FiGrid, FiMoreHorizontal, FiSettings } from 'react-icons/fi';
 import { formatPrice } from '../utils/formatPrice';
 import { getCategoryTheme } from '../utils/categoryTheme';
 import toast from 'react-hot-toast';
 
 type AdminRow = AdminProduct & { id: string; created_at: string };
-type Tab = 'products' | 'orders' | 'settings';
+type Tab = 'overview' | 'products' | 'orders' | 'settings';
 type CategoryFilter = 'All' | 'His' | 'Hers' | 'Spaces' | 'Hidden';
 type OrderStatus = 'pending' | 'confirmed' | 'delivered' | 'cancelled';
 type OrderFilter = 'All' | 'Pending' | 'Confirmed' | 'Delivered' | 'Cancelled';
@@ -31,6 +32,61 @@ type Order = {
   created_at: string;
   updated_at: string;
 };
+
+
+type AdminPageHeaderProps = {
+  title: string;
+  searchValue?: string;
+  searchPlaceholder?: string;
+  onSearchChange?: (value: string) => void;
+  onSearchFocus?: () => void;
+  action?: React.ReactNode;
+  filters?: React.ReactNode;
+};
+
+function AdminPageHeader({
+  title,
+  searchValue,
+  searchPlaceholder,
+  onSearchChange,
+  onSearchFocus,
+  action,
+  filters,
+}: AdminPageHeaderProps) {
+  return (
+    <div className="sticky top-[65px] z-30 -mx-4 bg-white px-4 pb-2 pt-1 sm:-mx-10 sm:px-10">
+      <h1 className="mb-2 font-heading text-3xl italic leading-tight text-[#4d4d4d] sm:text-4xl">
+        {title}
+      </h1>
+
+      {(searchPlaceholder || action) && (
+        <div className="flex items-center gap-3">
+          {searchPlaceholder && (
+            <div className="flex h-[50px] min-w-0 flex-1 items-center gap-3 border border-black/10 bg-[#f5f5f5] px-4 sm:px-5">
+              <FiSearch size={16} className="shrink-0 text-[#4d4d4d]/40" />
+              <input
+                type="text"
+                value={searchValue ?? ''}
+                onFocus={onSearchFocus}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                placeholder={searchPlaceholder}
+                aria-label={searchPlaceholder}
+                className="w-full min-w-0 border-0 bg-transparent font-heading text-sm font-medium text-[#4d4d4d] outline-none placeholder:font-heading placeholder:text-[#4d4d4d]/40 focus:outline-none focus:ring-0"
+              />
+            </div>
+          )}
+          {action}
+        </div>
+      )}
+
+      {filters && (
+        <div className="mt-5 flex flex-wrap gap-6">
+          {filters}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -56,13 +112,11 @@ export default function Admin() {
   const [confirmDelete, setConfirmDelete] = useState<AdminRow | null>(null);
 
   // UI state
-  const [activeTab, setActiveTab] = useState<Tab>('products');
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [viewingProduct, setViewingProduct] = useState<AdminRow | null>(null);
-  const [menuHovered, setMenuHovered] = useState(false);
   const [orderFilter, setOrderFilter] = useState<OrderFilter>('All');
   const [orderSearch, setOrderSearch] = useState('');
   const [orderPage, setOrderPage] = useState(1);
@@ -370,143 +424,131 @@ export default function Admin() {
   // ============ DASHBOARD ============
   return (
     <main className="min-h-screen bg-white">
-      {/* TOP NAV BAR */}
-      <header className="sticky top-0 z-40 border-b border-[#4d4d4d]/10 bg-white">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-10">
-<nav className="hidden items-center gap-8 md:flex">
-              {(['products', 'orders', 'settings'] as Tab[]).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`border-0 bg-transparent p-0 font-heading text-lg italic transition-colors ${
-                    activeTab === tab ? 'font-semibold text-[#4d4d4d]' : 'text-[#4d4d4d]/50 hover:text-[#4d4d4d]'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden text-xs text-[#4d4d4d]/40 sm:inline">{session.user.email}</span>
-            <button
-              onClick={handleLogout}
-              className="hidden items-center gap-2 border-0 bg-transparent text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] md:flex"
-            >
-              <FiLogOut size={14} /> Logout
-            </button>
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              onMouseEnter={() => setMenuHovered(true)}
-              onMouseLeave={() => setMenuHovered(false)}
-              className="inline-flex h-11 w-11 items-center justify-center border-0 bg-transparent p-0 text-[#4d4d4d] outline-none transition-colors hover:text-[#777770] md:hidden"
-              aria-label="Toggle menu"
-            >
-              <MenuIcon isOpen={isMobileMenuOpen} isHovered={menuHovered} size={29} />
-            </button>
-          </div>
+      {/* MINIMAL HEADER */}
+      <header className="sticky top-0 z-40 border-b border-[#4d4d4d]/10 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <p className="min-w-0 truncate text-xs font-semibold uppercase tracking-[0.16em] text-[#4d4d4d]/45">
+            Signed in as {session?.user?.email?.split('@')[0] || 'Admin'}
+          </p>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 border-0 bg-transparent px-2 text-sm font-medium text-[#4d4d4d]/70 transition-colors hover:text-[#4d4d4d]"
+          >
+            <FiLogOut size={16} />
+            Logout
+          </button>
         </div>
-
-        {/* Mobile menu — top-down dropdown */}
-        {isMobileMenuOpen && (
-          <>
-            {/* Overlay (transparent, closes menu on outside click) */}
-            <div
-              className="fixed inset-0 z-30 md:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-            <div className="absolute right-4 top-full z-40 mt-1 w-56 bg-white shadow-xl ring-1 ring-black/5 md:hidden">
-              {/* Admin name header */}
-              <div className="border-b border-[#4d4d4d]/10 px-4 py-3">
-                <p className="font-heading text-sm italic text-[#4d4d4d]">
-                  Signed in as {session.user.email.split('@')[0]}
-                </p>
-              </div>
-              {/* Nav tabs */}
-              <nav className="flex flex-col">
-                {(['products', 'orders', 'settings'] as Tab[]).map((tab) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => { setActiveTab(tab); setIsMobileMenuOpen(false); }}
-                    className={`w-full border-0 bg-transparent px-4 py-2.5 text-left text-sm font-medium capitalize transition-colors hover:bg-[#f5f5f5] ${
-                      activeTab === tab ? 'text-[#4d4d4d] font-semibold' : 'text-[#4d4d4d]/60'
-                    }`}
-                    style={{ WebkitAppearance: 'none', appearance: 'none' }}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </nav>
-              {/* Logout */}
-              <div className="border-t border-[#4d4d4d]/10">
-                <button
-                  type="button"
-                  onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
-                  className="flex w-full items-center gap-2 border-0 bg-transparent px-4 py-2.5 text-left text-sm font-medium text-red-500 transition-colors hover:bg-red-50"
-                  style={{ WebkitAppearance: 'none', appearance: 'none' }}
-                >
-                  <FiLogOut size={14} /> Logout
-                </button>
-              </div>
-            </div>
-          </>
-        )}
       </header>
 
-      <div className="mx-auto max-w-[1120px] px-6 py-12 sm:px-10 lg:py-16">
+      <div className="mx-auto max-w-[1120px] px-4 pb-32 pt-2 sm:px-10 sm:pb-36 sm:pt-3 lg:pt-4 lg:pb-36">
+        {/* ============ OVERVIEW TAB ============ */}
+        {activeTab === 'overview' && (
+          <section>
+            <AdminPageHeader
+              title="Overview"
+              searchValue={searchQuery}
+              searchPlaceholder="Search products"
+              onSearchFocus={() => setActiveTab('products')}
+              onSearchChange={(value) => {
+                setSearchQuery(value);
+                setCurrentPage(1);
+                setActiveTab('products');
+              }}
+              action={
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditing(null);
+                    setFormOpen(true);
+                  }}
+                  className="inline-flex h-[50px] shrink-0 items-center gap-2 border border-solid border-[#4d4d4d] bg-[#4d4d4d] px-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d] sm:px-6"
+                >
+                  <FiPlus size={14} />
+                  <span className="hidden sm:inline">Add Product</span>
+                  <span className="sm:hidden">Add</span>
+                </button>
+              }
+            />
+
+            <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-[#4d4d4d]/10 pt-6 sm:grid-cols-3 sm:gap-x-12">
+              <div>
+                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Products</p>
+                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{stats.total}</p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Active Products</p>
+                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{stats.active}</p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Orders</p>
+                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.total}</p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Pending Orders</p>
+                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.pending}</p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Confirmed Orders</p>
+                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.confirmed}</p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Delivered Orders</p>
+                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.delivered}</p>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ============ PRODUCTS TAB ============ */}
         {activeTab === 'products' && (
           <>
+            <AdminPageHeader
+              title="Products"
+              searchValue={searchQuery}
+              searchPlaceholder="Search products"
+              onSearchChange={(value) => {
+                setSearchQuery(value);
+                setCurrentPage(1);
+              }}
+              action={
+                <button
+                  type="button"
+                  onClick={() => { setEditing(null); setFormOpen(true); }}
+                  className="inline-flex h-[50px] shrink-0 items-center gap-2 border border-solid border-[#4d4d4d] bg-[#4d4d4d] px-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d] sm:px-6"
+                >
+                  <FiPlus size={14} />
+                  <span className="hidden sm:inline">Add Product</span>
+                </button>
+              }
+              filters={
+                (['All', 'His', 'Hers', 'Spaces', 'Hidden'] as CategoryFilter[]).map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat)}
+                    className={`border-0 bg-transparent px-0 py-1 font-heading text-sm font-medium transition-colors ${
+                      categoryFilter === cat
+                        ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
+                        : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))
+              }
+            />
+
             {/* Stats row */}
-            <div>
+            <div className="mt-4">
               <p className="text-sm font-medium text-[#4d4d4d]/60">
                 {stats.total} total · {stats.active} active · {stats.hidden} hidden
               </p>
-            </div>
-
-            {/* Full-width search + add row */}
-            <div className="mt-10 flex items-center gap-3">
-              {/* Search - grey background, rounded like login inputs */}
-              <div className="flex flex-1 items-center gap-3 border border-black/10 bg-[#f5f5f5] px-5 py-3.5">
-                <FiSearch size={16} className="text-[#4d4d4d]/40" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products"
-                  className="w-full border-0 bg-transparent text-sm font-medium text-[#4d4d4d] outline-none placeholder:text-[#4d4d4d]/40 focus:outline-none focus:ring-0"
-                />
-              </div>
-
-              {/* Add product - full text, smaller */}
-              <button
-                onClick={() => { setEditing(null); setFormOpen(true); }}
-                className="inline-flex h-[50px] shrink-0 items-center gap-2 border border-solid border-[#4d4d4d] bg-[#4d4d4d] px-6 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
-              >
-                <FiPlus size={14} /> Add Product
-              </button>
-            </div>
-
-            {/* Category filters — flat, no border */}
-            <div className="mt-8 flex flex-wrap gap-6" style={{ fontFamily: 'var(--font-body)' }}>
-              {(['All', 'His', 'Hers', 'Spaces', 'Hidden'] as CategoryFilter[]).map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setCategoryFilter(cat)}
-                  className={`border-0 bg-transparent px-0 py-1 text-sm font-medium transition-colors ${
-                    categoryFilter === cat
-                      ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
-                      : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
-                  }`}
-                  style={{ fontFamily: 'var(--font-body)' }}
-                >
-                  {cat}
-                </button>
-              ))}
             </div>
 
             {/* Product list */}
@@ -587,7 +629,7 @@ export default function Admin() {
 
             {/* Pagination footer */}
             <div className="mt-12 flex items-center justify-between border-t border-[#4d4d4d]/10 pt-6">
-              <p className="text-sm font-medium text-[#4d4d4d]/50">
+              <p className="font-heading text-sm font-medium text-[#4d4d4d]/50">
                 Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, filteredProducts.length)}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of {filteredProducts.length}
               </p>
 
@@ -596,7 +638,7 @@ export default function Admin() {
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="border-0 bg-transparent px-2 py-1 text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     ←
                   </button>
@@ -613,10 +655,10 @@ export default function Admin() {
                       const showEllipsis = prevPage && page - prevPage > 1;
                       return (
                         <span key={page} className="flex items-center gap-1">
-                          {showEllipsis && <span className="text-sm text-[#4d4d4d]/40">…</span>}
+                          {showEllipsis && <span className="font-heading text-sm text-[#4d4d4d]/40">…</span>}
                           <button
                             onClick={() => setCurrentPage(page)}
-                            className={`min-w-[32px] border-0 bg-transparent px-2 py-1 text-sm font-medium transition-colors ${
+                            className={`min-w-[32px] border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium transition-colors ${
                               page === currentPage
                                 ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
                                 : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
@@ -631,7 +673,7 @@ export default function Admin() {
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="border-0 bg-transparent px-2 py-1 text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     →
                   </button>
@@ -644,43 +686,31 @@ export default function Admin() {
         {/* ============ ORDERS TAB ============ */}
         {activeTab === 'orders' && (
           <>
-            {/* Stats row */}
-            <div>
-              <p className="text-sm font-medium text-[#4d4d4d]/60">
-                {orderStats.total} total · {orderStats.pending} pending · {orderStats.confirmed} confirmed · {orderStats.delivered} delivered · {orderStats.cancelled} cancelled
-              </p>
-            </div>
-
-            {/* Search */}
-            <div className="mt-10 flex items-center gap-3">
-              <div className="flex flex-1 items-center gap-3 border border-black/10 bg-[#f5f5f5] px-5 py-3.5">
-                <FiSearch size={16} className="text-[#4d4d4d]/40" />
-                <input
-                  type="text"
-                  value={orderSearch}
-                  onChange={(e) => setOrderSearch(e.target.value)}
-                  placeholder="Search orders by number, name, or phone"
-                  className="w-full border-0 bg-transparent text-sm font-medium text-[#4d4d4d] outline-none placeholder:text-[#4d4d4d]/40 focus:outline-none focus:ring-0"
-                />
-              </div>
-            </div>
-
-            {/* Status filters */}
-            <div className="mt-8 flex flex-wrap gap-6">
-              {(['All', 'Pending', 'Confirmed', 'Delivered', 'Cancelled'] as OrderFilter[]).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => { setOrderFilter(f); setOrderPage(1); }}
-                  className={`border-0 bg-transparent px-0 py-1 text-sm font-medium transition-colors ${
-                    orderFilter === f
-                      ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
-                      : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
+            <AdminPageHeader
+              title="Orders"
+              searchValue={orderSearch}
+              searchPlaceholder="Search orders by number, name, or phone"
+              onSearchChange={(value) => {
+                setOrderSearch(value);
+                setOrderPage(1);
+              }}
+              filters={
+                (['All', 'Pending', 'Confirmed', 'Delivered', 'Cancelled'] as OrderFilter[]).map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => { setOrderFilter(f); setOrderPage(1); }}
+                    className={`border-0 bg-transparent px-0 py-1 font-heading text-sm font-medium transition-colors ${
+                      orderFilter === f
+                        ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
+                        : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))
+              }
+            />
 
             {/* Order list */}
             <div className="mt-8">
@@ -691,41 +721,31 @@ export default function Admin() {
               ) : (
                 <div className="flex flex-col gap-3">
                   {paginatedOrders.map((order) => {
-                    const statusColor =
-                      order.status === 'pending' ? 'text-[#d97706]'
-                      : order.status === 'confirmed' ? 'text-[#8aa89b]'
-                      : order.status === 'delivered' ? 'text-[#4d4d4d]/60'
-                      : 'text-red-500';
-                    const statusLabel = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+                    const totalQuantity = order.items.reduce(
+                      (total, item) => total + item.qty,
+                      0
+                    );
+
                     return (
-                      <div
+                      <OrderItemCard
                         key={order.id}
+                        name={order.customer_name}
+                        leftContent={
+                          <span className="font-heading text-base leading-normal text-[#4d4d4d]/60">
+                            {new Date(order.created_at).toLocaleDateString('en-ZA', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                            {' • '}
+                            <span className="tabular-nums">{totalQuantity}</span>
+                            {' '}
+                            {totalQuantity === 1 ? 'item' : 'items'}
+                          </span>
+                        }
+                        rightContent={formatPrice(order.subtotal)}
                         onClick={() => setViewingOrder(order)}
-                        className="cursor-pointer border border-[#4d4d4d]/10 bg-[#f5f5f5] p-4 transition-colors hover:bg-[#ebebeb]"
-                        style={{ WebkitTapHighlightColor: 'transparent' }}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <p className="truncate font-heading text-lg font-semibold text-[#4d4d4d]">
-                              {order.order_number}
-                            </p>
-                            <p className="mt-0.5 text-sm text-[#4d4d4d]/60">
-                              {order.customer_name} · {order.customer_phone}
-                            </p>
-                          </div>
-                          <span className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider ${statusColor}`}>
-                            {statusLabel}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex items-center justify-between">
-                          <span className="truncate text-[10px] uppercase tracking-wider text-[#4d4d4d]/40 font-semibold">
-                            {order.items.length} {order.items.length === 1 ? 'item' : 'items'} · WhatsApp order
-                          </span>
-                          <span className="font-heading text-lg font-semibold text-[#8aa89b]">
-                            {formatPrice(order.subtotal)}
-                          </span>
-                        </div>
-                      </div>
+                      />
                     );
                   })}
                 </div>
@@ -734,7 +754,7 @@ export default function Admin() {
 
             {/* Pagination */}
             <div className="mt-12 flex items-center justify-between border-t border-[#4d4d4d]/10 pt-6">
-              <p className="text-sm font-medium text-[#4d4d4d]/50">
+              <p className="font-heading text-sm font-medium text-[#4d4d4d]/50">
                 Showing {Math.min((orderPage - 1) * ORDERS_PER_PAGE + 1, filteredOrders.length)}–{Math.min(orderPage * ORDERS_PER_PAGE, filteredOrders.length)} of {filteredOrders.length}
               </p>
 
@@ -743,7 +763,7 @@ export default function Admin() {
                   <button
                     onClick={() => setOrderPage((p) => Math.max(1, p - 1))}
                     disabled={orderPage === 1}
-                    className="border-0 bg-transparent px-2 py-1 text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     ←
                   </button>
@@ -751,7 +771,7 @@ export default function Admin() {
                     <button
                       key={page}
                       onClick={() => setOrderPage(page)}
-                      className={`min-w-[32px] border-0 bg-transparent px-2 py-1 text-sm font-medium transition-colors ${
+                      className={`min-w-[32px] border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium transition-colors ${
                         page === orderPage
                           ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
                           : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
@@ -763,7 +783,7 @@ export default function Admin() {
                   <button
                     onClick={() => setOrderPage((p) => Math.min(totalOrderPages, p + 1))}
                     disabled={orderPage === totalOrderPages}
-                    className="border-0 bg-transparent px-2 py-1 text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     →
                   </button>
@@ -775,14 +795,53 @@ export default function Admin() {
 
         {/* ============ SETTINGS TAB ============ */}
         {activeTab === 'settings' && (
-          <div className="py-20 text-center">
-            <h1 className="font-heading text-4xl italic text-[#4d4d4d]">Settings</h1>
-            <p className="mt-3 text-sm text-[#4d4d4d]/50">
-              Account and store settings will appear here.
-            </p>
+          <div>
+            <AdminPageHeader title="Settings" />
+            <div className="py-16 text-center">
+              <p className="text-sm text-[#4d4d4d]/50">
+                Account and store settings will appear here.
+              </p>
+            </div>
           </div>
         )}
       </div>
+
+      {/* FLOATING BOTTOM NAVIGATION */}
+      <nav aria-label="Admin navigation" className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(12px,env(safe-area-inset-bottom))]">
+        <div className="relative mx-auto flex max-w-md items-center justify-around rounded-2xl border border-black/10 bg-white/95 px-2 py-2 shadow-[0_8px_35px_rgba(0,0,0,0.14)] backdrop-blur">
+          {([
+            { tab: 'overview' as Tab, label: 'Overview', Icon: FiGrid },
+            { tab: 'products' as Tab, label: 'Products', Icon: FiPackage },
+            { tab: 'orders' as Tab, label: 'Orders', Icon: FiShoppingBag },
+          ]).map(({ tab, label, Icon }) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              aria-current={activeTab === tab ? 'page' : undefined}
+              className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] transition-colors ${
+                activeTab === tab ? 'bg-[#4d4d4d] text-white' : 'text-[#4d4d4d]/60 hover:bg-[#f5f5f5] hover:text-[#4d4d4d]'
+              }`}
+            >
+              <Icon size={19} />
+              <span>{label}</span>
+            </button>
+          ))}
+          <div className="relative flex min-w-0 flex-1 justify-center">
+            <button
+              type="button"
+              onClick={() => setActiveTab(activeTab === 'settings' ? 'overview' : 'settings')}
+              aria-expanded={activeTab === 'settings'}
+              className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] transition-colors ${
+                activeTab === 'settings' ? 'bg-[#4d4d4d] text-white' : 'text-[#4d4d4d]/60 hover:bg-[#f5f5f5] hover:text-[#4d4d4d]'
+              }`}
+            >
+              {activeTab === 'settings' ? <FiSettings size={19} /> : <FiMoreHorizontal size={19} />}
+              <span>{activeTab === 'settings' ? 'Settings' : 'More'}</span>
+            </button>
+          </div>
+        </div>
+      </nav>
 
       {/* Product Details Modal (Admin-specific) */}
       <AdminProductDetailsModal
@@ -818,6 +877,10 @@ export default function Admin() {
 
       <OrderDetailsModal
         order={viewingOrder}
+        products={products.filter(
+          (product): product is AdminRow & { id: string } =>
+            typeof product.id === 'string',
+        )}
         onClose={() => setViewingOrder(null)}
         onStatusChange={handleOrderStatusChange}
         onDelete={(o) => { setViewingOrder(null); setConfirmDeleteOrder(o); }}
