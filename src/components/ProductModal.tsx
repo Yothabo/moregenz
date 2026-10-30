@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { FiX, FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
@@ -19,7 +20,7 @@ type ProductModalProps = {
   placeholderColor: string;
   accentColor: string;
   isDark: boolean;
-  mode?: 'storefront' | 'cart';
+  mode?: 'storefront' | 'cart' | 'preview';
   cartQuantity?: number;
   onQuantityChange?: (quantity: number) => void;
   onRemoveFromCart?: () => void;
@@ -38,6 +39,7 @@ export default function ProductModal({
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [initialCartQuantity, setInitialCartQuantity] = useState(1);
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
 
   const { cartItems, addToCart } = useCart();
@@ -45,7 +47,9 @@ export default function ProductModal({
   useEffect(() => {
     if (product) {
       setIsMounted(true);
-      setQuantity(mode === 'cart' ? Math.max(1, cartQuantity ?? 1) : 1);
+      const startingQuantity = mode === 'cart' ? Math.max(1, cartQuantity ?? 1) : 1;
+      setQuantity(startingQuantity);
+      setInitialCartQuantity(startingQuantity);
       setShowDuplicateConfirm(false);
       requestAnimationFrame(() => {
         setTimeout(() => setIsOpen(true), 10);
@@ -88,7 +92,13 @@ export default function ProductModal({
 
   const handleAddToCart = () => {
     if (mode === 'cart') {
-      onRemoveFromCart?.();
+      if (quantity !== initialCartQuantity) {
+        onQuantityChange?.(quantity);
+        setInitialCartQuantity(quantity);
+        onClose();
+      } else {
+        onRemoveFromCart?.();
+      }
       return;
     }
     const isAlreadyInCart = cartItems.some((item) => item.id === cartItemId);
@@ -116,9 +126,11 @@ export default function ProductModal({
     onClose();
   };
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${
         isOpen ? 'opacity-100' : 'opacity-0'
       }`}
       onClick={onClose}
@@ -186,8 +198,8 @@ export default function ProductModal({
           </p>
         </div>
 
-        {/* 4. Quantity & Add to Cart */}
-        <div className="flex gap-3 px-5 py-5">
+        {/* 4. Quantity & Actions */}
+        {mode !== 'preview' && <div className="flex gap-3 px-5 py-5">
           <div className="flex items-center border border-[#4d4d4d]/20">
             <RippleButton
               onClick={() => handleQuantityChange(quantity - 1)}
@@ -210,12 +222,18 @@ export default function ProductModal({
             onClick={handleAddToCart}
             className="group flex h-12 flex-1 items-center justify-between border border-solid border-[#4d4d4d] bg-[#4d4d4d] px-5 text-xs font-semibold tracking-wide text-white transition-colors duration-300 hover:bg-transparent hover:text-[#4d4d4d]"
           >
-            <span>{mode === 'cart' ? 'Remove from Cart' : 'Add to Cart'}</span>
+            <span>
+              {mode === 'cart'
+                ? quantity !== initialCartQuantity ? 'Save' : 'Remove from Cart'
+                : 'Add to Cart'}
+            </span>
             <span className="text-base transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              {mode === 'cart' ? <FiTrash2 size={16} /> : '↗'}
+              {mode === 'cart'
+                ? quantity !== initialCartQuantity ? '✓' : <FiTrash2 size={16} />
+                : '↗'}
             </span>
           </button>
-        </div>
+        </div>}
       </div>
 
       {/* Duplicate Warning Dialog */}
@@ -229,6 +247,7 @@ export default function ProductModal({
         onConfirm={performAddToCart}
         onCancel={() => setShowDuplicateConfirm(false)}
       />
-    </div>
+    </div>,
+    document.body
   );
 }

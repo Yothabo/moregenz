@@ -8,12 +8,13 @@ import RippleButton from '../components/RippleButton';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 import ProductModal from '../components/ProductModal';
+import CheckoutModal from '../components/CheckoutModal';
 
 export default function CartPage() {
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal } = useCart();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
-  const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<typeof cartItems[number] | null>(null);
 
   const handleRemoveClick = (id: string, name: string) => {
@@ -40,7 +41,7 @@ export default function CartPage() {
   return (
     <>
       <Header sticky={true} showBack={true} />
-      <main className="flex min-h-screen flex-col bg-white px-6 pt-[88px] pb-12 sm:px-10 lg:px-12 lg:pt-[88px] lg:pb-20">
+      <main className="flex min-h-screen flex-col bg-white px-6 pt-0 pb-12 sm:px-10 lg:px-12 lg:pt-0 lg:pb-20">
         <div className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col">
 
           {cartItems.length === 0 ? (
@@ -67,11 +68,11 @@ export default function CartPage() {
               </Link>
             </div>
           ) : (
-            <div className="mt-12 flex flex-1 flex-col gap-6">
+            <div className="flex flex-1 flex-col gap-2">
               {cartItems.map((item) => (
                 <div
                   key={item.id}
-                  className={`flex items-center gap-6 border-b border-black/10 pb-6 transition-all duration-300 ease-in-out ${
+                  className={`flex items-center gap-6 bg-[#fafaf9] pr-3 transition-all duration-300 ease-in-out ${
                     removingId === item.id
                       ? 'opacity-0 scale-95 translate-x-4 pointer-events-none'
                       : 'opacity-100 scale-100 translate-x-0'
@@ -98,7 +99,7 @@ export default function CartPage() {
                       <button
                         type="button"
                         onClick={() => setSelectedProduct(item)}
-                        className="truncate text-left font-heading text-xl text-black"
+                        className="truncate text-left font-heading text-base text-[#4d4d4d]"
                         aria-label={`View ${item.name} details`}
                       >
                         {item.name}
@@ -112,28 +113,32 @@ export default function CartPage() {
                       </button>
                     </div>
 
-                    <div className="mt-2 flex items-center gap-4">
-                      <span className="font-heading text-base text-[#8aa89b]">{item.price}</span>
-
-                      <div className="flex items-center border border-black/10">
-                        <RippleButton
-                          onClick={() => decreaseQuantity(item.id)}
-                          className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
-                          ariaLabel="Decrease quantity"
-                        >
-                          <FiMinus size={16} />
-                        </RippleButton>
-                        <span className="min-w-[1.75rem] text-center font-heading text-lg text-black">
-                          {item.quantity}
-                        </span>
-                        <RippleButton
-                          onClick={() => increaseQuantity(item.id)}
-                          className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
-                          ariaLabel="Increase quantity"
-                        >
-                          <FiPlus size={16} />
-                        </RippleButton>
+                    <div className="mt-2 flex items-center justify-between gap-4">
+                      <div className="flex items-center">
+                        <div className="flex items-center border border-black/10">
+                          <RippleButton
+                            onClick={() => decreaseQuantity(item.id)}
+                            className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
+                            ariaLabel="Decrease quantity"
+                          >
+                            <FiMinus size={16} />
+                          </RippleButton>
+                          <span className="min-w-[1.75rem] text-center font-heading text-base text-[#4d4d4d]">
+                            {item.quantity}
+                          </span>
+                          <RippleButton
+                            onClick={() => increaseQuantity(item.id)}
+                            className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
+                            ariaLabel="Increase quantity"
+                          >
+                            <FiPlus size={16} />
+                          </RippleButton>
+                        </div>
                       </div>
+
+                      <span className="shrink-0 text-right font-heading text-base text-[#4d4d4d]/60 tabular-nums">
+                        {item.price}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -152,7 +157,7 @@ export default function CartPage() {
                     Continue Shopping
                   </Link>
                   <button
-                    onClick={() => setShowCheckoutConfirm(true)}
+                    onClick={() => setShowCheckoutModal(true)}
                     className="inline-flex min-h-12 items-center justify-center border border-solid border-[#8aa89b] bg-[#8aa89b] px-8 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-transparent hover:text-[#8aa89b]"
                   >
                     Checkout
@@ -200,24 +205,16 @@ export default function CartPage() {
         message={itemToDelete ? `Are you sure you want to remove "${itemToDelete.name}" from your cart? This action cannot be undone.` : ''}
         confirmText="Remove"
         cancelText="Keep it"
-        variant="grey"
-        reverseActions
+        variant="green"
         onConfirm={confirmDelete}
         onCancel={() => setItemToDelete(null)}
       />
 
-      <ConfirmModal
-        isOpen={showCheckoutConfirm}
-        title="Proceed to checkout?"
-        message={`You're about to check out ${cartItems.length} item${cartItems.length !== 1 ? 's' : ''} for a total of R ${cartTotal.toFixed(0)}. Ready to continue?`}
-        confirmText="Proceed"
-        cancelText="Wait"
-        variant="green"
-        onConfirm={() => {
-          setShowCheckoutConfirm(false);
-          // TODO: What happens after confirmation?
-        }}
-        onCancel={() => setShowCheckoutConfirm(false)}
+      <CheckoutModal
+        isOpen={showCheckoutModal}
+        onClose={() => setShowCheckoutModal(false)}
+        cartItems={cartItems}
+        cartTotal={cartTotal}
       />
     </>
   );

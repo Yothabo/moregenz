@@ -11,6 +11,7 @@ type CustomDropdownProps = {
   options: Option[];
   compact?: boolean;
   placeholder?: string;
+  menuWidth?: string;
 };
 
 export default function CustomDropdown({
@@ -19,6 +20,7 @@ export default function CustomDropdown({
   options,
   compact = false,
   placeholder = 'Select...',
+  menuWidth = '100%',
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -96,7 +98,15 @@ export default function CustomDropdown({
           fontFamily: compact ? 'var(--font-body)' : 'var(--font-heading)',
         }}
       >
-        <span style={{ color: selected ? '#4d4d4d' : 'rgba(77,77,77,0.4)' }}>
+        <span
+          style={{
+            color: selected ? '#4d4d4d' : 'rgba(77,77,77,0.4)',
+            minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {selected ? selected.label : placeholder}
         </span>
         <svg
@@ -125,8 +135,8 @@ export default function CustomDropdown({
           style={{
             position: 'absolute',
             left: 0,
-            right: 0,
             top: '100%',
+            width: menuWidth,
             marginTop: '4px',
             zIndex: 100,
             maxHeight: '240px',
