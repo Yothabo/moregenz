@@ -15,7 +15,7 @@ export default function Services() {
       placeholderColor: 'bg-[#8aa89b]',
       overlayColor: '#000000',
       hasImage: true,
-      imageSrc: '/images/hero/yotaabo.png',
+      imageSrc: '/images/hisimage.webp',
       isDark: false,
       collectionTitle: 'His Collection',
       products: [
@@ -40,7 +40,7 @@ export default function Services() {
       placeholderColor: 'bg-[#ff1493]',
       overlayColor: '#f2e9d8',
       hasImage: true,
-      imageSrc: '/images/services/her.png',
+      imageSrc: '/images/herimage.webp',
       isDark: false,
       collectionTitle: 'Her Collection',
       products: [
@@ -164,7 +164,7 @@ export default function Services() {
               {/* Image Overlay */}
               {category.hasImage && (
                 <img
-                  src={category.imageSrc || "/images/hero/yotaabo.png"}
+                  src={category.imageSrc || "/images/hisimage.webp"}
                   alt={`${category.title} fragrance`}
                   className="pointer-events-none absolute bottom-[15%] right-0 z-40 h-[35vh] w-auto object-contain object-right-bottom drop-shadow-2xl sm:bottom-[20%]"
                 />

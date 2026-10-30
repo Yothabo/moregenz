@@ -8,7 +8,7 @@ interface MetaTagsProps {
 export default function MetaTags({
   title = 'Yotaabo | Fragrance, With Intention',
   description = 'Discover fragrances that match your mood, define your style, and leave a lasting impression.',
-  image = '/images/hero/yotaabo.png',
+  image = '/images/hisimage.webp',
   url = typeof window !== 'undefined' ? window.location.href : '/',
 }: MetaTagsProps) {
   return (
