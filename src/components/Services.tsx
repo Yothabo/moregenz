@@ -1,6 +1,9 @@
 import ProductCarousel from './ProductCarousel';
+import { useProducts } from '../hooks/useProducts';
 
 export default function Services() {
+  const { products } = useProducts();
+
   const categories = [
     {
       id: 'his',
@@ -18,14 +21,7 @@ export default function Services() {
       imageSrc: '/images/hisimage.webp',
       isDark: false,
       collectionTitle: 'His Collection',
-      products: [
-        { name: 'Noir Oud', price: 'R 890' },
-        { name: 'Cedar & Smoke', price: 'R 750' },
-        { name: 'Midnight Leather', price: 'R 920' },
-        { name: 'Vetiver Storm', price: 'R 810' },
-        { name: 'Black Amber', price: 'R 850' },
-        { name: 'Smoked Rose', price: 'R 880' },
-      ],
+      productCategory: 'His',
     },
     {
       id: 'hers',
@@ -43,14 +39,7 @@ export default function Services() {
       imageSrc: '/images/herimage.webp',
       isDark: false,
       collectionTitle: 'Her Collection',
-      products: [
-        { name: 'Rose Éternelle', price: 'R 950' },
-        { name: 'Velvet Peony', price: 'R 880' },
-        { name: 'White Jasmine', price: 'R 910' },
-        { name: 'Amber Blush', price: 'R 840' },
-        { name: 'Silk & Vanilla', price: 'R 890' },
-        { name: 'Fleur de Nuit', price: 'R 970' },
-      ],
+      productCategory: 'Hers',
     },
     {
       id: 'spaces',
@@ -67,14 +56,7 @@ export default function Services() {
       hasImage: false,
       isDark: false,
       collectionTitle: 'Collections',
-      products: [
-        { name: 'Amber Room', price: 'R 450' },
-        { name: 'Linen & Cedar', price: 'R 420' },
-        { name: 'Cashmere Wood', price: 'R 480' },
-        { name: 'Smoked Fig', price: 'R 460' },
-        { name: 'Velvet Rose', price: 'R 440' },
-        { name: 'Sandalwood Haze', price: 'R 490' },
-      ],
+      productCategory: 'Spaces',
     },
     {
       id: 'about',
@@ -182,11 +164,16 @@ export default function Services() {
           </div>
 
           {/* Product Carousel */}
-          {category.products && (
+          {category.productCategory && (
             <div className={`w-full ${category.bgColor}`}>
               <ProductCarousel
                 title={category.collectionTitle}
-                products={category.products}
+                products={products
+                  .filter((product) => product.category === category.productCategory)
+                  .map((product) => ({
+                    ...product,
+                    price: `R ${Number(product.price).toFixed(2)}`,
+                  }))}
                 placeholderColor={category.placeholderColor}
                 bgColor={category.bgColor}
                 overlayColor={category.overlayColor}

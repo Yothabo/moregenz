@@ -92,7 +92,19 @@ export default function Hero() {
                 className="flex w-[45%] shrink-0 snap-start flex-col cursor-pointer sm:w-[30%] lg:w-[22%]"
                 style={{ WebkitTapHighlightColor: 'transparent' }}
               >
-                <div className={`aspect-[4/5] w-full ${getCategoryTheme(product.category).placeholderColor}`}></div>
+                <div className={`aspect-[4/5] w-full overflow-hidden ${getCategoryTheme(product.category).placeholderColor}`}>
+                  {product.image_url && (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none';
+                      }}
+                      className="h-full w-full object-contain p-4"
+                    />
+                  )}
+                </div>
                 <div className="mt-1 flex flex-col pt-3 pl-3">
                   <h4
                     className="font-heading text-base text-black"

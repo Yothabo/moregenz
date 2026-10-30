@@ -18,18 +18,13 @@ type CategoryFilter = 'All' | 'His' | 'Hers' | 'Spaces' | 'Hidden';
 type OrderStatus = 'pending' | 'confirmed' | 'delivered' | 'cancelled';
 type OrderFilter = 'All' | 'Pending' | 'Confirmed' | 'Delivered' | 'Cancelled';
 
-type OrderItem = { name: string; price: string; qty: number };
+type OrderItem = { name: string; price: number; qty: number };
 
 type Order = {
   id: string;
   order_number: string;
   customer_name: string;
   customer_phone: string;
-  customer_email: string | null;
-  delivery_address: string;
-  payment_method: string;
-  referral_source: string | null;
-  notes: string | null;
   items: OrderItem[];
   subtotal: number;
   status: OrderStatus;
@@ -124,37 +119,64 @@ export default function Admin() {
     setIsLoading(false);
   }
 
+  async function ordersApi(method: 'GET' | 'PATCH' | 'DELETE', body?: Record<string, string>) {
+    const { data: { session: currentSession }, error: sessionError } =
+      await supabase.auth.getSession();
+
+    if (sessionError || !currentSession?.access_token) {
+      throw new Error('Your admin session has expired. Please sign in again.');
+    }
+
+    const response = await fetch('/api/orders', {
+      method,
+      headers: {
+        Authorization: `Bearer ${currentSession.access_token}`,
+        ...(body ? { 'Content-Type': 'application/json' } : {}),
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'The order request failed.');
+    }
+
+    return data;
+  }
+
   async function loadOrders() {
     setIsLoadingOrders(true);
-    const { data, error } = await supabase
-      .from('orders').select('*')
-      .order('created_at', { ascending: false });
-    if (error) toast.error(error.message);
-    else setOrders(data ?? []);
-    setIsLoadingOrders(false);
+    try {
+      const data = await ordersApi('GET');
+      setOrders(data.orders ?? []);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to load orders.');
+    } finally {
+      setIsLoadingOrders(false);
+    }
   }
 
   async function handleOrderStatusChange(order: Order, newStatus: OrderStatus) {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
-      .eq('id', order.id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await ordersApi('PATCH', { id: order.id, status: newStatus });
       toast.success(`Order ${order.order_number} → ${newStatus}`);
       setViewingOrder(null);
-      loadOrders();
+      await loadOrders();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to update order.');
     }
   }
 
   async function handleDeleteOrder(order: Order) {
-    const { error } = await supabase.from('orders').delete().eq('id', order.id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await ordersApi('DELETE', { id: order.id });
       toast.success(`Order ${order.order_number} deleted`);
       setConfirmDeleteOrder(null);
       setViewingOrder(null);
-      loadOrders();
+      await loadOrders();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to delete order.');
     }
   }
 
@@ -697,7 +719,7 @@ export default function Admin() {
                         </div>
                         <div className="mt-2 flex items-center justify-between">
                           <span className="truncate text-[10px] uppercase tracking-wider text-[#4d4d4d]/40 font-semibold">
-                            {order.items.length} {order.items.length === 1 ? 'item' : 'items'} · {order.payment_method}
+                            {order.items.length} {order.items.length === 1 ? 'item' : 'items'} · WhatsApp order
                           </span>
                           <span className="font-heading text-lg font-semibold text-[#8aa89b]">
                             {formatPrice(order.subtotal)}

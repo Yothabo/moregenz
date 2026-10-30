@@ -9,6 +9,7 @@ type CheckoutModalProps = {
   onClose: () => void;
   cartItems: CartItem[];
   cartTotal: number;
+  onSuccess: () => void;
 };
 
 export default function CheckoutModal({
@@ -16,12 +17,19 @@ export default function CheckoutModal({
   onClose,
   cartItems,
   cartTotal,
+  onSuccess,
 }: CheckoutModalProps) {
   const [fullName, setFullName] = useState('');
   const [countryCode, setCountryCode] = useState('+27');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<CartItem | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [createdOrder, setCreatedOrder] = useState<{
+    order_number: string;
+    subtotal: number;
+  } | null>(null);
   const [errors, setErrors] = useState({
     fullName: '',
     phoneNumber: '',
@@ -40,8 +48,67 @@ export default function CheckoutModal({
     }
   };
 
-  const handleSubmit = () => {
-    setShowConfirmation(false);
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const phone = `${countryCode.replace(/\\D/g, '')}${phoneNumber.replace(/\\D/g, '')}`;
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name: fullName.trim(),
+          customer_phone: phone,
+          items: cartItems.map((item) => ({
+            product_id: item.id,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      const responseText = await response.text();
+      let data: {
+        error?: string;
+        order?: { order_number: string; subtotal: number };
+      } = {};
+
+      if (responseText.trim()) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          // Handle empty or non-JSON server responses below.
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || 'We could not submit your order. Please try again.'
+        );
+      }
+
+      if (!data.order) {
+        throw new Error(
+          'We could not confirm your order. Please try again in a moment.'
+        );
+      }
+
+      setCreatedOrder(data.order);
+      setShowConfirmation(false);
+      onSuccess();
+    } catch (error) {
+      setShowConfirmation(false);
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to submit your order. Please try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
 
@@ -56,6 +123,33 @@ export default function CheckoutModal({
     <>
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-lg">
       <div className="p-6 sm:p-8">
+        {createdOrder ? (
+          <div className="py-6 text-center">
+            <h2 className="text-2xl font-bold text-[#4d4d4d]">
+              Order received.
+            </h2>
+            <p className="mt-4 font-heading text-base text-[#4d4d4d]/70">
+              Thank you. Your order has been saved successfully.
+            </p>
+            <p className="mt-6 font-heading text-sm uppercase tracking-widest text-[#4d4d4d]/50">
+              Order number
+            </p>
+            <p className="mt-2 font-heading text-xl font-semibold text-[#4d4d4d]">
+              {createdOrder.order_number}
+            </p>
+            <p className="mt-3 font-heading text-lg text-[#4d4d4d]">
+              R {Number(createdOrder.subtotal).toFixed(2)}
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-3 flex h-12 w-full items-center justify-center bg-[#f5f5f5] font-heading text-base text-[#4d4d4d] transition-colors hover:bg-[#e5e5e5]"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <>
         <h2 className="text-2xl font-bold text-[#4d4d4d]">
           Checkout
         </h2>
@@ -184,18 +278,50 @@ export default function CheckoutModal({
             Continue
           </button>
         </div>
+          </>
+        )}
       </div>
 
       <ConfirmModal
-        isOpen={showConfirmation}
+        isOpen={showConfirmation && !createdOrder}
         title="Confirm your order"
         message={`Submit your order for R ${cartTotal.toFixed(2)}? We'll contact you on WhatsApp to arrange payment and delivery.`}
         confirmText="Submit"
         cancelText="Back"
         variant="grey"
         onConfirm={handleSubmit}
-        onCancel={() => setShowConfirmation(false)}
+        onCancel={() => {
+          if (!isSubmitting) setShowConfirmation(false);
+        }}
       />
+    </Modal>
+
+    <Modal
+      isOpen={Boolean(submitError)}
+      onClose={() => setSubmitError('')}
+      maxWidth="max-w-sm"
+    >
+      <div className="p-6 sm:p-8 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#f5f5f5]">
+          <span className="font-heading text-xl text-[#8a7770]">!</span>
+        </div>
+
+        <h2 className="mt-5 font-heading text-xl font-semibold text-[#4d4d4d]">
+          Order not submitted
+        </h2>
+
+        <p role="alert" className="mt-3 font-heading text-sm leading-6 text-[#4d4d4d]/65">
+          {submitError}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => setSubmitError('')}
+          className="mt-7 flex h-12 w-full items-center justify-center bg-[#4d4d4d] font-heading text-base text-white transition-colors hover:bg-[#3b3b3b]"
+        >
+          Close
+        </button>
+      </div>
     </Modal>
 
     <ProductModal

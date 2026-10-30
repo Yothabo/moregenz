@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import ProductModal from './ProductModal';
 
 type Product = {
+  id: string;
   name: string;
   price: string;
-  description?: string;
+  description?: string | null;
   image_url?: string | null;
 };
 
@@ -33,30 +34,48 @@ export default function ProductCarousel({
   category
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const visibleProducts = products.slice(0, 5);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    const maxScroll = scrollWidth - clientWidth;
-    if (maxScroll <= 0) {
+    const container = scrollRef.current;
+    const cards = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-product-card]')
+    );
+
+    if (!cards.length) {
       setActiveIndex(0);
       return;
     }
-    const ratio = scrollLeft / maxScroll;
-    const index = Math.round(ratio * (products.length - 1));
-    setActiveIndex(index);
+
+    let nearestIndex = 0;
+    let nearestDistance = Infinity;
+
+    cards.forEach((card, index) => {
+      const distance = Math.abs(card.offsetLeft - container.scrollLeft - container.offsetLeft);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+
+    setActiveIndex(nearestIndex);
   };
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    return () => el.removeEventListener('scroll', handleScroll);
-  }, [products.length]);
 
-  const isAtEnd = activeIndex >= products.length - 1;
+    el.scrollTo({ left: 0, behavior: 'auto' });
+    setActiveIndex(0);
+    el.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [products.map((product) => product.id).join('|')]);
+
+  const isAtEnd = activeIndex >= visibleProducts.length - 1;
 
   return (
     <div
@@ -79,9 +98,10 @@ export default function ProductCarousel({
         className="mt-8 flex gap-4 snap-x snap-mandatory overflow-x-auto px-6 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         style={{ WebkitTapHighlightColor: 'transparent', WebkitTouchCallout: 'none', userSelect: 'none' }}
       >
-        {products.map((product) => (
+        {visibleProducts.map((product) => (
           <div
-            key={product.name}
+            key={product.id}
+            data-product-card
             onClick={() => setSelectedProduct(product)}
             className="flex w-[45%] shrink-0 snap-start flex-col cursor-pointer outline-none focus:outline-none"
             style={{ WebkitTapHighlightColor: 'transparent', WebkitTouchCallout: 'none', userSelect: 'none' }}
@@ -91,6 +111,10 @@ export default function ProductCarousel({
                 <img
                   src={product.image_url}
                   alt={product.name}
+                  loading="lazy"
+                  onError={(event) => {
+                    event.currentTarget.style.display = 'none';
+                  }}
                   className="h-full w-full object-contain p-4"
                 />
               )}
@@ -121,7 +145,7 @@ export default function ProductCarousel({
 
       {/* Pagination Dots */}
       <div className="mt-4 flex items-center justify-center gap-1.5">
-        {products.map((_, i) => (
+        {visibleProducts.map((_, i) => (
           <span
             key={i}
             className={`h-1 w-1 rounded-full transition-all duration-300 ${

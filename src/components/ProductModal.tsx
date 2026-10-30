@@ -7,6 +7,7 @@ import RippleButton from './RippleButton';
 import ConfirmModal from './ConfirmModal';
 
 type Product = {
+  id: string;
   name: string;
   price: string;
   description?: string | null;
@@ -79,7 +80,7 @@ export default function ProductModal({
 
   if (!isMounted || !product) return null;
 
-  const cartItemId = product.name;
+  const cartItemId = product.id;
 
   const handleQuantityChange = (nextQuantity: number) => {
     const safeQuantity = Math.max(1, nextQuantity);

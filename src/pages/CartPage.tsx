@@ -11,7 +11,7 @@ import ProductModal from '../components/ProductModal';
 import CheckoutModal from '../components/CheckoutModal';
 
 export default function CartPage() {
-  const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal } = useCart();
+  const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, clearCart } = useCart();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
@@ -215,6 +215,7 @@ export default function CartPage() {
         onClose={() => setShowCheckoutModal(false)}
         cartItems={cartItems}
         cartTotal={cartTotal}
+        onSuccess={clearCart}
       />
     </>
   );

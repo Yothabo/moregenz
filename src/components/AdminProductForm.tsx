@@ -109,19 +109,53 @@ export default function AdminProductForm({
       sort_order: form.sort_order,
     };
 
-    let error;
-    if (productToEdit?.id) {
-      ({ error } = await supabase.from('products').update(payload).eq('id', productToEdit.id));
-    } else {
-      ({ error } = await supabase.from('products').insert(payload));
-    }
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
 
-    setIsSaving(false);
-    if (error) toast.error(error.message);
-    else {
+      if (!session?.access_token) {
+        throw new Error('Your session has expired. Please sign in again.');
+      }
+
+      const response = await fetch('/api/products', {
+        method: productToEdit?.id ? 'PATCH' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          ...payload,
+          ...(productToEdit?.id ? { id: productToEdit.id } : {}),
+        }),
+      });
+
+      const responseText = await response.text();
+      let data: { error?: string; product?: AdminProduct } = {};
+
+      if (responseText.trim()) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          // Handle non-JSON server responses below.
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to save the product.');
+      }
+
+      if (!data.product) {
+        throw new Error('The server did not confirm the saved product.');
+      }
+
       toast.success(productToEdit ? 'Product updated' : 'Product added');
       onSaved();
       onClose();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Unable to save the product.'
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 

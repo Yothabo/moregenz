@@ -6,7 +6,7 @@ import MenuIcon from './MenuIcon';
 
 type OrderItem = {
   name: string;
-  price: string;
+  price: number;
   qty: number;
 };
 
@@ -15,11 +15,6 @@ type Order = {
   order_number: string;
   customer_name: string;
   customer_phone: string;
-  customer_email: string | null;
-  delivery_address: string;
-  payment_method: string;
-  referral_source: string | null;
-  notes: string | null;
   items: OrderItem[];
   subtotal: number;
   status: 'pending' | 'confirmed' | 'delivered' | 'cancelled';
@@ -121,7 +116,7 @@ export default function OrderDetailsModal({
                 type="button"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  window.open(`https://wa.me/${order.customer_phone.replace(/\s/g, '')}`, '_blank');
+                  window.open(`https://wa.me/${order.customer_phone.replace(/\D/g, '')}`, '_blank');
                 }}
                 className="flex w-full items-center gap-3 border-0 border-b border-[#4d4d4d]/10 bg-transparent px-4 py-3 text-left font-heading text-sm text-[#4d4d4d] transition-colors hover:bg-[#f5f5f5]"
               >
@@ -205,42 +200,12 @@ export default function OrderDetailsModal({
 
             <div>
               <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
-                Delivery Address
+                Order date
               </span>
-              <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base leading-[1.4] text-[#4d4d4d]">
-                {order.delivery_address}
+              <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                {formattedDate}
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
-                  Payment
-                </span>
-                <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d]">
-                  {order.payment_method}
-                </div>
-              </div>
-              <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
-                  Referral
-                </span>
-                <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d]">
-                  {order.referral_source || '—'}
-                </div>
-              </div>
-            </div>
-
-            {order.notes && (
-              <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
-                  Notes
-                </span>
-                <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base leading-[1.4] text-[#4d4d4d]">
-                  {order.notes}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Items */}
@@ -254,11 +219,11 @@ export default function OrderDetailsModal({
                   <div>
                     <p className="font-heading text-base text-[#4d4d4d]">{item.name}</p>
                     <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#4d4d4d]/40">
-                      Qty {item.qty} · {item.price} each
+                      Qty {item.qty} · {formatPrice(item.price)} each
                     </p>
                   </div>
                   <p className="font-heading text-base font-semibold text-[#8aa89b]">
-                    {formatPrice(Number(item.price.replace(/[^\d.]/g, '')) * item.qty)}
+                    {formatPrice(item.price * item.qty)}
                   </p>
                 </div>
               ))}
