@@ -490,7 +490,7 @@ export default function Admin() {
           <div className="relative flex w-full items-center justify-center">
             <div className="w-full">
               <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: '25vh' }}>
-                <text x="50" y="50%" dominantBaseline="middle" textAnchor="middle" textLength="100" lengthAdjust="spacingAndGlyphs" style={{ fontFamily: adminTypography.heading, fontWeight: 400 }} className="fill-[#8aa89b]" fontSize="100">yotaabo</text>
+                <text x="50" y="50%" dominantBaseline="middle" textAnchor="middle" textLength="100" lengthAdjust="spacingAndGlyphs" style={{ fontFamily: '"Anton", sans-serif', fontWeight: 400 }} className="fill-[#8aa89b]" fontSize="100">yotaabo</text>
               </svg>
             </div>
             <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">

@@ -54,6 +54,7 @@ export default function ProductCarousel({
 }: ProductCarouselProps) {
   const [selectedProduct, setSelectedProduct] =
     useState<CarouselProduct | null>(null);
+  const [showHeaderViewMore, setShowHeaderViewMore] = useState(true);
 
   const visibleProducts = products.slice(0, 5);
 
@@ -77,12 +78,14 @@ export default function ProductCarousel({
           {title}
         </h3>
 
-        <Link
-          to={viewAllHref}
-          className="shrink-0 cursor-pointer font-heading text-sm italic tracking-wide text-[#3a3a3a] opacity-70 transition-opacity hover:opacity-100"
-        >
-          View more
-        </Link>
+        {showHeaderViewMore && (
+          <Link
+            to={viewAllHref}
+            className="shrink-0 cursor-pointer font-heading text-sm italic tracking-wide text-[#3a3a3a] opacity-70 transition-opacity hover:opacity-100"
+          >
+            View more
+          </Link>
+        )}
       </div>
 
       {description && (
@@ -132,6 +135,11 @@ export default function ProductCarousel({
           grabCursor
           watchOverflow
           loop={false}
+          onSwiper={(swiper) => setShowHeaderViewMore(!swiper.isEnd)}
+          onReachEnd={() => setShowHeaderViewMore(false)}
+          onFromEdge={() => setShowHeaderViewMore(true)}
+          onResize={(swiper) => setShowHeaderViewMore(!swiper.isEnd)}
+          onSlidesUpdated={(swiper) => setShowHeaderViewMore(!swiper.isEnd)}
           a11y={{
             prevSlideMessage: 'Previous products',
             nextSlideMessage: 'Next products',
