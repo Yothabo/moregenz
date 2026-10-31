@@ -1,10 +1,32 @@
 import ProductCarousel from './ProductCarousel';
-import { useProducts } from '../hooks/useProducts';
+import {
+  useProducts,
+  getCategoryProducts,
+  type ProductCategory,
+} from '../hooks/useProducts';
+
+type ServiceCategory = {
+  id: string;
+  title: string;
+  topText: string;
+  description: string;
+  bgColor: string;
+  textColor: string;
+  textFill: string;
+  accentColor: string;
+  placeholderColor?: string;
+  overlayColor?: string;
+  hasImage: boolean;
+  imageSrc?: string;
+  isDark?: boolean;
+  collectionTitle?: string;
+  productCategory?: ProductCategory;
+};
 
 export default function Services() {
-  const { products } = useProducts();
+  const { products, isLoading, error } = useProducts();
 
-  const categories = [
+  const categories: ServiceCategory[] = [
     {
       id: 'his',
       title: 'His',
@@ -164,23 +186,36 @@ export default function Services() {
           </div>
 
           {/* Product Carousel */}
-          {category.productCategory && (
+          {category.productCategory &&
+            category.collectionTitle &&
+            category.placeholderColor &&
+            category.isDark !== undefined && (
             <div className={`w-full ${category.bgColor}`}>
               <ProductCarousel
                 title={category.collectionTitle}
-                products={products
-                  .filter((product) => product.category === category.productCategory)
-                  .map((product) => ({
-                    ...product,
-                    price: `R ${Number(product.price).toFixed(2)}`,
-                  }))}
+                products={getCategoryProducts(
+                  products,
+                  category.productCategory,
+                  5
+                ).map((product) => ({
+                  ...product,
+                  price: `R ${Number(product.price).toFixed(2)}`,
+                }))}
                 placeholderColor={category.placeholderColor}
                 bgColor={category.bgColor}
-                overlayColor={category.overlayColor}
                 textColor={category.textColor}
                 accentColor={category.accentColor}
+                themeColor={
+                  category.id === 'his'
+                    ? '#8aa89b'
+                    : category.id === 'hers'
+                      ? '#ff1493'
+                      : '#c8ad8d'
+                }
                 isDark={category.isDark}
-                category={category.id === 'his' ? 'His' : category.id === 'hers' ? 'Hers' : 'Spaces'}
+                isLoading={isLoading}
+                error={error}
+                viewAllHref={`/catalog?category=${category.productCategory}`}
               />
             </div>
           )}

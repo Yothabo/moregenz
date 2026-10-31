@@ -31,6 +31,7 @@ type ProductModalProps = {
 export default function ProductModal({
   product,
   placeholderColor,
+  accentColor,
   mode = 'storefront',
   cartQuantity,
   onQuantityChange,
@@ -181,12 +182,7 @@ export default function ProductModal({
             </span>
           </div>
           <div>
-            <span
-              className="block font-heading text-xl leading-none"
-              style={{
-                color: placeholderColor.match(/\[(#[0-9a-fA-F]{3,8})\]/)?.[1] || '#8aa89b',
-              }}
-            >
+            <span className={`block font-heading text-xl leading-none ${accentColor}`}>
               {product.price}
             </span>
           </div>
