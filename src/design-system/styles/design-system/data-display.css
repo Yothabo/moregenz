@@ -1,0 +1,123 @@
+.yds-table-panel,
+.yds-products-panel {
+  margin-bottom: 17px;
+  padding: 19px 0 0;
+}
+
+.yds-table-panel > .yds-panel-heading,
+.yds-products-panel > .yds-panel-heading {
+  padding: 0 19px 17px;
+}
+
+.yds-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.yds-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.yds-table th {
+  padding: 11px 16px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: #fafbf9;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .09em;
+}
+
+.yds-table th:first-child,
+.yds-table td:first-child {
+  padding-left: 19px;
+}
+
+.yds-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #f0f2ef;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+
+.yds-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.yds-table tbody tr:hover {
+  background: #fbfcfa;
+}
+
+.yds-order-id,
+.yds-amount {
+  color: var(--ink) !important;
+  font-weight: 700;
+}
+
+.yds-muted {
+  color: var(--muted) !important;
+}
+
+.yds-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.yds-status-pending,
+.yds-status-low-stock {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.yds-status-processing,
+.yds-status-in-stock {
+  background: var(--sage-pale);
+  color: var(--sage-dark);
+}
+
+.yds-status-delivered {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.yds-status-out-of-stock {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.yds-product-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink) !important;
+  font-weight: 600;
+}
+
+.yds-product-placeholder {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 6px;
+  background: #edf0eb;
+  color: var(--sage-dark);
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+}
+
+.yds-row-menu {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+}

@@ -1,0 +1,47 @@
+.yds-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.yds-button-primary {
+  background: var(--ink);
+  color: white;
+}
+
+.yds-button-primary:hover {
+  background: var(--sage-dark);
+}
+
+.yds-button-secondary {
+  border-color: var(--line-strong);
+  background: white;
+  color: var(--ink-soft);
+}
+
+.yds-button-secondary:hover {
+  border-color: var(--sage);
+  color: var(--sage-dark);
+}
+
+.yds-button-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.yds-button-disabled,
+.yds-button:disabled {
+  background: #eff0ee;
+  color: #aeb4ad;
+  cursor: not-allowed;
+}
+

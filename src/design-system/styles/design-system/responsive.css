@@ -1,0 +1,129 @@
+@media (max-width: 1100px) {
+  .yds-content {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .yds-topbar {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .yds-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .yds-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .yds-sidebar {
+    width: 64px;
+    padding: 19px 8px 12px;
+  }
+
+  .yds-brand {
+    justify-content: center;
+    padding: 0 0 30px;
+  }
+
+  .yds-brand > span:last-child,
+  .yds-side-label,
+  .yds-nav-item:not(.active),
+  .yds-nav-item.active {
+    font-size: 0;
+  }
+
+  .yds-nav-item {
+    justify-content: center;
+    min-height: 42px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .yds-nav-icon {
+    font-size: 17px;
+  }
+
+  .yds-nav-count,
+  .yds-sidebar-bottom {
+    display: none;
+  }
+
+  .yds-main {
+    width: calc(100% - 64px);
+    margin-left: 64px;
+  }
+
+  .yds-topbar {
+    height: 54px;
+    padding: 0 15px;
+  }
+
+  .yds-content {
+    padding: 25px 15px;
+  }
+
+  .yds-welcome {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .yds-metrics {
+    gap: 9px;
+  }
+
+  .yds-metric {
+    padding: 13px;
+  }
+
+  .yds-metric > strong {
+    font-size: 20px;
+  }
+
+  .yds-metric-foot {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .yds-component-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .yds-revenue-panel,
+  .yds-activity-panel {
+    padding: 14px;
+  }
+
+  .yds-panel-heading h2 {
+    font-size: 17px;
+  }
+
+  .yds-store-indicator {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .yds-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .yds-metric-top {
+    font-size: 9px;
+  }
+
+  .yds-metric > strong {
+    font-size: 18px;
+  }
+
+  .yds-welcome h1 {
+    font-size: 25px;
+  }
+
+  .yds-footer {
+    font-size: 7px;
+  }
+}

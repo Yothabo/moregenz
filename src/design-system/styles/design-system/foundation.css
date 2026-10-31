@@ -1,0 +1,45 @@
+.yds-app {
+  --ink: #343b36;
+  --ink-soft: #626b64;
+  --muted: #929a93;
+  --sage: #82998b;
+  --sage-dark: #647c6d;
+  --sage-pale: #edf2ee;
+  --paper: #ffffff;
+  --canvas: #f7f8f6;
+  --surface: #ffffff;
+  --surface-soft: #f3f5f2;
+  --line: #e8ebe7;
+  --line-strong: #dce2dc;
+  --success: #557d61;
+  --success-bg: #edf5ef;
+  --warning: #a87932;
+  --warning-bg: #faf3e7;
+  --danger: #b45f5b;
+  --danger-bg: #f9eeed;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow: 0 2px 12px rgba(38, 51, 42, .045);
+
+  min-height: 100vh;
+  display: flex;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.yds-app *,
+.yds-app *::before,
+.yds-app *::after {
+  box-sizing: border-box;
+}
+
+.yds-app button,
+.yds-app input,
+.yds-app select {
+  font: inherit;
+}

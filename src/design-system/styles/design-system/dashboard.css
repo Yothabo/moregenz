@@ -1,0 +1,238 @@
+.yds-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 17px;
+}
+
+.yds-metric {
+  min-width: 0;
+  padding: 17px 18px 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.yds-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+
+.yds-metric-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--sage-pale);
+  color: var(--sage-dark);
+  font-size: 14px;
+}
+
+.yds-metric > strong {
+  display: block;
+  margin: 13px 0 10px;
+  font-family: 'Manrope', sans-serif;
+  font-size: clamp(20px, 2.3vw, 26px);
+  font-weight: 700;
+  letter-spacing: -.045em;
+  line-height: 1.2;
+}
+
+.yds-metric-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.yds-positive {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.yds-neutral {
+  color: var(--warning);
+  font-weight: 700;
+}
+
+.yds-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(270px, 1fr);
+  gap: 16px;
+  margin-bottom: 17px;
+}
+
+.yds-panel {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.yds-revenue-panel,
+.yds-activity-panel {
+  padding: 19px;
+}
+
+.yds-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.yds-panel-heading h2 {
+  margin: 5px 0 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.yds-panel-heading select {
+  min-height: 31px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: white;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+
+.yds-chart-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.yds-chart-summary strong {
+  font-family: 'Manrope', sans-serif;
+  font-size: 24px;
+  letter-spacing: -.04em;
+}
+
+.yds-chart-summary span {
+  font-size: 10px;
+}
+
+.yds-chart {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  height: 155px;
+  margin-top: 16px;
+}
+
+.yds-chart-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 2px;
+  color: #a0a8a0;
+  font-size: 8px;
+}
+
+.yds-chart-area {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.yds-chart-column {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.yds-chart-column > div {
+  width: min(24px, 72%);
+  min-height: 5px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #9fb6a7, #dbe6dd);
+}
+
+.yds-chart-column:nth-child(3n) > div {
+  background: linear-gradient(180deg, #718f7c, #cbd9ce);
+}
+
+.yds-chart-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.yds-chart-gridlines i {
+  border-top: 1px dashed #edf0ec;
+}
+
+.yds-chart-x {
+  display: flex;
+  justify-content: space-around;
+  margin: 9px 0 0 34px;
+  color: #a0a8a0;
+  font-size: 8px;
+}
+
+.yds-activity-panel .yds-panel-heading {
+  margin-bottom: 13px;
+}
+
+.yds-activity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 0;
+  border-top: 1px solid #f0f2ef;
+}
+
+.yds-activity-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 29px;
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+  background: var(--sage-pale);
+  color: var(--sage-dark);
+  font-size: 13px;
+}
+
+.yds-activity > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.yds-activity strong {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.yds-activity small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.yds-activity time {
+  color: #a0a8a0;
+  font-size: 8px;
+  white-space: nowrap;
+}
