@@ -206,24 +206,9 @@ export default function ProductCarousel({
               <Link
                 to={viewAllHref}
                 aria-label={`View more ${title} products`}
-                className="group flex w-full flex-col text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-4"
+                className={`flex aspect-[4/5] w-full items-center justify-center font-heading text-lg italic ${accentColor} outline-none transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4`}
               >
-                <div
-                  className={`flex aspect-[4/5] w-full items-center justify-center ${placeholderColor} transition-opacity group-hover:opacity-80`}
-                >
-                  <span className={`font-heading text-lg italic ${accentColor}`}>
-                    View more <span aria-hidden="true">→</span>
-                  </span>
-                </div>
-
-                <div className="mt-1 flex min-w-0 flex-col pt-3 pl-3">
-                  <h4
-                    className={`font-heading text-base ${textColor}`}
-                    style={{ lineHeight: '1', margin: 0, padding: 0 }}
-                  >
-                    Explore collection
-                  </h4>
-                </div>
+                View more
               </Link>
             </SwiperSlide>
           )}
