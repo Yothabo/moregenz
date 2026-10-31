@@ -1,12 +1,16 @@
+import { adminTypography } from '../design-system/tokens/adminTypography';
+import { adminText, colors, adminSpacingVariables } from '../design-system/tokens';
+import "../design-system/styles/admin-typography.css";
+import "../design-system/styles/admin-spacing.css";
 import { useState, useEffect, useMemo } from 'react';
 import type * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabase';
 import AdminProductForm, { AdminProduct } from '../components/AdminProductForm';
+import AdminItemCard from '../components/AdminItemCard';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import ConfirmModal from '../components/ConfirmModal';
 import OrderDetailsModal from '../components/OrderDetailsModal';
-import OrderItemCard from '../components/OrderItemCard';
 import AdminProductDetailsModal from '../components/AdminProductDetailsModal';
 import { FiPlus, FiEdit2, FiTrash2, FiLogOut, FiEye, FiEyeOff, FiSearch, FiRotateCcw, FiX, FiPackage, FiShoppingBag, FiGrid, FiMoreHorizontal, FiSettings } from 'react-icons/fi';
 import { formatPrice } from '../utils/formatPrice';
@@ -54,15 +58,15 @@ function AdminPageHeader({
   filters,
 }: AdminPageHeaderProps) {
   return (
-    <div className="sticky top-[65px] z-30 -mx-4 bg-white px-4 pb-2 pt-1 sm:-mx-10 sm:px-10">
-      <h1 className="mb-2 font-heading text-3xl italic leading-tight text-[#4d4d4d] sm:text-4xl">
+    <div className="admin-section-header">
+      <h1 className="admin-section-header-title admin-type-page-title text-[#4d4d4d]">
         {title}
       </h1>
 
       {(searchPlaceholder || action) && (
-        <div className="flex items-center gap-3">
+        <div className="admin-section-header-row flex items-center">
           {searchPlaceholder && (
-            <div className="flex h-[50px] min-w-0 flex-1 items-center gap-3 border border-black/10 bg-[#f5f5f5] px-4 sm:px-5">
+            <div className="admin-search-control flex min-w-0 flex-1 items-center border border-black/10 bg-[#f5f5f5]">
               <FiSearch size={16} className="shrink-0 text-[#4d4d4d]/40" />
               <input
                 type="text"
@@ -71,7 +75,7 @@ function AdminPageHeader({
                 onChange={(e) => onSearchChange?.(e.target.value)}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                className="w-full min-w-0 border-0 bg-transparent font-heading text-sm font-medium text-[#4d4d4d] outline-none placeholder:font-heading placeholder:text-[#4d4d4d]/40 focus:outline-none focus:ring-0"
+                className="admin-type-body w-full min-w-0 border-0 bg-transparent text-[#4d4d4d] outline-none placeholder:text-[#4d4d4d]/40 focus:outline-none focus:ring-0"
               />
             </div>
           )}
@@ -80,7 +84,7 @@ function AdminPageHeader({
       )}
 
       {filters && (
-        <div className="mt-5 flex flex-wrap gap-6">
+        <div className="admin-section-header-filters flex flex-wrap">
           {filters}
         </div>
       )}
@@ -103,13 +107,63 @@ export default function Admin() {
   const [isForgotMode, setIsForgotMode] = useState(false);
 
   // Data
-  const [products, setProducts] = useState<AdminRow[]>([]);
+  const [products, setProducts] = useState<AdminRow[]>(() => {
+    try {
+      const cached = sessionStorage.getItem('yotaabo-admin-products-cache');
+      const parsed = cached ? JSON.parse(cached) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    try {
+      return !sessionStorage.getItem('yotaabo-admin-products-cache');
+    } catch {
+      return true;
+    }
+  });
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<AdminProduct | null>(null);
+  const [formOpen, setFormOpen] = useState(() => {
+    try {
+      return sessionStorage.getItem('yotaabo-admin-product-form-open') === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [editing, setEditing] = useState<AdminProduct | null>(() => {
+    try {
+      const saved = sessionStorage.getItem('yotaabo-admin-product-editing');
+      return saved ? JSON.parse(saved) as AdminProduct : null;
+    } catch {
+      return null;
+    }
+  });
   const [confirmDelete, setConfirmDelete] = useState<AdminRow | null>(null);
+
+  // Preserve an open product form across browser reloads.
+  useEffect(() => {
+    try {
+      if (formOpen) {
+        sessionStorage.setItem('yotaabo-admin-product-form-open', 'true');
+
+        if (editing) {
+          sessionStorage.setItem(
+            'yotaabo-admin-product-editing',
+            JSON.stringify(editing)
+          );
+        } else {
+          sessionStorage.removeItem('yotaabo-admin-product-editing');
+        }
+      } else {
+        sessionStorage.removeItem('yotaabo-admin-product-form-open');
+        sessionStorage.removeItem('yotaabo-admin-product-editing');
+      }
+    } catch {
+      // Storage may be unavailable; the admin form remains usable.
+    }
+  }, [formOpen, editing]);
 
   // UI state
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -127,16 +181,40 @@ export default function Admin() {
 
   // ============ AUTH ============
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    let active = true;
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+
       setSession(session);
-      checkAdmin(session);
+
+      // Token refreshes update the session but do not require another
+      // admin permission query.
+      const shouldCheckAdmin = [
+        'INITIAL_SESSION',
+        'SIGNED_IN',
+        'SIGNED_OUT',
+        'USER_UPDATED',
+        'PASSWORD_RECOVERY',
+      ].includes(event);
+
+      if (!shouldCheckAdmin) return;
+
+      setIsChecking(true);
+      setIsAdmin(session ? null : false);
+
+      // Defer the permission query until the auth callback has returned.
+      window.setTimeout(() => {
+        if (active) void checkAdmin(session);
+      }, 0);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      checkAdmin(session);
-    });
-    return () => sub.subscription.unsubscribe();
+
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
+
 
   async function checkAdmin(session: any) {
     setIsChecking(true);
@@ -195,10 +273,20 @@ export default function Admin() {
   }
 
   async function loadProducts() {
-    setIsLoading(true);
     try {
       const data = await productsApi('GET', undefined, true);
-      setProducts(data.products ?? []);
+      const latestProducts = data.products ?? [];
+
+      setProducts(latestProducts);
+
+      try {
+        sessionStorage.setItem(
+          'yotaabo-admin-products-cache',
+          JSON.stringify(latestProducts)
+        );
+      } catch {
+        // The dashboard can still work if browser storage is unavailable.
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unable to load products.');
     } finally {
@@ -384,6 +472,16 @@ export default function Admin() {
     };
   }, [orders]);
 
+  // Wait for Supabase to restore the initial session before
+  // deciding whether to show the login form.
+  if (isChecking && !session) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-white">
+        <p className="font-heading text-lg text-[#4d4d4d]/60">Loading...</p>
+      </main>
+    );
+  }
+
   // ============ LOGIN ============
   if (!session) {
     return (
@@ -392,7 +490,7 @@ export default function Admin() {
           <div className="relative flex w-full items-center justify-center">
             <div className="w-full">
               <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: '25vh' }}>
-                <text x="50" y="50%" dominantBaseline="middle" textAnchor="middle" textLength="100" lengthAdjust="spacingAndGlyphs" style={{ fontFamily: '"Anton", sans-serif', fontWeight: 400 }} className="fill-[#8aa89b]" fontSize="100">yotaabo</text>
+                <text x="50" y="50%" dominantBaseline="middle" textAnchor="middle" textLength="100" lengthAdjust="spacingAndGlyphs" style={{ fontFamily: adminTypography.heading, fontWeight: 400 }} className="fill-[#8aa89b]" fontSize="100">yotaabo</text>
               </svg>
             </div>
             <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
@@ -460,19 +558,60 @@ export default function Admin() {
     );
   }
 
-  // ============ DASHBOARD ============
+
   return (
-    <main className="min-h-screen bg-white">
+    <main
+      className="admin-scope min-h-screen bg-white"
+      style={{
+        "--admin-text-primary": adminText.primary,
+        "--admin-text-secondary": adminText.secondary,
+        "--admin-text-supporting": adminText.supporting,
+        "--admin-text-muted": adminText.muted,
+        "--admin-text-disabled": adminText.disabled,
+        "--admin-charcoal-40": colors.opacity.charcoal40,
+        "--admin-charcoal-50": colors.opacity.charcoal50,
+        "--admin-charcoal-70": colors.opacity.charcoal70,
+        "--admin-surface": colors.neutral.surface,
+        "--admin-card-order-media-surface": colors.neutral.grey300,
+        "--admin-surface-subtle": colors.neutral.surfaceSubtle,
+        "--admin-border-subtle": colors.opacity.charcoal10,
+        "--admin-status-amber": colors.statusPalette.amber,
+        "--admin-status-green": colors.statusPalette.green,
+        "--admin-status-red": colors.statusPalette.red,
+
+        ...adminSpacingVariables,
+
+        "--admin-font-heading": adminTypography.heading,
+        "--admin-font-body": adminTypography.body,
+
+        "--admin-size-page-title": adminTypography.size.pageTitle,
+        "--admin-size-section-title": adminTypography.size.sectionTitle,
+        "--admin-size-card-title": adminTypography.size.cardTitle,
+        "--admin-size-subsection-title": adminTypography.size.subsectionTitle,
+        "--admin-size-body": adminTypography.size.body,
+        "--admin-size-supporting": adminTypography.size.supporting,
+        "--admin-size-micro": adminTypography.size.micro,
+
+        "--admin-weight-normal": adminTypography.weight.normal,
+        "--admin-weight-medium": adminTypography.weight.medium,
+        "--admin-weight-semibold": adminTypography.weight.semibold,
+
+        "--admin-line-tight": adminTypography.lineHeight.tight,
+        "--admin-line-heading": adminTypography.lineHeight.heading,
+        "--admin-line-body": adminTypography.lineHeight.body,
+        "--admin-line-compact": adminTypography.lineHeight.compact,
+      } as React.CSSProperties}
+    >
       {/* MINIMAL HEADER */}
       <header className="sticky top-0 z-40 border-b border-[#4d4d4d]/10 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <p className="min-w-0 truncate text-xs font-semibold uppercase tracking-[0.16em] text-[#4d4d4d]/45">
+        <div className="admin-topbar-inner mx-auto flex items-center justify-between">
+          <p className="admin-type-micro min-w-0 truncate font-semibold uppercase tracking-[0.16em] text-[#4d4d4d]/45">
             Signed in as {session?.user?.email?.split('@')[0] || 'Admin'}
           </p>
           <button
             type="button"
             onClick={handleLogout}
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 border-0 bg-transparent px-2 text-sm font-medium text-[#4d4d4d]/70 transition-colors hover:text-[#4d4d4d]"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 border-0 bg-transparent px-2 admin-type-body font-medium text-[#4d4d4d]/70 transition-colors hover:text-[#4d4d4d]"
           >
             <FiLogOut size={16} />
             Logout
@@ -480,7 +619,7 @@ export default function Admin() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1120px] px-4 pb-32 pt-2 sm:px-10 sm:pb-36 sm:pt-3 lg:pt-4 lg:pb-36">
+      <div className="admin-page-shell mx-auto">
         {/* ============ OVERVIEW TAB ============ */}
         {activeTab === 'overview' && (
           <section>
@@ -501,42 +640,42 @@ export default function Admin() {
                     setEditing(null);
                     setFormOpen(true);
                   }}
-                  className="inline-flex h-[50px] w-[50px] shrink-0 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] p-0 text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
+                  className="admin-square-action inline-flex shrink-0 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
                 >
                   <FiPlus size={18} />
                 </button>
               }
             />
 
-            <div className="mx-auto mt-3 grid w-full max-w-4xl grid-cols-2 gap-x-8 gap-y-6 border-t border-[#4d4d4d]/10 pt-6 sm:grid-cols-3 sm:gap-x-12">
-              <div className="bg-[#f5f5f5] p-4 sm:p-5">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Products</p>
-                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{stats.total}</p>
+            <div className="admin-overview-grid mx-auto grid w-full grid-cols-2 border-t border-[#4d4d4d]/10 sm:grid-cols-3">
+              <div className="admin-stat-card bg-[#f5f5f5]">
+                <p className="admin-type-supporting uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Products</p>
+                <p className="admin-stat-value admin-type-metric text-[#4d4d4d]">{stats.total}</p>
               </div>
 
-              <div className="bg-[#f5f5f5] p-4 sm:p-5">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Active Products</p>
-                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{stats.active}</p>
+              <div className="admin-stat-card bg-[#f5f5f5]">
+                <p className="admin-type-supporting uppercase tracking-[0.12em] text-[#4d4d4d]/45">Active Products</p>
+                <p className="admin-stat-value admin-type-metric text-[#4d4d4d]">{stats.active}</p>
               </div>
 
-              <div className="bg-[#f5f5f5] p-4 sm:p-5">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Orders</p>
-                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.total}</p>
+              <div className="admin-stat-card bg-[#f5f5f5]">
+                <p className="admin-type-supporting uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Orders</p>
+                <p className="admin-stat-value admin-type-metric text-[#4d4d4d]">{orderStats.total}</p>
               </div>
 
-              <div className="bg-[#f5f5f5] p-4 sm:p-5">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Pending Orders</p>
-                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.pending}</p>
+              <div className="admin-stat-card bg-[#f5f5f5]">
+                <p className="admin-type-supporting uppercase tracking-[0.12em] text-[#4d4d4d]/45">Pending Orders</p>
+                <p className="admin-stat-value admin-type-metric text-[#4d4d4d]">{orderStats.pending}</p>
               </div>
 
-              <div className="bg-[#f5f5f5] p-4 sm:p-5">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Confirmed Orders</p>
-                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.confirmed}</p>
+              <div className="admin-stat-card bg-[#f5f5f5]">
+                <p className="admin-type-supporting uppercase tracking-[0.12em] text-[#4d4d4d]/45">Confirmed Orders</p>
+                <p className="admin-stat-value admin-type-metric text-[#4d4d4d]">{orderStats.confirmed}</p>
               </div>
 
-              <div className="bg-[#f5f5f5] p-4 sm:p-5">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Delivered Orders</p>
-                <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.delivered}</p>
+              <div className="admin-stat-card bg-[#f5f5f5]">
+                <p className="admin-type-supporting uppercase tracking-[0.12em] text-[#4d4d4d]/45">Delivered Orders</p>
+                <p className="admin-stat-value admin-type-metric text-[#4d4d4d]">{orderStats.delivered}</p>
               </div>
             </div>
           </section>
@@ -557,7 +696,7 @@ export default function Admin() {
                 <button
                   type="button"
                   onClick={() => { setEditing(null); setFormOpen(true); }}
-                  className="inline-flex h-[50px] w-[50px] shrink-0 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] p-0 text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
+                  className="admin-square-action inline-flex shrink-0 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
                 >
                   <FiPlus size={18} />
                 </button>
@@ -568,7 +707,7 @@ export default function Admin() {
                     key={cat}
                     type="button"
                     onClick={() => setCategoryFilter(cat)}
-                    className={`border-0 bg-transparent px-0 py-1 font-heading text-sm font-medium transition-colors ${
+                    className={`border-0 bg-transparent px-0 py-1 admin-type-body text-sm font-medium transition-colors ${
                       categoryFilter === cat
                         ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
                         : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
@@ -581,84 +720,43 @@ export default function Admin() {
             />
 
             {/* Product list */}
-            <div className="mt-8">
+            <div className="admin-product-list-region">
               {filteredProducts.length === 0 ? (
-                <p className="py-16 text-center text-sm text-[#4d4d4d]/40">No products match your filters.</p>
+                <p className="admin-empty-state admin-type-supporting text-center text-[#4d4d4d]/40">No products match your filters.</p>
               ) : (
-                <div className="flex flex-col gap-6">
+                <div className="admin-product-list flex flex-col">
                   {paginatedProducts.map((product) => {
                     const theme = getCategoryTheme(product.category);
                     const isActive = product.is_active;
 
                     return (
-                      <div
+                      <AdminItemCard
                         key={product.id}
+                        layout="product"
+                        title={product.name}
+                        status={isActive ? 'Active' : 'Inactive'}
+                        price={formatPrice(product.price)}
+                        meta={`${product.category} · ${product.subcategory}`}
                         onClick={() => setViewingProduct(product)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            setViewingProduct(product);
-                          }
-                        }}
-                        className={`flex cursor-pointer items-stretch overflow-hidden font-heading border border-[#4d4d4d]/10 bg-white transition-colors hover:bg-[#fafafa] ${
-                          !isActive ? 'opacity-60' : ''
-                        }`}
-                        style={{ WebkitTapHighlightColor: 'transparent' }}
-                      >
-                        {/* Fixed-size image container */}
-                        <div
-                          className={`relative h-24 w-24 shrink-0 overflow-hidden border-r border-[#4d4d4d]/10 sm:h-28 sm:w-28 ${
-                            isActive ? theme.placeholderColor : 'bg-gray-300'
-                          }`}
-                        >
-                          {product.image_url && (
+                        ariaLabel={`View product ${product.name}`}
+                        leftClassName={
+                          isActive ? theme.placeholderColor : 'bg-gray-300'
+                        }
+                        leftContent={
+                          product.image_url ? (
                             <img
                               src={product.image_url}
                               alt={product.name}
                               loading="lazy"
                               className="absolute inset-0 h-full w-full object-contain p-2"
                             />
-                          )}
-                        </div>
-
-                        {/* Details column */}
-                        <div className="flex min-w-0 flex-1 flex-col justify-center bg-[#f5f5f5] p-3 sm:p-4">
-                          <div>
-                            <div className="flex items-center justify-between gap-3">
-                              <p
-                                className="truncate text-sm font-medium leading-snug text-[#4d4d4d] sm:text-base"
-                                style={{ lineHeight: '1.1', margin: 0, padding: 0 }}
-                              >
-                                {product.name}
-                              </p>
-                              <span
-                                className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider ${
-                                  isActive ? 'text-[#4d4d4d]/40' : 'text-red-500'
-                                }`}
-                              >
-                                {isActive ? 'Active' : 'Inactive'}
-                              </span>
-                            </div>
-                            <div className="mt-1 flex items-center justify-between gap-2 sm:gap-3">
-                              <p
-                                className={`font-heading text-lg font-semibold sm:text-xl ${theme.accentColor}`}
-                                style={{ lineHeight: '1', margin: 0, padding: 0 }}
-                              >
-                                {formatPrice(product.price)}
-                              </p>
-                              <p
-                                className="max-w-[48%] truncate text-right text-[9px] font-semibold uppercase tracking-wider text-[#4d4d4d]/45 sm:text-[10px]"
-                                style={{ lineHeight: '1', margin: 0, padding: 0 }}
-                              >
-                                {product.category} · {product.subcategory}
-                              </p>
-                            </div>
-                          </div>
-
-                        </div>
-                      </div>
+                          ) : null
+                        }
+                        statusClassName={
+                          isActive ? 'text-[#4d4d4d]/40' : 'text-red-500'
+                        }
+                        className={!isActive ? 'opacity-60' : ''}
+                      />
                     );
                   })}
                 </div>
@@ -667,7 +765,7 @@ export default function Admin() {
 
             {/* Pagination footer */}
             <div className="mt-12 flex items-center justify-between border-t border-[#4d4d4d]/10 pt-6">
-              <p className="font-heading text-sm font-medium text-[#4d4d4d]/50">
+              <p className="admin-type-supporting text-sm font-medium text-[#4d4d4d]/50">
                 Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, filteredProducts.length)}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of {filteredProducts.length}
               </p>
 
@@ -676,7 +774,7 @@ export default function Admin() {
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 admin-type-body text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     ←
                   </button>
@@ -693,10 +791,10 @@ export default function Admin() {
                       const showEllipsis = prevPage && page - prevPage > 1;
                       return (
                         <span key={page} className="flex items-center gap-1">
-                          {showEllipsis && <span className="font-heading text-sm text-[#4d4d4d]/40">…</span>}
+                          {showEllipsis && <span className="admin-type-numeric text-sm text-[#4d4d4d]/40">…</span>}
                           <button
                             onClick={() => setCurrentPage(page)}
-                            className={`min-w-[32px] border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium transition-colors ${
+                            className={`min-w-[32px] border-0 bg-transparent px-2 py-1 admin-type-numeric text-sm font-medium transition-colors ${
                               page === currentPage
                                 ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
                                 : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
@@ -711,7 +809,7 @@ export default function Admin() {
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 admin-type-body text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     →
                   </button>
@@ -738,7 +836,7 @@ export default function Admin() {
                     key={f}
                     type="button"
                     onClick={() => { setOrderFilter(f); setOrderPage(1); }}
-                    className={`border-0 bg-transparent px-0 py-1 font-heading text-sm font-medium transition-colors ${
+                    className={`border-0 bg-transparent px-0 py-1 admin-type-body text-sm font-medium transition-colors ${
                       orderFilter === f
                         ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
                         : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
@@ -751,50 +849,118 @@ export default function Admin() {
             />
 
             {/* Order list */}
-            <div className="mt-8">
+            <div className="admin-order-list-region">
               {isLoadingOrders ? (
-                <p className="py-16 text-center text-sm text-[#4d4d4d]/40">Loading orders...</p>
+                <p className="admin-order-list-message admin-type-supporting text-center text-[#4d4d4d]/40">Loading orders...</p>
               ) : filteredOrders.length === 0 ? (
-                <p className="py-16 text-center text-sm text-[#4d4d4d]/40">No orders match your filters.</p>
+                <p className="admin-order-list-message admin-type-supporting text-center text-[#4d4d4d]/40">No orders match your filters.</p>
               ) : (
-                <div className="flex flex-col gap-3">
-                  {paginatedOrders.map((order) => {
-                    const totalQuantity = order.items.reduce(
-                      (total, item) => total + item.qty,
-                      0
-                    );
+                <>
+                  {/* Mobile order cards */}
+                  <div className="admin-order-mobile-list flex flex-col gap-6 md:hidden">
+                    {paginatedOrders.map((order) => {
+                      const totalQuantity = order.items.reduce(
+                        (total, item) => total + item.qty,
+                        0
+                      );
 
-                    return (
-                      <OrderItemCard
-                        key={order.id}
-                        name={order.customer_name}
-                        status={order.status}
-                        leftContent={
-                          <div className="flex w-full min-w-0 items-center justify-between gap-3 font-heading text-base lowercase leading-normal text-[#4d4d4d]/60">
-                            <span className="truncate">
-                              {new Date(order.created_at).toLocaleDateString('en-ZA', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
-                            </span>
-                            <span className="shrink-0 tabular-nums">
-                              {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
-                            </span>
-                          </div>
+                      const orderDate = new Date(order.created_at).toLocaleDateString(
+                        'en-ZA',
+                        {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
                         }
-                        rightContent={formatPrice(order.subtotal)}
-                        onClick={() => setViewingOrder(order)}
-                      />
-                    );
-                  })}
-                </div>
+                      );
+
+                      return (
+                        <AdminItemCard
+                          key={order.id}
+                          layout="product"
+                          title={order.customer_name}
+                          status={order.status}
+                          price={formatPrice(order.subtotal)}
+                          meta={orderDate}
+                          onClick={() => setViewingOrder(order)}
+                          ariaLabel={`View order from ${order.customer_name}`}
+                          leftClassName="admin-item-card-order-media"
+                          statusClassName={
+                            order.status === 'pending'
+                              ? 'text-amber-600'
+                              : order.status === 'cancelled'
+                                ? 'text-red-500'
+                                : 'text-green-700'
+                          }
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop orders table */}
+                  <div className="hidden md:block admin-orders-table-scroll">
+                    <table className="admin-orders-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Order</th>
+                          <th scope="col">Customer</th>
+                          <th scope="col">Date</th>
+                          <th scope="col" className="admin-orders-table-number">Items</th>
+                          <th scope="col" className="admin-orders-table-number">Total</th>
+                          <th scope="col">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedOrders.map((order) => {
+                          const totalQuantity = order.items.reduce(
+                            (total, item) => total + item.qty,
+                            0
+                          );
+
+                          return (
+                            <tr
+                              key={order.id}
+                              onClick={() => setViewingOrder(order)}
+                              onKeyDown={(event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                  event.preventDefault();
+                                  setViewingOrder(order);
+                                }
+                              }}
+                              tabIndex={0}
+                              role="button"
+                              aria-label={`View order ${order.order_number} from ${order.customer_name}`}
+                            >
+                              <td className="admin-orders-table-order">{order.order_number}</td>
+                              <td className="admin-orders-table-customer">{order.customer_name}</td>
+                              <td>
+                                {new Date(order.created_at).toLocaleDateString('en-ZA', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                })}
+                              </td>
+                              <td className="admin-orders-table-number">
+                                {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
+                              </td>
+                              <td className="admin-orders-table-total">{formatPrice(order.subtotal)}</td>
+                              <td>
+                                <span className={`admin-order-status admin-order-status-${order.status}`}>
+                                  {order.status}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </div>
 
             {/* Pagination */}
             <div className="mt-12 flex items-center justify-between border-t border-[#4d4d4d]/10 pt-6">
-              <p className="font-heading text-sm font-medium text-[#4d4d4d]/50">
+              <p className="admin-type-supporting text-sm font-medium text-[#4d4d4d]/50">
                 Showing {Math.min((orderPage - 1) * ORDERS_PER_PAGE + 1, filteredOrders.length)}–{Math.min(orderPage * ORDERS_PER_PAGE, filteredOrders.length)} of {filteredOrders.length}
               </p>
 
@@ -803,7 +969,7 @@ export default function Admin() {
                   <button
                     onClick={() => setOrderPage((p) => Math.max(1, p - 1))}
                     disabled={orderPage === 1}
-                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 admin-type-body text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     ←
                   </button>
@@ -811,7 +977,7 @@ export default function Admin() {
                     <button
                       key={page}
                       onClick={() => setOrderPage(page)}
-                      className={`min-w-[32px] border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium transition-colors ${
+                      className={`min-w-[32px] border-0 bg-transparent px-2 py-1 admin-type-numeric text-sm font-medium transition-colors ${
                         page === orderPage
                           ? 'text-[#4d4d4d] underline underline-offset-4 decoration-1'
                           : 'text-[#4d4d4d]/40 hover:text-[#4d4d4d]'
@@ -823,7 +989,7 @@ export default function Admin() {
                   <button
                     onClick={() => setOrderPage((p) => Math.min(totalOrderPages, p + 1))}
                     disabled={orderPage === totalOrderPages}
-                    className="border-0 bg-transparent px-2 py-1 font-heading text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
+                    className="border-0 bg-transparent px-2 py-1 admin-type-body text-sm font-medium text-[#4d4d4d]/60 transition-colors hover:text-[#4d4d4d] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     →
                   </button>
@@ -838,7 +1004,7 @@ export default function Admin() {
           <div>
             <AdminPageHeader title="Settings" />
             <div className="py-16 text-center">
-              <p className="text-sm text-[#4d4d4d]/50">
+              <p className="admin-type-supporting text-sm text-[#4d4d4d]/50">
                 Account and store settings will appear here.
               </p>
             </div>
@@ -859,7 +1025,7 @@ export default function Admin() {
               type="button"
               onClick={() => setActiveTab(tab)}
               aria-current={activeTab === tab ? 'page' : undefined}
-              className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] transition-colors ${
+              className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 admin-type-micro transition-colors ${
                 activeTab === tab ? 'bg-[#4d4d4d] text-white' : 'text-[#4d4d4d]/60 hover:bg-[#f5f5f5] hover:text-[#4d4d4d]'
               }`}
             >
@@ -872,7 +1038,7 @@ export default function Admin() {
               type="button"
               onClick={() => setActiveTab(activeTab === 'settings' ? 'overview' : 'settings')}
               aria-expanded={activeTab === 'settings'}
-              className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] transition-colors ${
+              className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 admin-type-micro transition-colors ${
                 activeTab === 'settings' ? 'bg-[#4d4d4d] text-white' : 'text-[#4d4d4d]/60 hover:bg-[#f5f5f5] hover:text-[#4d4d4d]'
               }`}
             >

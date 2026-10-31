@@ -68,7 +68,7 @@ export default function AdminProductDetailsModal({
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             onMouseEnter={() => setMenuHovered(true)}
             onMouseLeave={() => setMenuHovered(false)}
-            className="flex h-10 w-10 items-center justify-center border-0 bg-white/80 text-[#4d4d4d] backdrop-blur-sm transition-colors hover:bg-white"
+            className="flex h-10 w-10 items-center justify-center border-0 bg-white/80 admin-color-primary backdrop-blur-sm transition-colors hover:bg-white"
             aria-label="Product options"
             style={{ WebkitAppearance: 'none', appearance: 'none' }}
           >
@@ -84,7 +84,7 @@ export default function AdminProductDetailsModal({
                   if (product.is_active) onHide(product);
                   else onShow(product);
                 }}
-                className="flex w-full items-center gap-3 border-0 bg-transparent px-4 py-3 text-left font-heading text-sm text-[#4d4d4d] transition-colors hover:bg-[#f5f5f5]"
+                className="flex w-full items-center gap-3 border-0 bg-transparent px-4 py-3 text-left admin-type-body text-sm admin-color-primary transition-colors hover:bg-[var(--admin-surface)]"
                 style={{ WebkitAppearance: 'none', appearance: 'none' }}
               >
                 {product.is_active ? (
@@ -99,7 +99,7 @@ export default function AdminProductDetailsModal({
                   setIsMenuOpen(false);
                   onDelete(product);
                 }}
-                className="flex w-full items-center gap-3 border-0 border-t border-[#4d4d4d]/10 bg-transparent px-4 py-3 text-left font-heading text-sm text-red-500 transition-colors hover:bg-red-50"
+                className="flex w-full items-center gap-3 border-0 border-t border-[var(--admin-border-subtle)] bg-transparent px-4 py-3 text-left admin-type-body text-sm text-[var(--admin-status-red)] transition-colors hover:bg-red-50"
                 style={{ WebkitAppearance: 'none', appearance: 'none' }}
               >
                 <FiTrash2 size={14} /> Delete permanently
@@ -127,29 +127,29 @@ export default function AdminProductDetailsModal({
           {/* Read-only fields */}
           <div className="mt-6 flex flex-col gap-4">
             <div>
-              <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                 Name
               </span>
-              <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+              <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                 {product.name}
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Price (R)
                 </span>
-                <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                   {formatPrice(product.price)}
                 </div>
               </div>
 
               <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Category
                 </span>
-                <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                   {product.category}
                 </div>
               </div>
@@ -157,20 +157,20 @@ export default function AdminProductDetailsModal({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Subcategory
                 </span>
-                <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                   {product.subcategory}
                 </div>
               </div>
 
               <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Status
                 </span>
-                <div className={`w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base ${
-                  product.is_active ? 'text-[#4d4d4d]' : 'text-red-500'
+                <div className={`w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body ${
+                  product.is_active ? 'admin-color-primary' : 'text-[var(--admin-status-red)]'
                 }`}>
                   {product.is_active ? 'Active' : 'Inactive'}
                 </div>
@@ -178,10 +178,10 @@ export default function AdminProductDetailsModal({
             </div>
 
             <div>
-              <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                 Description
               </span>
-              <div className="w-full bg-[#f5f5f5] px-4 py-3 font-heading text-base leading-[1.4] text-[#4d4d4d]">
+              <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body leading-[1.4] admin-color-primary">
                 {product.description || 'No description for this product.'}
               </div>
             </div>
@@ -192,14 +192,14 @@ export default function AdminProductDetailsModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex h-12 flex-1 items-center justify-center border-0 bg-[#f5f5f5] font-heading text-base text-[#4d4d4d] transition-colors hover:bg-[#e5e5e5]"
+              className="flex h-12 flex-1 items-center justify-center border-0 bg-[var(--admin-surface)] admin-type-body admin-color-primary transition-colors hover:bg-[#e5e5e5]"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={() => { onClose(); onEdit(product); }}
-              className="flex h-12 flex-1 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] font-heading text-base text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
+              className="flex h-12 flex-1 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] admin-type-body text-white transition-colors hover:bg-transparent hover:admin-color-primary"
             >
               Edit
             </button>

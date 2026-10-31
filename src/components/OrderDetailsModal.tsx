@@ -91,14 +91,14 @@ export default function OrderDetailsModal({
   const closeMenu = () => setIsMenuOpen(false);
 
   const actionClass =
-    'flex min-h-12 w-full items-center gap-3 border-0 border-b border-[#4d4d4d]/10 bg-white px-4 py-3 text-left font-body text-sm text-[#4d4d4d]/80 transition-colors hover:bg-[#fafaf9] hover:text-[#4d4d4d]';
+    'flex min-h-12 w-full items-center gap-3 border-0 border-b border-[#4d4d4d]/10 bg-white px-4 py-3 text-left admin-type-body text-[#4d4d4d]/80 transition-colors hover:bg-[#fafaf9] hover:text-[#4d4d4d]';
 
   return (
     <Modal isOpen={!!order} onClose={onClose} maxWidth="max-w-2xl" scrollable={false}>
       <div className="relative flex max-h-[85vh] flex-col overflow-hidden">
         {/* Header */}
         <div className="relative z-20 flex shrink-0 items-center justify-between gap-4 border-b border-[#4d4d4d]/10 bg-white px-6 py-4 sm:px-8">
-          <h2 className="min-w-0 truncate font-heading text-sm font-medium leading-snug text-[#4d4d4d] sm:text-base">
+          <h2 className="min-w-0 truncate admin-type-card-title leading-snug text-[#4d4d4d] ">
             {order.customer_name}
           </h2>
 
@@ -117,19 +117,19 @@ export default function OrderDetailsModal({
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Order number
                 </span>
-                <div className="w-full bg-[#fafaf9] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                   {order.order_number}
                 </div>
               </div>
 
               <div>
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Order date
                 </span>
-                <div className="w-full bg-[#fafaf9] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                   {formattedDate}
                 </div>
               </div>
@@ -137,19 +137,19 @@ export default function OrderDetailsModal({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="min-w-0">
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Phone
                 </span>
-                <div className="w-full truncate bg-[#fafaf9] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                <div className="w-full truncate bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                   {order.customer_phone}
                 </div>
               </div>
 
               <div className="min-w-0">
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Status
                 </span>
-                <div className="w-full bg-[#fafaf9] px-4 py-3 font-heading text-base text-[#4d4d4d]">
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
                   <span className={STATUS_COLORS[order.status]}>
                     {STATUS_LABELS[order.status]}
                   </span>
@@ -160,11 +160,11 @@ export default function OrderDetailsModal({
 
           {/* Items */}
           <div className="mt-6">
-            <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+            <h3 className="mb-3 admin-type-micro uppercase tracking-widest text-[#4d4d4d]/40">
               Items
             </h3>
 
-            <div className="flex flex-col gap-2">
+            <div className="admin-order-items flex flex-col gap-2">
               {order.items.map((item, index) => {
                 const matchedProduct = products.find(
                   (product) =>
@@ -175,6 +175,7 @@ export default function OrderDetailsModal({
                 return (
                 <CheckoutItemCard
                   key={`${order.id}-${index}`}
+                  variant="admin"
                   name={item.name}
                   onClick={
                     matchedProduct
@@ -183,24 +184,24 @@ export default function OrderDetailsModal({
                   }
                   leftContent={
                     <>
-                      <span className="font-heading tabular-nums">{item.qty}</span>
+                      <span className="admin-type-body">{item.qty}</span>
                       {' × '}
-                      <span className="font-heading tabular-nums">
+                      <span className="admin-type-body admin-color-primary">
                         {formatPrice(item.price)}
                       </span>
                     </>
                   }
-                  rightContent={formatPrice(item.price * item.qty)}
+                  rightContent={<span className="admin-type-body admin-color-primary">{formatPrice(item.price * item.qty)}</span>}
                 />
                 );
               })}
             </div>
 
             <div className="mt-4 flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">
+              <p className="admin-type-micro uppercase tracking-widest text-[#4d4d4d]/40">
                 Subtotal
               </p>
-              <p className="font-heading text-2xl font-semibold text-[#8aa89b]">
+              <p className="admin-type-body admin-color-primary">
                 {formatPrice(order.subtotal)}
               </p>
             </div>
@@ -253,7 +254,7 @@ export default function OrderDetailsModal({
                       closeMenu();
                       onStatusChange(order, 'cancelled');
                     }}
-                    className="flex min-h-12 w-full items-center gap-3 border-0 border-b border-[#4d4d4d]/10 bg-white px-4 py-3 text-left font-body text-sm text-red-500/80 transition-colors hover:bg-[#fafaf9] hover:text-red-600"
+                    className="flex min-h-12 w-full items-center gap-3 border-0 border-b border-[#4d4d4d]/10 bg-white px-4 py-3 text-left admin-type-body text-red-500/80 transition-colors hover:bg-[#fafaf9] hover:text-red-600"
                   >
                     <FiX size={14} />
                     Unable to complete
@@ -267,7 +268,7 @@ export default function OrderDetailsModal({
                     closeMenu();
                     onDelete(order);
                   }}
-                  className="flex min-h-12 w-full items-center gap-3 border-0 bg-white px-4 py-3 text-left font-body text-sm text-red-500/80 transition-colors hover:bg-[#fafaf9] hover:text-red-600"
+                  className="flex min-h-12 w-full items-center gap-3 border-0 bg-white px-4 py-3 text-left admin-type-body text-red-500/80 transition-colors hover:bg-[#fafaf9] hover:text-red-600"
                 >
                   <FiTrash2 size={14} />
                   Delete permanently
@@ -279,7 +280,7 @@ export default function OrderDetailsModal({
               <button
                 type="button"
                 onClick={() => setIsMenuOpen((open) => !open)}
-                className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 border-0 bg-[#f5f5f5] font-heading text-base text-[#4d4d4d] transition-colors hover:bg-[#e5e5e5]"
+                className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 border-0 bg-[#f5f5f5] admin-type-body text-[#4d4d4d] transition-colors hover:bg-[#e5e5e5]"
                 aria-expanded={isMenuOpen}
                 aria-haspopup="menu"
                 aria-label="Order actions menu"

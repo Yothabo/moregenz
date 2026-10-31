@@ -29,6 +29,8 @@ const SUBCATEGORY_OPTIONS: Record<string, string[]> = {
   Spaces: ['Home', 'Car', 'Freshness'],
 };
 
+const DRAFT_STORAGE_KEY = 'yotaabo-admin-product-form-draft';
+
 const emptyProduct: AdminProduct = {
   name: '',
   price: 0,
@@ -50,17 +52,82 @@ export default function AdminProductForm({
   const [statusValue, setStatusValue] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDraftHydrated, setIsDraftHydrated] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      setForm(productToEdit ?? emptyProduct);
-      if (productToEdit) {
-        setStatusValue(productToEdit.is_active ? 'active' : 'hidden');
-      } else {
-        setStatusValue('');
-      }
+    if (!isOpen) {
+      setIsDraftHydrated(false);
+      return;
     }
+
+    setIsDraftHydrated(false);
+
+    try {
+      const raw = sessionStorage.getItem(DRAFT_STORAGE_KEY);
+      const saved = raw
+        ? JSON.parse(raw) as {
+            productId: string | null;
+            form: AdminProduct;
+            statusValue: string;
+          }
+        : null;
+
+      const currentProductId = productToEdit?.id ?? null;
+
+      if (
+        saved &&
+        saved.productId === currentProductId &&
+        saved.form
+      ) {
+        setForm(saved.form);
+        setStatusValue(saved.statusValue ?? '');
+      } else {
+        setForm(productToEdit ?? { ...emptyProduct });
+        setStatusValue(
+          productToEdit
+            ? productToEdit.is_active ? 'active' : 'hidden'
+            : ''
+        );
+      }
+    } catch {
+      setForm(productToEdit ?? { ...emptyProduct });
+      setStatusValue(
+        productToEdit
+          ? productToEdit.is_active ? 'active' : 'hidden'
+          : ''
+      );
+    }
+
+    setIsDraftHydrated(true);
   }, [isOpen, productToEdit]);
+
+  useEffect(() => {
+    if (!isOpen || !isDraftHydrated) return;
+
+    try {
+      sessionStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify({
+          productId: productToEdit?.id ?? null,
+          form,
+          statusValue,
+        })
+      );
+    } catch {
+      // Storage may be unavailable; the form remains usable.
+    }
+  }, [isOpen, isDraftHydrated, form, statusValue, productToEdit]);
+
+  const handleClose = () => {
+    try {
+      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch {
+      // Ignore storage errors when closing.
+    }
+
+    setIsDraftHydrated(false);
+    onClose();
+  };
 
   const handleChange = (field: keyof AdminProduct, value: any) => {
     setForm((prev) => {
@@ -149,7 +216,7 @@ export default function AdminProductForm({
 
       toast.success(productToEdit ? 'Product updated' : 'Product added');
       onSaved();
-      onClose();
+      handleClose();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Unable to save the product.'
@@ -160,29 +227,29 @@ export default function AdminProductForm({
   };
 
   const inputClass =
-    'w-full border-0 bg-[#f5f5f5] px-4 py-3 font-heading text-base text-[#4d4d4d] outline-none ring-0 transition-colors placeholder:text-[#4d4d4d]/40 focus:border-0 focus:outline-none focus:ring-0';
+    'w-full border-0 bg-[#f5f5f5] px-4 py-3 admin-type-body text-[#4d4d4d] outline-none ring-0 transition-colors placeholder:text-[#4d4d4d]/40 focus:border-0 focus:outline-none focus:ring-0';
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <div className="p-6 sm:p-8">
-        <h2 className="text-2xl font-bold text-[#4d4d4d]">
+        <h2 className="admin-type-section-title text-[#4d4d4d]">
           {productToEdit ? 'Edit Product' : 'Add Product'}
         </h2>
 
         <div className="mt-6 flex flex-col gap-4">
           <label className="block">
-            <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Name</span>
+            <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Name</span>
             <input type="text" value={form.name} onChange={(e) => handleChange('name', e.target.value)} className={inputClass} placeholder="e.g. Noir Oud" />
           </label>
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
-              <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Price (R)</span>
-              <input type="number" value={form.price || ''} onChange={(e) => handleChange('price', Number(e.target.value))} className={inputClass} placeholder="0" />
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Price (R)</span>
+              <input type="number" value={form.price || ''} onChange={(e) => handleChange('price', Number(e.target.value))} className={`${inputClass} admin-type-price`} placeholder="0" />
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Status</span>
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Status</span>
               <CustomDropdown
                 value={statusValue}
                 onChange={(v) => { setStatusValue(v); handleChange('is_active', v === 'active'); }}
@@ -197,7 +264,7 @@ export default function AdminProductForm({
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
-              <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Category</span>
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Category</span>
               <CustomDropdown
                 value={form.category}
                 onChange={(v) => handleChange('category', v)}
@@ -211,7 +278,7 @@ export default function AdminProductForm({
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Subcategory</span>
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Subcategory</span>
               <CustomDropdown
                 value={form.subcategory}
                 onChange={(v) => handleChange('subcategory', v)}
@@ -225,15 +292,15 @@ export default function AdminProductForm({
           </div>
 
           <label className="block">
-            <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Description</span>
+            <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Description</span>
             <textarea rows={3} value={form.description ?? ''} onChange={(e) => handleChange('description', e.target.value)} className={`resize-none ${inputClass}`} placeholder="A short description of the fragrance..." />
           </label>
 
           <div>
-            <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Product Image</span>
+            <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Product Image</span>
             <div className="flex gap-2">
               <input type="url" value={form.image_url ?? ''} onChange={(e) => handleChange('image_url', e.target.value)} className={inputClass} placeholder="https://..." />
-              <label className={`flex h-[46px] shrink-0 cursor-pointer items-center justify-center border-0 bg-[#4d4d4d] px-4 font-heading text-base text-white transition-colors hover:bg-[#3a3a3a] ${isUploading ? 'cursor-not-allowed opacity-50' : ''}`}>
+              <label className={`flex h-[46px] shrink-0 cursor-pointer items-center justify-center border-0 bg-[#4d4d4d] px-4 admin-type-body text-white transition-colors hover:bg-[#3a3a3a] ${isUploading ? 'cursor-not-allowed opacity-50' : ''}`}>
                 {isUploading ? '...' : 'Upload'}
                 <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
               </label>
@@ -241,10 +308,10 @@ export default function AdminProductForm({
           </div>
 
           <div className="mt-6 flex items-center gap-3">
-            <button type="button" onClick={onClose} className="flex h-12 flex-1 items-center justify-center border-0 bg-[#f5f5f5] font-heading text-base text-[#4d4d4d] transition-colors hover:bg-[#e5e5e5]">
+            <button type="button" onClick={handleClose} className="flex h-12 flex-1 items-center justify-center border-0 bg-[#f5f5f5] admin-type-body text-[#4d4d4d] transition-colors hover:bg-[#e5e5e5]">
               Cancel
             </button>
-            <button type="button" onClick={handleSubmit} disabled={isSaving} className="flex h-12 flex-1 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] font-heading text-base text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d] disabled:opacity-50">
+            <button type="button" onClick={handleSubmit} disabled={isSaving} className="flex h-12 flex-1 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] admin-type-body text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d] disabled:opacity-50">
               {isSaving ? (
                 <span className="flex items-center gap-1">
                   <span className="loading-dot"></span>

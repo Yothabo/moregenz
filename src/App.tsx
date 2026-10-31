@@ -12,6 +12,7 @@ import ViewCatalog from './pages/ViewCatalog';
 import Admin from './pages/Admin';
 import UpdatePassword from './pages/UpdatePassword';
 import CartPage from './pages/CartPage';
+import DesignSystemTest from './pages/DesignSystemTest';
 
 export default function App() {
   useTouchSelection();
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/update-password" element={<UpdatePassword />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/test" element={<DesignSystemTest />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster

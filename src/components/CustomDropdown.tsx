@@ -53,7 +53,6 @@ export default function CustomDropdown({
     background: 'transparent',
     border: 'none',
     margin: 0,
-    fontFamily: 'inherit',
     textDecoration: 'none',
     cursor: 'pointer',
     outline: 'none',
@@ -73,7 +72,6 @@ export default function CustomDropdown({
     background: 'transparent',
     border: 'none',
     margin: 0,
-    fontFamily: 'inherit',
     textDecoration: 'none',
     cursor: 'pointer',
     outline: 'none',
@@ -90,12 +88,10 @@ export default function CustomDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
+        className="admin-type-body"
         style={{
           ...baseButtonStyle,
           padding: compact ? '6px 12px' : '12px 16px',
-          fontSize: compact ? '12px' : '16px',
-          fontWeight: compact ? 600 : 500,
-          fontFamily: compact ? 'var(--font-body)' : 'var(--font-heading)',
         }}
       >
         <span
@@ -154,12 +150,10 @@ export default function CustomDropdown({
                 onChange(option.value);
                 setIsOpen(false);
               }}
+              className="admin-type-body"
               style={{
                 ...optionButtonStyle,
                 padding: '10px 16px',
-                fontSize: compact ? '12px' : '16px',
-                fontWeight: option.value === value ? 600 : 500,
-                fontFamily: compact ? 'var(--font-body)' : 'var(--font-heading)',
                 color: '#4d4d4d',
               }}
               onMouseEnter={(e) => {
