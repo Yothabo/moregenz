@@ -98,7 +98,7 @@ export default function OrderDetailsModal({
       <div className="relative flex max-h-[85vh] flex-col overflow-hidden">
         {/* Header */}
         <div className="relative z-20 flex shrink-0 items-center justify-between gap-4 border-b border-[#4d4d4d]/10 bg-white px-6 py-4 sm:px-8">
-          <h2 className="min-w-0 truncate font-heading text-2xl italic text-[#4d4d4d]">
+          <h2 className="min-w-0 truncate font-heading text-sm font-medium leading-snug text-[#4d4d4d] sm:text-base">
             {order.customer_name}
           </h2>
 

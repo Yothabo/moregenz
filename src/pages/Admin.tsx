@@ -162,15 +162,48 @@ export default function Admin() {
     loadOrders();
   }, [isAdmin]);
 
+  async function productsApi(
+    method: 'GET' | 'PATCH',
+    body?: Record<string, string | boolean>,
+    adminScope = false
+  ) {
+    const { data: { session: currentSession }, error: sessionError } =
+      await supabase.auth.getSession();
+
+    if (sessionError || !currentSession?.access_token) {
+      throw new Error('Your admin session has expired. Please sign in again.');
+    }
+
+    const url = adminScope ? '/api/products?scope=admin' : '/api/products';
+    const response = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${currentSession.access_token}`,
+        Accept: 'application/json',
+        ...(body ? { 'Content-Type': 'application/json' } : {}),
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'The product request failed.');
+    }
+
+    return data;
+  }
+
   async function loadProducts() {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('products').select('*')
-      .order('category', { ascending: true })
-      .order('sort_order', { ascending: true });
-    if (error) toast.error(error.message);
-    else setProducts(data ?? []);
-    setIsLoading(false);
+    try {
+      const data = await productsApi('GET', undefined, true);
+      setProducts(data.products ?? []);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to load products.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function ordersApi(method: 'GET' | 'PATCH' | 'DELETE', body?: Record<string, string>) {
@@ -256,25 +289,33 @@ export default function Admin() {
   }
 
   async function handleDelete(product: AdminRow) {
-    const { error } = await supabase
-      .from('products').update({ is_active: false }).eq('id', product.id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await productsApi('PATCH', {
+        action: 'set-status',
+        id: product.id,
+        is_active: false,
+      });
       toast.success(`${product.name} hidden`);
       setConfirmDelete(null);
-      setViewingProduct(null); // close the details modal too
-      loadProducts();
+      setViewingProduct(null);
+      await loadProducts();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to hide product.');
     }
   }
 
   async function handleReactivate(product: AdminRow) {
-    const { error } = await supabase
-      .from('products').update({ is_active: true }).eq('id', product.id);
-    if (error) toast.error(error.message);
-    else {
+    try {
+      await productsApi('PATCH', {
+        action: 'set-status',
+        id: product.id,
+        is_active: true,
+      });
       toast.success(`${product.name} reactivated`);
-      setViewingProduct(null); // close the details modal too
-      loadProducts();
+      setViewingProduct(null);
+      await loadProducts();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to reactivate product.');
     }
   }
 
@@ -305,14 +346,6 @@ export default function Admin() {
     return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredProducts, currentPage]);
 
-  const stats = useMemo(() => {
-    return {
-      total: products.length,
-      active: products.filter((p) => p.is_active).length,
-      hidden: products.filter((p) => !p.is_active).length,
-    };
-  }, [products]);
-
   // Order filtering
   const filteredOrders = useMemo(() => {
     return orders.filter((o) => {
@@ -334,6 +367,12 @@ export default function Admin() {
     const start = (orderPage - 1) * ORDERS_PER_PAGE;
     return filteredOrders.slice(start, start + ORDERS_PER_PAGE);
   }, [filteredOrders, orderPage]);
+
+  const stats = useMemo(() => ({
+    total: products.length,
+    active: products.filter((p) => p.is_active).length,
+    hidden: products.filter((p) => !p.is_active).length,
+  }), [products]);
 
   const orderStats = useMemo(() => {
     return {
@@ -462,42 +501,40 @@ export default function Admin() {
                     setEditing(null);
                     setFormOpen(true);
                   }}
-                  className="inline-flex h-[50px] shrink-0 items-center gap-2 border border-solid border-[#4d4d4d] bg-[#4d4d4d] px-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d] sm:px-6"
+                  className="inline-flex h-[50px] w-[50px] shrink-0 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] p-0 text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
                 >
-                  <FiPlus size={14} />
-                  <span className="hidden sm:inline">Add Product</span>
-                  <span className="sm:hidden">Add</span>
+                  <FiPlus size={18} />
                 </button>
               }
             />
 
-            <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-[#4d4d4d]/10 pt-6 sm:grid-cols-3 sm:gap-x-12">
-              <div>
+            <div className="mx-auto mt-3 grid w-full max-w-4xl grid-cols-2 gap-x-8 gap-y-6 border-t border-[#4d4d4d]/10 pt-6 sm:grid-cols-3 sm:gap-x-12">
+              <div className="bg-[#f5f5f5] p-4 sm:p-5">
                 <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Products</p>
                 <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{stats.total}</p>
               </div>
 
-              <div>
+              <div className="bg-[#f5f5f5] p-4 sm:p-5">
                 <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Active Products</p>
                 <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{stats.active}</p>
               </div>
 
-              <div>
+              <div className="bg-[#f5f5f5] p-4 sm:p-5">
                 <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Total Orders</p>
                 <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.total}</p>
               </div>
 
-              <div>
+              <div className="bg-[#f5f5f5] p-4 sm:p-5">
                 <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Pending Orders</p>
                 <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.pending}</p>
               </div>
 
-              <div>
+              <div className="bg-[#f5f5f5] p-4 sm:p-5">
                 <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Confirmed Orders</p>
                 <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.confirmed}</p>
               </div>
 
-              <div>
+              <div className="bg-[#f5f5f5] p-4 sm:p-5">
                 <p className="text-xs uppercase tracking-[0.12em] text-[#4d4d4d]/45">Delivered Orders</p>
                 <p className="mt-3 font-heading text-3xl text-[#4d4d4d] sm:text-4xl">{orderStats.delivered}</p>
               </div>
@@ -520,10 +557,9 @@ export default function Admin() {
                 <button
                   type="button"
                   onClick={() => { setEditing(null); setFormOpen(true); }}
-                  className="inline-flex h-[50px] shrink-0 items-center gap-2 border border-solid border-[#4d4d4d] bg-[#4d4d4d] px-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d] sm:px-6"
+                  className="inline-flex h-[50px] w-[50px] shrink-0 items-center justify-center border border-solid border-[#4d4d4d] bg-[#4d4d4d] p-0 text-white transition-colors hover:bg-transparent hover:text-[#4d4d4d]"
                 >
-                  <FiPlus size={14} />
-                  <span className="hidden sm:inline">Add Product</span>
+                  <FiPlus size={18} />
                 </button>
               }
               filters={
@@ -544,13 +580,6 @@ export default function Admin() {
               }
             />
 
-            {/* Stats row */}
-            <div className="mt-4">
-              <p className="text-sm font-medium text-[#4d4d4d]/60">
-                {stats.total} total · {stats.active} active · {stats.hidden} hidden
-              </p>
-            </div>
-
             {/* Product list */}
             <div className="mt-8">
               {filteredProducts.length === 0 ? (
@@ -564,33 +593,42 @@ export default function Admin() {
                     return (
                       <div
                         key={product.id}
-                        className={`flex items-stretch border border-[#4d4d4d]/10 bg-[#f5f5f5] transition-colors hover:bg-[#ebebeb] ${
+                        onClick={() => setViewingProduct(product)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            setViewingProduct(product);
+                          }
+                        }}
+                        className={`flex cursor-pointer items-stretch overflow-hidden font-heading border border-[#4d4d4d]/10 bg-white transition-colors hover:bg-[#fafafa] ${
                           !isActive ? 'opacity-60' : ''
                         }`}
                         style={{ WebkitTapHighlightColor: 'transparent' }}
                       >
-                                                {/* Image */}
+                        {/* Fixed-size image container */}
                         <div
-                          className={`shrink-0 w-24 sm:w-28 overflow-hidden border-r border-[#4d4d4d]/10 ${isActive ? theme.placeholderColor : 'bg-gray-300'}`}
+                          className={`relative h-24 w-24 shrink-0 overflow-hidden border-r border-[#4d4d4d]/10 sm:h-28 sm:w-28 ${
+                            isActive ? theme.placeholderColor : 'bg-gray-300'
+                          }`}
                         >
                           {product.image_url && (
                             <img
                               src={product.image_url}
                               alt={product.name}
-                              className="h-full w-full object-contain p-1.5"
+                              loading="lazy"
+                              className="absolute inset-0 h-full w-full object-contain p-2"
                             />
                           )}
                         </div>
 
                         {/* Details column */}
-                        <div className="flex flex-1 min-w-0 flex-col justify-between p-3">
-                          <div
-                            className="cursor-pointer"
-                            onClick={() => setViewingProduct(product)}
-                          >
+                        <div className="flex min-w-0 flex-1 flex-col justify-center bg-[#f5f5f5] p-3 sm:p-4">
+                          <div>
                             <div className="flex items-center justify-between gap-3">
                               <p
-                                className="truncate text-base font-medium text-[#4d4d4d]/70"
+                                className="truncate text-sm font-medium leading-snug text-[#4d4d4d] sm:text-base"
                                 style={{ lineHeight: '1.1', margin: 0, padding: 0 }}
                               >
                                 {product.name}
@@ -605,13 +643,13 @@ export default function Admin() {
                             </div>
                             <div className="mt-1 flex items-center justify-between gap-2 sm:gap-3">
                               <p
-                                className={`font-heading text-lg font-semibold ${theme.accentColor}`}
+                                className={`font-heading text-lg font-semibold sm:text-xl ${theme.accentColor}`}
                                 style={{ lineHeight: '1', margin: 0, padding: 0 }}
                               >
                                 {formatPrice(product.price)}
                               </p>
                               <p
-                                className="truncate text-[10px] uppercase tracking-wider text-[#4d4d4d]/40 font-semibold text-right"
+                                className="max-w-[48%] truncate text-right text-[9px] font-semibold uppercase tracking-wider text-[#4d4d4d]/45 sm:text-[10px]"
                                 style={{ lineHeight: '1', margin: 0, padding: 0 }}
                               >
                                 {product.category} · {product.subcategory}
@@ -730,18 +768,20 @@ export default function Admin() {
                       <OrderItemCard
                         key={order.id}
                         name={order.customer_name}
+                        status={order.status}
                         leftContent={
-                          <span className="font-heading text-base leading-normal text-[#4d4d4d]/60">
-                            {new Date(order.created_at).toLocaleDateString('en-ZA', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                            {' • '}
-                            <span className="tabular-nums">{totalQuantity}</span>
-                            {' '}
-                            {totalQuantity === 1 ? 'item' : 'items'}
-                          </span>
+                          <div className="flex w-full min-w-0 items-center justify-between gap-3 font-heading text-base lowercase leading-normal text-[#4d4d4d]/60">
+                            <span className="truncate">
+                              {new Date(order.created_at).toLocaleDateString('en-ZA', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })}
+                            </span>
+                            <span className="shrink-0 tabular-nums">
+                              {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
+                            </span>
+                          </div>
                         }
                         rightContent={formatPrice(order.subtotal)}
                         onClick={() => setViewingOrder(order)}

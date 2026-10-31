@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../utils/supabase';
 
 export type Product = {
   id: string;
@@ -25,20 +24,31 @@ export function useProducts() {
 
     async function fetchProducts() {
       setIsLoading(true);
-      const { data, error: fetchError } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
+      try {
+        const response = await fetch('/api/products', {
+          headers: { Accept: 'application/json' },
+        });
+        const data = await response.json();
 
-      if (cancelled) return;
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load products.');
+        }
 
-      if (fetchError) {
-        setError(fetchError.message);
-      } else {
-        setProducts(data || []);
+        if (!cancelled) {
+          setProducts(Array.isArray(data.products) ? data.products : []);
+          setError(null);
+        }
+      } catch (fetchError) {
+        if (!cancelled) {
+          setError(
+            fetchError instanceof Error
+              ? fetchError.message
+              : 'Unable to load products.'
+          );
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-      setIsLoading(false);
     }
 
     fetchProducts();

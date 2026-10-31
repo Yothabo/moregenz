@@ -175,8 +175,67 @@ async function saveProduct(request, body, isUpdate) {
   return json({ product: result.rows[0] }, isUpdate ? 200 : 201);
 }
 
+async function listProducts(request) {
+  const url = new URL(request.url);
+  const isAdminRequest = url.searchParams.get('scope') === 'admin';
+
+  if (isAdminRequest) {
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return json({ error: 'You are not authorised to view products.' }, 401);
+    }
+  }
+
+  const result = await pool.query(
+    `SELECT *
+     FROM public.products
+     ${isAdminRequest ? '' : 'WHERE is_active = TRUE'}
+     ORDER BY category ASC, sort_order ASC, created_at DESC`
+  );
+
+  return new Response(JSON.stringify({ products: result.rows }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': isAdminRequest
+        ? 'private, no-store'
+        : 'public, max-age=30, s-maxage=300, stale-while-revalidate=600',
+    },
+  });
+}
+
+async function updateProductStatus(body) {
+  const id = String(body?.id || '');
+
+  if (!uuidPattern.test(id)) {
+    return json({ error: 'A valid product ID is required.' }, 400);
+  }
+
+  if (typeof body?.is_active !== 'boolean') {
+    return json({ error: 'A valid product status is required.' }, 400);
+  }
+
+  const result = await pool.query(
+    `UPDATE public.products
+     SET is_active = $1
+     WHERE id = $2
+     RETURNING id, name, is_active`,
+    [body.is_active, id]
+  );
+
+  if (!result.rowCount) {
+    return json({ error: 'Product not found.' }, 404);
+  }
+
+  return json({ product: result.rows[0] });
+}
+
 export default async (request) => {
   try {
+    if (request.method === 'GET') {
+      return await listProducts(request);
+    }
+
     if (!['POST', 'PATCH'].includes(request.method)) {
       return json({ error: 'Method not allowed.' }, 405);
     }
@@ -193,9 +252,13 @@ export default async (request) => {
       return json({ error: 'Invalid request body.' }, 400);
     }
 
+    if (request.method === 'PATCH' && body?.action === 'set-status') {
+      return await updateProductStatus(body);
+    }
+
     return await saveProduct(request, body, request.method === 'PATCH');
   } catch (error) {
     console.error('Products function error:', error);
-    return json({ error: 'Unable to save the product right now.' }, 500);
+    return json({ error: 'Unable to process the product request right now.' }, 500);
   }
 };
