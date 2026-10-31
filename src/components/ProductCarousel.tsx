@@ -73,13 +73,13 @@ export default function ProductCarousel({
       aria-label={`${title} product collection`}
     >
       <div className="flex items-baseline justify-between px-6 sm:px-10 lg:px-12">
-        <h3 className={`font-heading text-3xl italic ${accentColor}`}>
+        <h3 className={`font-heading text-3xl italic ${title === "Trending" ? "text-[#3a3a3a]" : accentColor}`}>
           {title}
         </h3>
 
         <Link
           to={viewAllHref}
-          className={`shrink-0 cursor-pointer font-heading text-sm italic tracking-wide ${accentColor} opacity-70 transition-opacity hover:opacity-100`}
+          className="shrink-0 cursor-pointer font-heading text-sm italic tracking-wide text-[#3a3a3a] opacity-70 transition-opacity hover:opacity-100"
         >
           View more
         </Link>
@@ -206,7 +206,7 @@ export default function ProductCarousel({
               <Link
                 to={viewAllHref}
                 aria-label={`View more ${title} products`}
-                className={`flex aspect-[4/5] w-full items-center justify-center font-heading text-lg italic ${accentColor} outline-none transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4`}
+                className="flex aspect-[4/5] w-full items-center justify-center font-heading text-lg italic text-[#3a3a3a] outline-none transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4"
               >
                 View more
               </Link>
