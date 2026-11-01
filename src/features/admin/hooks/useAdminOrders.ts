@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../../../utils/supabase';
 import toast from 'react-hot-toast';
 import type {
@@ -7,8 +7,19 @@ import type {
 } from '../types/admin.types';
 
 export function useAdminOrders(isAdmin: boolean | null) {
+  const adminRef = useRef(isAdmin);
+  const adminGenerationRef = useRef(0);
+  const previousAdminRef = useRef(isAdmin);
+
+  if (previousAdminRef.current !== isAdmin) {
+    adminGenerationRef.current += 1;
+    previousAdminRef.current = isAdmin;
+  }
+
+  adminRef.current = isAdmin;
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+  const [hasLoadedOrders, setHasLoadedOrders] = useState(false);
 
   const ordersApi = useCallback(
     async (
@@ -47,19 +58,31 @@ export function useAdminOrders(isAdmin: boolean | null) {
   );
 
   const loadOrders = useCallback(async () => {
+    const requestGeneration = adminGenerationRef.current;
     setIsLoadingOrders(true);
 
     try {
       const data = await ordersApi('GET');
       setOrders(data.orders ?? []);
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Unable to load orders.'
-      );
+      if (
+        adminRef.current &&
+        requestGeneration === adminGenerationRef.current
+      ) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'Unable to load orders.'
+        );
+      }
     } finally {
-      setIsLoadingOrders(false);
+      if (
+        requestGeneration === adminGenerationRef.current &&
+        adminRef.current
+      ) {
+        setIsLoadingOrders(false);
+        setHasLoadedOrders(true);
+      }
     }
   }, [ordersApi]);
 
@@ -107,13 +130,19 @@ export function useAdminOrders(isAdmin: boolean | null) {
   );
 
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin) {
+      setIsLoadingOrders(false);
+      setHasLoadedOrders(false);
+      return;
+    }
+
     void loadOrders();
   }, [isAdmin, loadOrders]);
 
   return {
     orders,
     isLoadingOrders,
+    hasLoadedOrders,
     loadOrders,
     changeOrderStatus,
     deleteOrder,

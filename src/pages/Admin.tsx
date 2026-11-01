@@ -50,7 +50,7 @@ export default function Admin() {
 
   const {
     products,
-    isLoading,
+    hasLoadedProducts,
     loadProducts,
     hideProduct,
     reactivateProduct,
@@ -59,6 +59,7 @@ export default function Admin() {
   const {
     orders,
     isLoadingOrders,
+    hasLoadedOrders,
     loadOrders,
     changeOrderStatus,
     deleteOrder,
@@ -67,6 +68,8 @@ export default function Admin() {
   // Login form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginTransitionPending, setLoginTransitionPending] = useState(false);
+  const [showLoginTransition, setShowLoginTransition] = useState(false);
 
   // Product form state
   const [formOpen, setFormOpen] = useState(() => {
@@ -129,10 +132,42 @@ export default function Admin() {
   }, [formOpen, editing]);
 
   // Login
-  function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    login(email, password);
+    setLoginTransitionPending(true);
+
+    const accepted = await login(email, password);
+
+    if (!accepted) {
+      setLoginTransitionPending(false);
+    }
   }
+
+  useEffect(() => {
+    if (!loginTransitionPending || !session || isChecking) return;
+
+    if (isAdmin === false) {
+      setLoginTransitionPending(false);
+      return;
+    }
+
+    if (
+      isAdmin === true &&
+      hasLoadedProducts &&
+      hasLoadedOrders &&
+      !isLoadingOrders
+    ) {
+      setShowLoginTransition(true);
+    }
+  }, [
+    loginTransitionPending,
+    session,
+    isChecking,
+    isAdmin,
+    hasLoadedProducts,
+    hasLoadedOrders,
+    isLoadingOrders,
+  ]);
 
   // Product actions
   async function handleHideProduct(product: AdminRow) {
@@ -264,24 +299,34 @@ export default function Admin() {
     [orders],
   );
 
-  // Restore the original authentication loading states.
-  if (isChecking && !session) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-white">
-        <p className="font-heading text-lg text-[#4d4d4d]/60">
-          Loading...
-        </p>
-      </main>
-    );
-  }
-
-  if (!session) {
+  if (
+    !session ||
+    isChecking ||
+    isAdmin === null ||
+    (isAdmin && (!hasLoadedProducts || !hasLoadedOrders)) ||
+    loginTransitionPending
+  ) {
     return (
       <AdminLoginScreen
         email={email}
         password={password}
         loginError={loginError}
         isLoggingIn={isLoggingIn}
+        isResolving={
+          Boolean(session) &&
+          (isChecking ||
+            isAdmin === null ||
+            !hasLoadedProducts ||
+            !hasLoadedOrders)
+        }
+        showAuthIndicator={
+          Boolean(session) && !isChecking && isAdmin === true && !showLoginTransition
+        }
+        isTransitioning={showLoginTransition}
+        onTransitionComplete={() => {
+          setShowLoginTransition(false);
+          setLoginTransitionPending(false);
+        }}
         onEmailChange={setEmail}
         onPasswordChange={setPassword}
         onLogin={handleLogin}
@@ -308,16 +353,6 @@ export default function Admin() {
             Log Out
           </button>
         </div>
-      </main>
-    );
-  }
-
-  if (isChecking || isAdmin === null || isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-white">
-        <p className="font-heading text-lg text-[#4d4d4d]/60">
-          Loading...
-        </p>
       </main>
     );
   }

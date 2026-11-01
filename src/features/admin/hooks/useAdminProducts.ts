@@ -1,10 +1,20 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../../../utils/supabase';
 import toast from 'react-hot-toast';
 import { ADMIN_STORAGE_KEYS } from '../constants/admin.constants';
 import type { AdminRow } from '../types/admin.types';
 
 export function useAdminProducts(isAdmin: boolean | null) {
+  const adminRef = useRef(isAdmin);
+  const adminGenerationRef = useRef(0);
+  const previousAdminRef = useRef(isAdmin);
+
+  if (previousAdminRef.current !== isAdmin) {
+    adminGenerationRef.current += 1;
+    previousAdminRef.current = isAdmin;
+  }
+
+  adminRef.current = isAdmin;
   const [products, setProducts] = useState<AdminRow[]>(() => {
     try {
       const cached = sessionStorage.getItem(
@@ -26,6 +36,8 @@ export function useAdminProducts(isAdmin: boolean | null) {
       return true;
     }
   });
+
+  const [hasLoadedProducts, setHasLoadedProducts] = useState(false);
 
   const productsApi = useCallback(
     async (
@@ -70,6 +82,8 @@ export function useAdminProducts(isAdmin: boolean | null) {
   );
 
   const loadProducts = useCallback(async () => {
+    const requestGeneration = adminGenerationRef.current;
+    setIsLoading(true);
     try {
       const data = await productsApi('GET', undefined, true);
       const latestProducts = data.products ?? [];
@@ -85,13 +99,24 @@ export function useAdminProducts(isAdmin: boolean | null) {
         // The dashboard remains usable when browser storage is unavailable.
       }
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Unable to load products.'
-      );
+      if (
+        adminRef.current &&
+        requestGeneration === adminGenerationRef.current
+      ) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'Unable to load products.'
+        );
+      }
     } finally {
-      setIsLoading(false);
+      if (
+        requestGeneration === adminGenerationRef.current &&
+        adminRef.current
+      ) {
+        setIsLoading(false);
+        setHasLoadedProducts(true);
+      }
     }
   }, [productsApi]);
 
@@ -144,13 +169,19 @@ export function useAdminProducts(isAdmin: boolean | null) {
   );
 
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin) {
+      setIsLoading(false);
+      setHasLoadedProducts(false);
+      return;
+    }
+
     void loadProducts();
   }, [isAdmin, loadProducts]);
 
   return {
     products,
     isLoading,
+    hasLoadedProducts,
     loadProducts,
     hideProduct,
     reactivateProduct,

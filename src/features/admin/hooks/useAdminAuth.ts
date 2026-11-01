@@ -9,7 +9,7 @@ type UseAdminAuthResult = {
   isLoggingIn: boolean;
   loginError: string | null;
   clearLoginError: () => void;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 };
 
@@ -105,7 +105,7 @@ export function useAdminAuth(): UseAdminAuthResult {
     setIsLoggingIn(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -116,13 +116,17 @@ export function useAdminAuth(): UseAdminAuthResult {
             ? 'The email or password you entered is incorrect.'
             : error.message
         );
+        return false;
       }
+
+      return Boolean(data.session);
     } catch (error) {
       setLoginError(
         error instanceof Error
           ? error.message
           : 'Unable to sign in. Please try again.'
       );
+      return false;
     } finally {
       setIsLoggingIn(false);
     }
