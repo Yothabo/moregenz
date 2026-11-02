@@ -6,7 +6,7 @@ export type AdminRow = AdminProduct & {
   created_at: string;
 };
 
-export type Tab = 'overview' | 'products' | 'orders' | 'settings';
+export type Tab = 'overview' | 'products' | 'orders' | 'activities' | 'settings';
 
 export type CategoryFilter = 'All' | 'His' | 'Hers' | 'Spaces' | 'Hidden';
 
@@ -43,6 +43,8 @@ export type Order = {
 
 export type AdminPageHeaderProps = {
   title: string;
+  eyebrow?: string;
+  description?: string;
   searchValue?: string;
   searchPlaceholder?: string;
   onSearchChange?: (value: string) => void;

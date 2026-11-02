@@ -113,7 +113,7 @@ function validateProduct(body) {
   };
 }
 
-async function saveProduct(request, body, isUpdate) {
+async function saveProduct(body, isUpdate, admin) {
   if (isUpdate) {
     const id = String(body?.id || '');
     if (!uuidPattern.test(id)) {
@@ -138,38 +138,50 @@ async function saveProduct(request, body, isUpdate) {
     product.sort_order,
   ];
 
+  const client = await pool.connect();
   let result;
 
-  if (isUpdate) {
-    result = await pool.query(
-      `UPDATE public.products
-       SET name = $1,
-           price = $2,
-           category = $3,
-           subcategory = $4,
-           description = $5,
-           image_url = $6,
-           is_active = $7,
-           sort_order = $8
-       WHERE id = $9
-       RETURNING id, name, price, category, subcategory, description,
-                 image_url, is_active, sort_order`,
-      [...values, body.id]
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      "SELECT set_config('app.actor_email', $1, true)",
+      [admin.email || '']
     );
-  } else {
-    result = await pool.query(
-      `INSERT INTO public.products
-         (name, price, category, subcategory, description, image_url,
-          is_active, sort_order)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, name, price, category, subcategory, description,
-                 image_url, is_active, sort_order`,
-      values
-    );
-  }
 
-  if (!result.rowCount) {
-    return json({ error: 'Product not found.' }, 404);
+    if (isUpdate) {
+      result = await client.query(
+        `UPDATE public.products
+         SET name = $1, price = $2, category = $3,
+             subcategory = $4, description = $5, image_url = $6,
+             is_active = $7, sort_order = $8
+         WHERE id = $9
+         RETURNING id, name, price, category, subcategory, description,
+                   image_url, is_active, sort_order`,
+        [...values, body.id]
+      );
+    } else {
+      result = await client.query(
+        `INSERT INTO public.products
+           (name, price, category, subcategory, description, image_url,
+            is_active, sort_order)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING id, name, price, category, subcategory, description,
+                   image_url, is_active, sort_order`,
+        values
+      );
+    }
+
+    if (!result.rowCount) {
+      await client.query('ROLLBACK');
+      return json({ error: 'Product not found.' }, 404);
+    }
+
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
   }
 
   return json({ product: result.rows[0] }, isUpdate ? 200 : 201);
@@ -204,7 +216,7 @@ async function listProducts(request) {
   });
 }
 
-async function updateProductStatus(body) {
+async function updateProductStatus(body, admin) {
   const id = String(body?.id || '');
 
   if (!uuidPattern.test(id)) {
@@ -215,16 +227,35 @@ async function updateProductStatus(body) {
     return json({ error: 'A valid product status is required.' }, 400);
   }
 
-  const result = await pool.query(
-    `UPDATE public.products
-     SET is_active = $1
-     WHERE id = $2
-     RETURNING id, name, is_active`,
-    [body.is_active, id]
-  );
+  const client = await pool.connect();
+  let result;
 
-  if (!result.rowCount) {
-    return json({ error: 'Product not found.' }, 404);
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      "SELECT set_config('app.actor_email', $1, true)",
+      [admin.email || '']
+    );
+
+    result = await client.query(
+      `UPDATE public.products
+       SET is_active = $1
+       WHERE id = $2
+       RETURNING id, name, is_active`,
+      [body.is_active, id]
+    );
+
+    if (!result.rowCount) {
+      await client.query('ROLLBACK');
+      return json({ error: 'Product not found.' }, 404);
+    }
+
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
   }
 
   return json({ product: result.rows[0] });
@@ -253,10 +284,10 @@ export default async (request) => {
     }
 
     if (request.method === 'PATCH' && body?.action === 'set-status') {
-      return await updateProductStatus(body);
+      return await updateProductStatus(body, admin);
     }
 
-    return await saveProduct(request, body, request.method === 'PATCH');
+    return await saveProduct(body, request.method === 'PATCH', admin);
   } catch (error) {
     console.error('Products function error:', error);
     return json({ error: 'Unable to process the product request right now.' }, 500);

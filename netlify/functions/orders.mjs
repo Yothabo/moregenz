@@ -260,26 +260,70 @@ export default async (request) => {
 
       if (!statuses.includes(status)) return error('Invalid order status.');
 
-      const result = await pool.query(
-        `UPDATE public.orders
-         SET status = $1, updated_at = now()
-         WHERE id = $2
-         RETURNING id, order_number, status`,
-        [status, id]
-      );
+      const client = await pool.connect();
+      let result;
 
-      if (!result.rowCount) return error('Order not found.', 404);
+      try {
+        await client.query('BEGIN');
+        await client.query(
+          "SELECT set_config('app.actor_email', $1, true)",
+          [admin.email || '']
+        );
+
+        result = await client.query(
+          `UPDATE public.orders
+           SET status = $1, updated_at = now()
+           WHERE id = $2
+           RETURNING id, order_number, status`,
+          [status, id]
+        );
+
+        if (!result.rowCount) {
+          await client.query('ROLLBACK');
+          return error('Order not found.', 404);
+        }
+
+        await client.query('COMMIT');
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      } finally {
+        client.release();
+      }
+
       return json({ order: result.rows[0] });
     }
 
-    const result = await pool.query(
-      `DELETE FROM public.orders
-       WHERE id = $1
-       RETURNING id, order_number`,
-      [id]
-    );
+    const client = await pool.connect();
+    let result;
 
-    if (!result.rowCount) return error('Order not found.', 404);
+    try {
+      await client.query('BEGIN');
+      await client.query(
+        "SELECT set_config('app.actor_email', $1, true)",
+        [admin.email || '']
+      );
+
+      result = await client.query(
+        `DELETE FROM public.orders
+         WHERE id = $1
+         RETURNING id, order_number`,
+        [id]
+      );
+
+      if (!result.rowCount) {
+        await client.query('ROLLBACK');
+        return error('Order not found.', 404);
+      }
+
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+
     return json({ deleted: result.rows[0] });
   } catch (err) {
     console.error('Orders function error:', err);

@@ -186,7 +186,7 @@
 }
 
 .admin-scope .admin-section-header-row {
-  gap: var(--admin-space-sm);
+  gap: var(--admin-space-xs);
 }
 
 .admin-scope .admin-search-control {
@@ -214,15 +214,16 @@
 }
 
 .admin-scope .admin-overview-grid {
-  max-width: 896px;
-  column-gap: var(--admin-space-2xl);
-  row-gap: var(--admin-space-xl);
+  max-width: none;
+  column-gap: var(--admin-space-xs);
+  row-gap: var(--admin-space-xs);
   margin-top: var(--admin-space-sm);
   padding-top: var(--admin-space-xl);
 }
 
 .admin-scope .admin-stat-card {
-  padding: var(--admin-space-md);
+  min-height: 132px;
+  padding: var(--admin-space-lg) var(--admin-space-md);
 }
 
 .admin-scope .admin-stat-value {
@@ -266,11 +267,13 @@
   }
 
   .admin-scope .admin-overview-grid {
-    column-gap: var(--admin-space-3xl);
+    column-gap: var(--admin-space-sm);
+    row-gap: var(--admin-space-sm);
   }
 
   .admin-scope .admin-stat-card {
-    padding: var(--admin-space-lg);
+    min-height: 148px;
+    padding: var(--admin-space-xl) var(--admin-space-lg);
   }
 }
 
@@ -387,4 +390,18 @@
 .admin-scope .admin-order-status-cancelled {
   background: color-mix(in srgb, var(--admin-status-red) 12%, transparent);
   color: var(--admin-status-red);
+}
+
+
+/* Compact typography for the overview welcome header. */
+.admin-scope .admin-overview .admin-section-header > div:first-child > p:first-child {
+  line-height: 1.1;
+}
+
+.admin-scope .admin-overview .admin-section-header > div:first-child > h1 {
+  line-height: 1;
+}
+
+.admin-scope .admin-overview .admin-section-header > div:first-child > p:last-child {
+  line-height: 1.2;
 }

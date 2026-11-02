@@ -21,11 +21,13 @@ import AdminLoginScreen from '../features/admin/components/AdminLoginScreen';
 import AdminTopBar from '../features/admin/components/AdminTopBar';
 import AdminBottomNavigation from '../features/admin/components/AdminBottomNavigation';
 import AdminOverview from '../features/admin/components/AdminOverview';
+import AdminActivities from '../features/admin/components/AdminActivities';
 import AdminProducts from '../features/admin/components/AdminProducts';
 import AdminOrders from '../features/admin/components/AdminOrders';
 import { useAdminAuth } from '../features/admin/hooks/useAdminAuth';
 import { useAdminProducts } from '../features/admin/hooks/useAdminProducts';
 import { useAdminOrders } from '../features/admin/hooks/useAdminOrders';
+import { useAdminActivity } from '../features/admin/hooks/useAdminActivity';
 
 import type {
   AdminRow,
@@ -55,6 +57,12 @@ export default function Admin() {
     hideProduct,
     reactivateProduct,
   } = useAdminProducts(isAdmin);
+
+  const {
+    activities,
+    isLoadingActivities,
+    loadActivities,
+  } = useAdminActivity(isAdmin);
 
   const {
     orders,
@@ -176,6 +184,7 @@ export default function Admin() {
     if (success) {
       setConfirmDelete(null);
       setViewingProduct(null);
+      void loadActivities();
     }
   }
 
@@ -184,6 +193,7 @@ export default function Admin() {
 
     if (success) {
       setViewingProduct(null);
+      void loadActivities();
     }
   }
 
@@ -196,6 +206,7 @@ export default function Admin() {
 
     if (success) {
       setViewingOrder(null);
+      void loadActivities();
     }
   }
 
@@ -205,6 +216,7 @@ export default function Admin() {
     if (success) {
       setConfirmDeleteOrder(null);
       setViewingOrder(null);
+      void loadActivities();
     }
   }
 
@@ -405,11 +417,13 @@ export default function Admin() {
       <AdminTopBar
         email={session?.user?.email?.split('@')[0] || 'Admin'}
         onLogout={logout}
+        onBack={activeTab === 'activities' ? () => setActiveTab('overview') : undefined}
       />
 
       <div className="admin-page-shell mx-auto">
         {activeTab === 'overview' && (
           <AdminOverview
+            email={session?.user?.email?.split('@')[0] || 'Admin'}
             searchQuery={searchQuery}
             onSearchChange={(value) => {
               setSearchQuery(value);
@@ -423,6 +437,9 @@ export default function Admin() {
             }}
             stats={stats}
             orderStats={orderStats}
+            activities={activities}
+            isLoadingActivities={isLoadingActivities}
+            onViewAllActivities={() => setActiveTab('activities')}
           />
         )}
 
@@ -470,6 +487,13 @@ export default function Admin() {
           />
         )}
 
+        {activeTab === 'activities' && (
+          <AdminActivities
+            activities={activities}
+            isLoadingActivities={isLoadingActivities}
+          />
+        )}
+
         {activeTab === 'settings' && (
           <div>
             <div className="admin-section-header">
@@ -513,7 +537,10 @@ export default function Admin() {
           setFormOpen(false);
           setEditing(null);
         }}
-        onSaved={loadProducts}
+        onSaved={() => {
+          void loadProducts();
+          void loadActivities();
+        }}
         productToEdit={editing}
       />
 
