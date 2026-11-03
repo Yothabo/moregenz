@@ -224,6 +224,9 @@
 .admin-scope .admin-stat-card {
   min-height: 132px;
   padding: var(--admin-space-lg) var(--admin-space-md);
+  border: 1px solid rgba(77, 77, 77, 0.12);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.035);
 }
 
 .admin-scope .admin-stat-value {

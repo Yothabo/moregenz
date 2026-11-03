@@ -1,24 +1,79 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { supabase } from '../../../utils/supabase';
 import toast from 'react-hot-toast';
 import type {
   Order,
   OrderStatus,
 } from '../types/admin.types';
+import { ADMIN_STORAGE_KEYS } from '../constants/admin.constants';
+import {
+  readAdminSnapshot,
+  writeAdminSnapshot,
+} from '../utils/adminSnapshot';
 
-export function useAdminOrders(isAdmin: boolean | null) {
+function isOrders(value: unknown): value is Order[] {
+  const validStatuses: OrderStatus[] = [
+    'pending',
+    'confirmed',
+    'delivered',
+    'cancelled',
+  ];
+
+  return (
+    Array.isArray(value) &&
+    value.every((order) => {
+      if (!order || typeof order !== 'object') return false;
+
+      const item = order as Record<string, unknown>;
+
+      return (
+        typeof item.id === 'string' &&
+        typeof item.order_number === 'string' &&
+        typeof item.customer_name === 'string' &&
+        typeof item.customer_phone === 'string' &&
+        Array.isArray(item.items) &&
+        item.items.every((orderItem: unknown) => {
+          if (!orderItem || typeof orderItem !== 'object') return false;
+
+          const line = orderItem as Record<string, unknown>;
+
+          return (
+            typeof line.name === 'string' &&
+            typeof line.price === 'number' &&
+            typeof line.qty === 'number'
+          );
+        }) &&
+        typeof item.subtotal === 'number' &&
+        validStatuses.includes(item.status as OrderStatus) &&
+        typeof item.created_at === 'string' &&
+        typeof item.updated_at === 'string'
+      );
+    })
+  );
+}
+
+export function useAdminOrders(
+  isAdmin: boolean | null,
+  userId: string | null
+) {
   const adminRef = useRef(isAdmin);
+  const userIdRef = useRef(userId);
   const adminGenerationRef = useRef(0);
-  const previousAdminRef = useRef(isAdmin);
+  const previousScopeRef = useRef({ isAdmin, userId });
 
-  if (previousAdminRef.current !== isAdmin) {
+  if (
+    previousScopeRef.current.isAdmin !== isAdmin ||
+    previousScopeRef.current.userId !== userId
+  ) {
     adminGenerationRef.current += 1;
-    previousAdminRef.current = isAdmin;
+    previousScopeRef.current = { isAdmin, userId };
   }
 
   adminRef.current = isAdmin;
+  userIdRef.current = userId;
+
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [hasLoadedOrders, setHasLoadedOrders] = useState(false);
 
   const ordersApi = useCallback(
@@ -31,7 +86,11 @@ export function useAdminOrders(isAdmin: boolean | null) {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !currentSession?.access_token) {
+      if (
+        sessionError ||
+        !currentSession?.access_token ||
+        currentSession.user.id !== userId
+      ) {
         throw new Error(
           'Your admin session has expired. Please sign in again.'
         );
@@ -41,6 +100,7 @@ export function useAdminOrders(isAdmin: boolean | null) {
         method,
         headers: {
           Authorization: `Bearer ${currentSession.access_token}`,
+          Accept: 'application/json',
           ...(body ? { 'Content-Type': 'application/json' } : {}),
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
@@ -54,21 +114,41 @@ export function useAdminOrders(isAdmin: boolean | null) {
 
       return data;
     },
-    []
+    [userId]
   );
 
   const loadOrders = useCallback(async () => {
+    if (isAdmin !== true || !userId) return;
+
     const requestGeneration = adminGenerationRef.current;
+    const requestUserId = userId;
+
+    const isCurrentRequest = () =>
+      requestGeneration === adminGenerationRef.current &&
+      adminRef.current === true &&
+      userIdRef.current === requestUserId;
+
     setIsLoadingOrders(true);
 
     try {
       const data = await ordersApi('GET');
-      setOrders(data.orders ?? []);
+      const latestOrders: unknown = data.orders ?? [];
+
+      if (!isOrders(latestOrders)) {
+        throw new Error('The orders response has an invalid format.');
+      }
+
+      if (!isCurrentRequest()) return;
+
+      setOrders(latestOrders);
+
+      writeAdminSnapshot(
+        ADMIN_STORAGE_KEYS.ordersCache,
+        requestUserId,
+        latestOrders
+      );
     } catch (error) {
-      if (
-        adminRef.current &&
-        requestGeneration === adminGenerationRef.current
-      ) {
+      if (isCurrentRequest()) {
         toast.error(
           error instanceof Error
             ? error.message
@@ -76,15 +156,12 @@ export function useAdminOrders(isAdmin: boolean | null) {
         );
       }
     } finally {
-      if (
-        requestGeneration === adminGenerationRef.current &&
-        adminRef.current
-      ) {
+      if (isCurrentRequest()) {
         setIsLoadingOrders(false);
         setHasLoadedOrders(true);
       }
     }
-  }, [ordersApi]);
+  }, [isAdmin, ordersApi, userId]);
 
   const changeOrderStatus = useCallback(
     async (order: Order, newStatus: OrderStatus): Promise<boolean> => {
@@ -94,19 +171,25 @@ export function useAdminOrders(isAdmin: boolean | null) {
           status: newStatus,
         });
 
-        toast.success(`Order ${order.order_number} → ${newStatus}`);
-        await loadOrders();
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.success(`Order ${order.order_number} → ${newStatus}`);
+          await loadOrders();
+        }
+
         return true;
       } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Unable to update order.'
-        );
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'Unable to update order.'
+          );
+        }
+
         return false;
       }
     },
-    [loadOrders, ordersApi]
+    [loadOrders, ordersApi, userId]
   );
 
   const deleteOrder = useCallback(
@@ -114,30 +197,53 @@ export function useAdminOrders(isAdmin: boolean | null) {
       try {
         await ordersApi('DELETE', { id: order.id });
 
-        toast.success(`Order ${order.order_number} deleted`);
-        await loadOrders();
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.success(`Order ${order.order_number} deleted`);
+          await loadOrders();
+        }
+
         return true;
       } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Unable to delete order.'
-        );
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'Unable to delete order.'
+          );
+        }
+
         return false;
       }
     },
-    [loadOrders, ordersApi]
+    [loadOrders, ordersApi, userId]
   );
 
-  useEffect(() => {
-    if (!isAdmin) {
+  useLayoutEffect(() => {
+    if (isAdmin !== true || !userId) {
+      setOrders([]);
       setIsLoadingOrders(false);
       setHasLoadedOrders(false);
       return;
     }
 
+    const cachedOrders = readAdminSnapshot(
+      ADMIN_STORAGE_KEYS.ordersCache,
+      userId,
+      isOrders
+    );
+
+    if (cachedOrders) {
+      setOrders(cachedOrders);
+      setIsLoadingOrders(false);
+      setHasLoadedOrders(true);
+    } else {
+      setOrders([]);
+      setIsLoadingOrders(true);
+      setHasLoadedOrders(false);
+    }
+
     void loadOrders();
-  }, [isAdmin, loadOrders]);
+  }, [isAdmin, userId, loadOrders]);
 
   return {
     orders,

@@ -1,47 +1,104 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { supabase } from '../../../utils/supabase';
 import toast from 'react-hot-toast';
 import { ADMIN_STORAGE_KEYS } from '../constants/admin.constants';
+import {
+  readAdminSnapshot,
+  writeAdminSnapshot,
+} from '../utils/adminSnapshot';
 import type { AdminRow } from '../types/admin.types';
 
-export function useAdminProducts(isAdmin: boolean | null) {
-  const adminRef = useRef(isAdmin);
-  const adminGenerationRef = useRef(0);
-  const previousAdminRef = useRef(isAdmin);
+function getProductStoragePath(imageUrl: string | null | undefined) {
+  if (!imageUrl) return null;
 
-  if (previousAdminRef.current !== isAdmin) {
+  try {
+    const url = new URL(imageUrl);
+    const marker = '/storage/v1/object/public/products/';
+    const index = url.pathname.indexOf(marker);
+
+    if (index === -1) return null;
+
+    return decodeURIComponent(
+      url.pathname.slice(index + marker.length)
+    );
+  } catch {
+    return null;
+  }
+}
+
+function normalizeAdminRows(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+
+  return value.map((product) => {
+    if (!product || typeof product !== 'object') return product;
+
+    const item = product as Record<string, unknown>;
+
+    return {
+      ...item,
+      price:
+        typeof item.price === 'string' && item.price.trim() !== ''
+          ? Number(item.price)
+          : item.price,
+      sort_order:
+        typeof item.sort_order === 'string' && item.sort_order.trim() !== ''
+          ? Number(item.sort_order)
+          : item.sort_order,
+    };
+  });
+}
+
+function isAdminRows(value: unknown): value is AdminRow[] {
+  return (
+    Array.isArray(value) &&
+    value.every((product) => {
+      if (!product || typeof product !== 'object') return false;
+
+      const item = product as Record<string, unknown>;
+
+      return (
+        typeof item.id === 'string' &&
+        typeof item.name === 'string' &&
+        typeof item.price === 'number' &&
+        ['His', 'Hers', 'Spaces'].includes(String(item.category)) &&
+        typeof item.subcategory === 'string' &&
+        (item.description === null || typeof item.description === 'string') &&
+        (item.image_url === null || typeof item.image_url === 'string') &&
+        typeof item.is_active === 'boolean' &&
+        typeof item.sort_order === 'number' &&
+        typeof item.created_at === 'string'
+      );
+    })
+  );
+}
+
+export function useAdminProducts(
+  isAdmin: boolean | null,
+  userId: string | null
+) {
+  const adminRef = useRef(isAdmin);
+  const userIdRef = useRef(userId);
+  const adminGenerationRef = useRef(0);
+  const previousScopeRef = useRef({ isAdmin, userId });
+
+  if (
+    previousScopeRef.current.isAdmin !== isAdmin ||
+    previousScopeRef.current.userId !== userId
+  ) {
     adminGenerationRef.current += 1;
-    previousAdminRef.current = isAdmin;
+    previousScopeRef.current = { isAdmin, userId };
   }
 
   adminRef.current = isAdmin;
-  const [products, setProducts] = useState<AdminRow[]>(() => {
-    try {
-      const cached = sessionStorage.getItem(
-        ADMIN_STORAGE_KEYS.productsCache
-      );
-      const parsed = cached ? JSON.parse(cached) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  });
+  userIdRef.current = userId;
 
-  const [isLoading, setIsLoading] = useState(() => {
-    try {
-      return !sessionStorage.getItem(
-        ADMIN_STORAGE_KEYS.productsCache
-      );
-    } catch {
-      return true;
-    }
-  });
-
+  const [products, setProducts] = useState<AdminRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasLoadedProducts, setHasLoadedProducts] = useState(false);
 
   const productsApi = useCallback(
     async (
-      method: 'GET' | 'PATCH',
+      method: 'GET' | 'PATCH' | 'DELETE',
       body?: Record<string, string | boolean>,
       adminScope = false
     ) => {
@@ -50,7 +107,11 @@ export function useAdminProducts(isAdmin: boolean | null) {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !currentSession?.access_token) {
+      if (
+        sessionError ||
+        !currentSession?.access_token ||
+        currentSession.user.id !== userId
+      ) {
         throw new Error(
           'Your admin session has expired. Please sign in again.'
         );
@@ -78,31 +139,41 @@ export function useAdminProducts(isAdmin: boolean | null) {
 
       return data;
     },
-    []
+    [userId]
   );
 
   const loadProducts = useCallback(async () => {
+    if (!isAdmin || !userId) return;
+
     const requestGeneration = adminGenerationRef.current;
+    const requestUserId = userId;
+
+    const isCurrentRequest = () =>
+      requestGeneration === adminGenerationRef.current &&
+      adminRef.current === true &&
+      userIdRef.current === requestUserId;
+
     setIsLoading(true);
+
     try {
       const data = await productsApi('GET', undefined, true);
-      const latestProducts = data.products ?? [];
+      const latestProducts = normalizeAdminRows(data.products ?? []);
+
+      if (!isAdminRows(latestProducts)) {
+        throw new Error('The products response has an invalid format.');
+      }
+
+      if (!isCurrentRequest()) return;
 
       setProducts(latestProducts);
 
-      try {
-        sessionStorage.setItem(
-          ADMIN_STORAGE_KEYS.productsCache,
-          JSON.stringify(latestProducts)
-        );
-      } catch {
-        // The dashboard remains usable when browser storage is unavailable.
-      }
+      writeAdminSnapshot(
+        ADMIN_STORAGE_KEYS.productsCache,
+        requestUserId,
+        latestProducts
+      );
     } catch (error) {
-      if (
-        adminRef.current &&
-        requestGeneration === adminGenerationRef.current
-      ) {
+      if (isCurrentRequest()) {
         toast.error(
           error instanceof Error
             ? error.message
@@ -110,15 +181,12 @@ export function useAdminProducts(isAdmin: boolean | null) {
         );
       }
     } finally {
-      if (
-        requestGeneration === adminGenerationRef.current &&
-        adminRef.current
-      ) {
+      if (isCurrentRequest()) {
         setIsLoading(false);
         setHasLoadedProducts(true);
       }
     }
-  }, [productsApi]);
+  }, [isAdmin, productsApi, userId]);
 
   const hideProduct = useCallback(
     async (product: AdminRow): Promise<boolean> => {
@@ -129,19 +197,25 @@ export function useAdminProducts(isAdmin: boolean | null) {
           is_active: false,
         });
 
-        toast.success(`${product.name} hidden`);
-        await loadProducts();
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.success(`${product.name} hidden`);
+          await loadProducts();
+        }
+
         return true;
       } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Unable to hide product.'
-        );
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'Unable to hide product.'
+          );
+        }
+
         return false;
       }
     },
-    [loadProducts, productsApi]
+    [loadProducts, productsApi, userId]
   );
 
   const reactivateProduct = useCallback(
@@ -153,30 +227,112 @@ export function useAdminProducts(isAdmin: boolean | null) {
           is_active: true,
         });
 
-        toast.success(`${product.name} reactivated`);
-        await loadProducts();
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.success(`${product.name} reactivated`);
+          await loadProducts();
+        }
+
         return true;
       } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Unable to reactivate product.'
-        );
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'Unable to reactivate product.'
+          );
+        }
+
         return false;
       }
     },
-    [loadProducts, productsApi]
+    [loadProducts, productsApi, userId]
   );
 
-  useEffect(() => {
-    if (!isAdmin) {
+  const deleteProduct = useCallback(
+    async (product: AdminRow): Promise<boolean> => {
+      try {
+        const data = await productsApi('DELETE', { id: product.id });
+
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.success(`${product.name} deleted`);
+
+          const imagePath = getProductStoragePath(
+            data.deleted?.image_url ?? product.image_url
+          );
+
+          if (imagePath) {
+            void supabase.storage
+              .from('products')
+              .remove([imagePath])
+              .then(({ error: storageError }) => {
+                if (storageError) {
+                  console.error(
+                    'Deleted product image could not be removed:',
+                    storageError
+                  );
+                  toast.error(
+                    'Product deleted, but its image could not be removed.'
+                  );
+                }
+              })
+              .catch((error) => {
+                console.error(
+                  'Deleted product image cleanup failed:',
+                  error
+                );
+                toast.error(
+                  'Product deleted, but its image could not be removed.'
+                );
+              });
+          }
+
+          void loadProducts().catch((error) => {
+            console.error('Product list refresh failed:', error);
+          });
+        }
+
+        return true;
+      } catch (error) {
+        if (adminRef.current && userIdRef.current === userId) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'Unable to delete product.'
+          );
+        }
+
+        return false;
+      }
+    },
+    [loadProducts, productsApi, userId]
+  );
+
+  useLayoutEffect(() => {
+    if (isAdmin !== true || !userId) {
+      setProducts([]);
       setIsLoading(false);
       setHasLoadedProducts(false);
       return;
     }
 
+    const cachedProducts = readAdminSnapshot(
+      ADMIN_STORAGE_KEYS.productsCache,
+      userId,
+      isAdminRows
+    );
+
+    if (cachedProducts) {
+      setProducts(cachedProducts);
+      setIsLoading(false);
+      setHasLoadedProducts(true);
+    } else {
+      setProducts([]);
+      setIsLoading(true);
+      setHasLoadedProducts(false);
+    }
+
     void loadProducts();
-  }, [isAdmin, loadProducts]);
+  }, [isAdmin, userId, loadProducts]);
 
   return {
     products,
@@ -185,5 +341,6 @@ export function useAdminProducts(isAdmin: boolean | null) {
     loadProducts,
     hideProduct,
     reactivateProduct,
+    deleteProduct,
   };
 }

@@ -261,13 +261,53 @@ async function updateProductStatus(body, admin) {
   return json({ product: result.rows[0] });
 }
 
+async function deleteProduct(body, admin) {
+  const id = String(body?.id || '');
+
+  if (!uuidPattern.test(id)) {
+    return json({ error: 'A valid product ID is required.' }, 400);
+  }
+
+  const client = await pool.connect();
+  let result;
+
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      "SELECT set_config('app.actor_email', $1, true)",
+      [admin.email || '']
+    );
+
+    result = await client.query(
+      `DELETE FROM public.products
+       WHERE id = $1
+       RETURNING id, name, image_url`,
+      [id]
+    );
+
+    if (!result.rowCount) {
+      await client.query('ROLLBACK');
+      return json({ error: 'Product not found.' }, 404);
+    }
+
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+
+  return json({ deleted: result.rows[0] });
+}
+
 export default async (request) => {
   try {
     if (request.method === 'GET') {
       return await listProducts(request);
     }
 
-    if (!['POST', 'PATCH'].includes(request.method)) {
+    if (!['POST', 'PATCH', 'DELETE'].includes(request.method)) {
       return json({ error: 'Method not allowed.' }, 405);
     }
 
@@ -281,6 +321,10 @@ export default async (request) => {
       body = await request.json();
     } catch {
       return json({ error: 'Invalid request body.' }, 400);
+    }
+
+    if (request.method === 'DELETE') {
+      return await deleteProduct(body, admin);
     }
 
     if (request.method === 'PATCH' && body?.action === 'set-status') {

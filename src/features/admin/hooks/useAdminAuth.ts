@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../utils/supabase';
+import { ADMIN_STORAGE_KEYS } from '../constants/admin.constants';
 
 type UseAdminAuthResult = {
   session: Session | null;
@@ -13,12 +14,37 @@ type UseAdminAuthResult = {
   logout: () => Promise<void>;
 };
 
+function clearAdminStorage() {
+  try {
+    const storageKeys = Object.values(ADMIN_STORAGE_KEYS);
+
+    for (let index = sessionStorage.length - 1; index >= 0; index--) {
+      const storedKey = sessionStorage.key(index);
+
+      if (
+        storedKey &&
+        storageKeys.some(
+          (key) =>
+            storedKey === key ||
+            storedKey.startsWith(`${key}:`)
+        )
+      ) {
+        sessionStorage.removeItem(storedKey);
+      }
+    }
+  } catch {
+    // Storage may be unavailable in some browser environments.
+  }
+}
+
 export function useAdminAuth(): UseAdminAuthResult {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  const lastUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -29,6 +55,7 @@ export function useAdminAuth(): UseAdminAuthResult {
       setIsChecking(true);
 
       if (!currentSession) {
+        clearAdminStorage();
         setIsAdmin(false);
         setIsChecking(false);
         return;
@@ -57,6 +84,7 @@ export function useAdminAuth(): UseAdminAuthResult {
             continue;
           }
         } else {
+          clearAdminStorage();
           setIsAdmin(false);
           setIsChecking(false);
           return;
@@ -64,6 +92,7 @@ export function useAdminAuth(): UseAdminAuthResult {
       }
 
       if (active) {
+        clearAdminStorage();
         setIsAdmin(false);
         setIsChecking(false);
       }
@@ -73,6 +102,18 @@ export function useAdminAuth(): UseAdminAuthResult {
       (event, nextSession) => {
         if (!active) return;
 
+        const nextUserId = nextSession?.user.id ?? null;
+
+        if (
+          event === 'SIGNED_OUT' ||
+          (event === 'SIGNED_IN' &&
+            lastUserIdRef.current !== null &&
+            lastUserIdRef.current !== nextUserId)
+        ) {
+          clearAdminStorage();
+        }
+
+        lastUserIdRef.current = nextUserId;
         setSession(nextSession);
 
         const shouldCheckAdmin = [
@@ -133,7 +174,13 @@ export function useAdminAuth(): UseAdminAuthResult {
   }
 
   async function logout() {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      throw error;
+    }
+
+    clearAdminStorage();
     setSession(null);
     setIsAdmin(false);
   }

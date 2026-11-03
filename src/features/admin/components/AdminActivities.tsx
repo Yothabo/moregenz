@@ -190,7 +190,7 @@ export default function AdminActivities({
                   {group.map((activity) => (
                     <article
                       key={activity.id}
-                      className="flex items-center justify-between gap-3 rounded-sm bg-[#f5f5f5] px-4 py-2.5"
+                      className="flex items-center justify-between gap-3 rounded-[5px] border border-[#4d4d4d]/[0.10] bg-[#f5f5f5] px-4 py-2.5 shadow-[0_1px_3px_rgba(0,0,0,0.035)]"
                     >
                       <p className="min-w-0 text-sm leading-relaxed text-[#4d4d4d]/45">
                         {getActivityDescription(activity)}

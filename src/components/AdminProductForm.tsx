@@ -31,6 +31,22 @@ const SUBCATEGORY_OPTIONS: Record<string, string[]> = {
 
 const DRAFT_STORAGE_KEY = 'yotaabo-admin-product-form-draft';
 
+const getProductStoragePath = (imageUrl: string | null | undefined) => {
+  if (!imageUrl) return null;
+
+  try {
+    const url = new URL(imageUrl);
+    const marker = '/storage/v1/object/public/products/';
+    const index = url.pathname.indexOf(marker);
+
+    if (index === -1) return null;
+
+    return decodeURIComponent(url.pathname.slice(index + marker.length));
+  } catch {
+    return null;
+  }
+};
+
 const emptyProduct: AdminProduct = {
   name: '',
   price: 0,
@@ -140,21 +156,109 @@ export default function AdminProductForm({
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.currentTarget;
+    const file = input.files?.[0];
     if (!file) return;
+
     setIsUploading(true);
-    const ext = file.name.split('.').pop();
-    const path = `${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`;
-    const { error } = await supabase.storage.from('products').upload(path, file);
-    if (error) {
-      toast.error('Upload failed: ' + error.message);
+
+    try {
+      const supportedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+      if (!supportedTypes.includes(file.type)) {
+        throw new Error('Please select a JPEG, PNG, or WebP image.');
+      }
+
+      const optimizedFile = await new Promise<File>((resolve, reject) => {
+        const objectUrl = URL.createObjectURL(file);
+        const image = new Image();
+
+        const cleanup = () => URL.revokeObjectURL(objectUrl);
+
+        image.onload = () => {
+          try {
+            const maxDimension = 1600;
+            const scale = Math.min(
+              1,
+              maxDimension / Math.max(image.naturalWidth, image.naturalHeight)
+            );
+
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+            canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+            const context = canvas.getContext('2d');
+
+            if (!context) {
+              throw new Error('Could not process this image.');
+            }
+
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(
+              (blob) => {
+                cleanup();
+
+                if (!blob || blob.type !== 'image/webp') {
+                  reject(new Error('Your browser could not convert this image to WebP.'));
+                  return;
+                }
+
+                const filename = file.name.replace(/\.[^.]+$/, '') || 'product';
+
+                resolve(
+                  new File([blob], `${filename}.webp`, {
+                    type: 'image/webp',
+                    lastModified: Date.now(),
+                  })
+                );
+              },
+              'image/webp',
+              0.82
+            );
+          } catch (error) {
+            cleanup();
+            reject(error);
+          }
+        };
+
+        image.onerror = () => {
+          cleanup();
+          reject(new Error('Could not read this image. Try another file.'));
+        };
+
+        image.src = objectUrl;
+      });
+
+      const path = `${Date.now()}-${Math.random().toString(36).substring(2)}.webp`;
+
+      const { error } = await supabase.storage
+        .from('products')
+        .upload(path, optimizedFile, {
+          cacheControl: '31536000',
+          contentType: 'image/webp',
+          upsert: false,
+        });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('products').getPublicUrl(path);
+
+      setForm((prev) => ({ ...prev, image_url: publicUrl }));
+      toast.success('Image optimised and uploaded');
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'An unexpected error occurred.';
+
+      toast.error('Image upload failed: ' + message);
+    } finally {
       setIsUploading(false);
-      return;
+      input.value = '';
     }
-    const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(path);
-    setForm((prev) => ({ ...prev, image_url: publicUrl }));
-    setIsUploading(false);
-    toast.success('Image uploaded');
   };
 
   const handleSubmit = async () => {
@@ -212,6 +316,24 @@ export default function AdminProductForm({
 
       if (!data.product) {
         throw new Error('The server did not confirm the saved product.');
+      }
+
+      if (
+        productToEdit?.image_url &&
+        productToEdit.image_url !== payload.image_url
+      ) {
+        const oldImagePath = getProductStoragePath(productToEdit.image_url);
+
+        if (oldImagePath) {
+          const { error: deleteError } = await supabase.storage
+            .from('products')
+            .remove([oldImagePath]);
+
+          if (deleteError) {
+            console.error('Previous product image could not be deleted:', deleteError);
+            toast.error('Product saved, but the previous image could not be deleted.');
+          }
+        }
       }
 
       toast.success(productToEdit ? 'Product updated' : 'Product added');
@@ -298,13 +420,37 @@ export default function AdminProductForm({
 
           <div>
             <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Product Image</span>
+
             <div className="flex gap-2">
-              <input type="url" value={form.image_url ?? ''} onChange={(e) => handleChange('image_url', e.target.value)} className={inputClass} placeholder="https://..." />
+              <input
+                type="url"
+                value={form.image_url ?? ''}
+                onChange={(e) => handleChange('image_url', e.target.value)}
+                className={inputClass}
+                placeholder="https://..."
+              />
+
               <label className={`flex h-[46px] shrink-0 cursor-pointer items-center justify-center border-0 bg-[#4d4d4d] px-4 admin-type-body text-white transition-colors hover:bg-[#3a3a3a] ${isUploading ? 'cursor-not-allowed opacity-50' : ''}`}>
-                {isUploading ? '...' : 'Upload'}
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
+                {isUploading ? '...' : form.image_url?.trim() ? 'Change' : 'Upload'}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                  disabled={isUploading}
+                />
               </label>
             </div>
+
+            {form.image_url?.trim() && (
+              <div className="mt-3 flex h-40 w-full items-center justify-center overflow-hidden bg-[#f5f5f5] p-3">
+                <img
+                  src={form.image_url}
+                  alt="Product preview"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            )}
           </div>
 
           <div className="mt-6 flex items-center gap-3">

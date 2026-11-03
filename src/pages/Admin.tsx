@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type * as React from 'react';
+import { recordLifecycleEvent } from '../utils/lifecycleDiagnostics';
 
 import { adminTypography } from '../design-system/tokens/adminTypography';
 import {
@@ -39,6 +40,14 @@ import type {
 } from '../features/admin/types/admin.types';
 
 export default function Admin() {
+  useEffect(() => {
+    recordLifecycleEvent('admin-mounted');
+
+    return () => {
+      recordLifecycleEvent('admin-unmounted');
+    };
+  }, []);
+
   const {
     session,
     isAdmin,
@@ -56,13 +65,14 @@ export default function Admin() {
     loadProducts,
     hideProduct,
     reactivateProduct,
-  } = useAdminProducts(isAdmin);
+    deleteProduct,
+  } = useAdminProducts(isAdmin, session?.user.id ?? null);
 
   const {
     activities,
     isLoadingActivities,
     loadActivities,
-  } = useAdminActivity(isAdmin);
+  } = useAdminActivity(isAdmin, session?.user.id ?? null);
 
   const {
     orders,
@@ -71,7 +81,7 @@ export default function Admin() {
     loadOrders,
     changeOrderStatus,
     deleteOrder,
-  } = useAdminOrders(isAdmin);
+  } = useAdminOrders(isAdmin, session?.user.id ?? null);
 
   // Login form state
   const [email, setEmail] = useState('');
@@ -80,28 +90,30 @@ export default function Admin() {
   const [showLoginTransition, setShowLoginTransition] = useState(false);
 
   // Product form state
-  const [formOpen, setFormOpen] = useState(() => {
-    try {
-      return sessionStorage.getItem('yotaabo-admin-product-form-open') === 'true';
-    } catch {
-      return false;
-    }
-  });
+  const formUserId =
+    isAdmin === true ? session?.user.id ?? null : null;
 
-  const [editing, setEditing] = useState<AdminProduct | null>(() => {
-    try {
-      const saved = sessionStorage.getItem('yotaabo-admin-product-editing');
-      return saved ? (JSON.parse(saved) as AdminProduct) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<AdminProduct | null>(null);
+  const [formStateReady, setFormStateReady] = useState(false);
+  const restoredFormScopeRef = useRef<string | null>(null);
 
   const [confirmDelete, setConfirmDelete] = useState<AdminRow | null>(null);
+  const [confirmPermanentDelete, setConfirmPermanentDelete] =
+    useState<AdminRow | null>(null);
+  const [isHidingProduct, setIsHidingProduct] = useState(false);
+  const isHidingProductRef = useRef(false);
+  const [isDeletingProduct, setIsDeletingProduct] = useState(false);
+  const isDeletingProductRef = useRef(false);
   const [viewingProduct, setViewingProduct] = useState<AdminRow | null>(null);
 
   // Dashboard state
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,28 +128,87 @@ export default function Admin() {
   const ITEMS_PER_PAGE = 20;
   const ORDERS_PER_PAGE = 20;
 
-  // Preserve an open product form across browser reloads.
-  useEffect(() => {
+  // Restore a product form only after this admin has been authorized.
+  useLayoutEffect(() => {
+    if (!formUserId) {
+      restoredFormScopeRef.current = null;
+      setFormOpen(false);
+      setEditing(null);
+      setFormStateReady(false);
+      setConfirmDelete(null);
+      setConfirmPermanentDelete(null);
+      setIsDeletingProduct(false);
+      setViewingProduct(null);
+      return;
+    }
+
+    setFormStateReady(false);
+
     try {
+      const formOpenKey =
+        `yotaabo-admin-product-form-open:${formUserId}`;
+      const editingKey =
+        `yotaabo-admin-product-editing:${formUserId}`;
+
+      const savedOpen = sessionStorage.getItem(formOpenKey) === 'true';
+      const savedEditing = sessionStorage.getItem(editingKey);
+
+      let restoredEditing: AdminProduct | null = null;
+
+      if (savedEditing) {
+        try {
+          restoredEditing = JSON.parse(savedEditing) as AdminProduct;
+        } catch {
+          sessionStorage.removeItem(editingKey);
+        }
+      }
+
+      setFormOpen(savedOpen);
+      setEditing(restoredEditing);
+    } catch {
+      setFormOpen(false);
+      setEditing(null);
+    }
+
+    restoredFormScopeRef.current = formUserId;
+    setFormStateReady(true);
+  }, [formUserId]);
+
+  // Preserve the authorized admin's open form across browser reloads.
+  useEffect(() => {
+    if (
+      !formUserId ||
+      !formStateReady ||
+      restoredFormScopeRef.current !== formUserId
+    ) {
+      return;
+    }
+
+    try {
+      const formOpenKey =
+        `yotaabo-admin-product-form-open:${formUserId}`;
+      const editingKey =
+        `yotaabo-admin-product-editing:${formUserId}`;
+
       if (formOpen) {
-        sessionStorage.setItem('yotaabo-admin-product-form-open', 'true');
+        sessionStorage.setItem(formOpenKey, 'true');
 
         if (editing) {
           sessionStorage.setItem(
-            'yotaabo-admin-product-editing',
+            editingKey,
             JSON.stringify(editing),
           );
         } else {
-          sessionStorage.removeItem('yotaabo-admin-product-editing');
+          sessionStorage.removeItem(editingKey);
         }
       } else {
-        sessionStorage.removeItem('yotaabo-admin-product-form-open');
-        sessionStorage.removeItem('yotaabo-admin-product-editing');
+        sessionStorage.removeItem(formOpenKey);
+        sessionStorage.removeItem(editingKey);
       }
     } catch {
       // Storage may be unavailable; the admin form remains usable.
     }
-  }, [formOpen, editing]);
+  }, [formUserId, formStateReady, formOpen, editing]);
 
   // Login
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
@@ -179,12 +250,42 @@ export default function Admin() {
 
   // Product actions
   async function handleHideProduct(product: AdminRow) {
-    const success = await hideProduct(product);
+    if (isHidingProductRef.current) return;
 
-    if (success) {
-      setConfirmDelete(null);
-      setViewingProduct(null);
-      void loadActivities();
+    isHidingProductRef.current = true;
+    setIsHidingProduct(true);
+
+    try {
+      const success = await hideProduct(product);
+
+      if (success) {
+        setConfirmDelete(null);
+        setViewingProduct(null);
+        void loadActivities();
+      }
+    } finally {
+      isHidingProductRef.current = false;
+      setIsHidingProduct(false);
+    }
+  }
+
+  async function handlePermanentDeleteProduct(product: AdminRow) {
+    if (isDeletingProductRef.current) return;
+
+    isDeletingProductRef.current = true;
+    setIsDeletingProduct(true);
+
+    try {
+      const success = await deleteProduct(product);
+
+      if (success) {
+        setConfirmPermanentDelete(null);
+        setViewingProduct(null);
+        void loadActivities();
+      }
+    } finally {
+      isDeletingProductRef.current = false;
+      setIsDeletingProduct(false);
     }
   }
 
@@ -527,7 +628,7 @@ export default function Admin() {
         onShow={handleReactivateProduct}
         onDelete={(product) => {
           setViewingProduct(null);
-          setConfirmDelete(product);
+          setConfirmPermanentDelete(product);
         }}
       />
 
@@ -555,10 +656,35 @@ export default function Admin() {
         confirmText="Hide"
         cancelText="Cancel"
         variant="grey"
+        isLoading={isHidingProduct}
         onConfirm={() => {
           if (confirmDelete) void handleHideProduct(confirmDelete);
         }}
-        onCancel={() => setConfirmDelete(null)}
+        onCancel={() => {
+          if (!isHidingProduct) setConfirmDelete(null);
+        }}
+      />
+
+      <ConfirmModal
+        isOpen={!!confirmPermanentDelete}
+        title="Delete product permanently?"
+        message={
+          confirmPermanentDelete
+            ? `"${confirmPermanentDelete.name}" will be permanently deleted. This cannot be undone.`
+            : ''
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="grey"
+        isLoading={isDeletingProduct}
+        onConfirm={() => {
+          if (confirmPermanentDelete) {
+            void handlePermanentDeleteProduct(confirmPermanentDelete);
+          }
+        }}
+        onCancel={() => {
+          if (!isDeletingProduct) setConfirmPermanentDelete(null);
+        }}
       />
 
       <OrderDetailsModal
