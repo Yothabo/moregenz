@@ -6,7 +6,8 @@ import Header from '../components/Header';
 import useStorefront from '../hooks/useStorefront';
 
 export default function NotFound() {
-  const { pathFor } = useStorefront();
+  const { name: storeName, pathFor } = useStorefront();
+  const isYotaabo = storeName === 'Yotaabo';
 
   return (
     <>
@@ -14,7 +15,7 @@ export default function NotFound() {
       <main className="flex flex-1 items-center justify-center bg-[#f5f5f2] px-6 py-20 sm:px-10">
       <div className="w-full max-w-[760px] border border-black/10 bg-white px-6 py-12 text-center sm:px-12 sm:py-16">
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--color-grey)]">
-          Yotaabo / 404
+          {storeName} / 404
         </p>
         <h1 className="mt-5 font-heading text-8xl font-medium leading-none tracking-[-0.05em] text-black sm:text-9xl">
           404
@@ -24,7 +25,7 @@ export default function NotFound() {
         </h2>
         <p className="mx-auto mt-4 max-w-md text-sm leading-[1.9] text-[#555550]">
           The page may have moved, or the address may be incorrect. Let's get
-          you back to the fragrance collection.
+          {isYotaabo ? 'you back to the fragrance collection.' : 'you back to the collection.'}
         </p>
         <Link
           to={pathFor()}

@@ -61,11 +61,17 @@ export default function ViewCatalog() {
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 5);
 
-  const categoryOneLiners: Record<string, string> = {
-    'His': 'Distinctive scents for the modern man.',
-    'Hers': 'Fragrances that celebrate elegance and individuality.',
-    'Spaces': 'Bring your signature scent into every room and ride.',
-  };
+  const categoryOneLiners: Record<string, string> = storeName === 'Yotaabo'
+    ? {
+        His: 'Distinctive scents for the modern man.',
+        Hers: 'Fragrances that celebrate elegance and individuality.',
+        Spaces: 'Bring your signature scent into every room and ride.',
+      }
+    : {
+        His: 'Everyday comfort. Underwear made for him.',
+        Hers: 'Intimate essentials chosen for comfort and confidence.',
+        Spaces: 'Sleepwear and relaxed essentials for winding down.',
+      };
 
   return (
     <>
@@ -144,7 +150,7 @@ export default function ViewCatalog() {
               >
                 <div className="flex w-full items-center justify-between">
                   <h2 className="font-heading text-4xl italic text-[#4d4d4d] sm:text-5xl">
-                    {category === 'Spaces' ? 'Spaces & Home' : category}
+                    {category === 'Spaces' ? (storeName === 'Yotaabo' ? 'Spaces & Home' : 'Lounge') : (category === 'His' && storeName !== 'Yotaabo' ? 'Him' : category === 'Hers' && storeName !== 'Yotaabo' ? 'Her' : category)}
                   </h2>
                   <span className="text-2xl text-[#4d4d4d]/50 transition-transform duration-300 group-hover:text-[#4d4d4d]">
                     {isOpen ? <FiMinus size={28} /> : <FiPlus size={28} />}

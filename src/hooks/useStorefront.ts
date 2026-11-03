@@ -10,7 +10,7 @@ const STOREFRONTS = {
     categoryOrder: ['His', 'Hers', 'Spaces'] as StorefrontCategory[],
   },
   porschs: {
-    name: 'Porschs',
+    name: 'Poshies',
     basePath: '/porschs',
     primaryAccent: '#ff1493',
     categoryOrder: ['Hers', 'His', 'Spaces'] as StorefrontCategory[],

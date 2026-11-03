@@ -4,26 +4,21 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import useStorefront from '../hooks/useStorefront';
 
-const principles = [
-  {
-    number: '01',
-    title: 'Personal',
-    copy: 'Choose what resonates with you, not just what is trending.',
-  },
-  {
-    number: '02',
-    title: 'Considered',
-    copy: 'Make fragrance part of the details that define your style.',
-  },
-  {
-    number: '03',
-    title: 'Memorable',
-    copy: 'Let your scent become part of the impression you leave.',
-  },
-];
-
 export default function About() {
   const { name: storeName, pathFor } = useStorefront();
+  const isYotaabo = storeName === 'Yotaabo';
+
+  const principles = isYotaabo
+    ? [
+        { number: '01', title: 'Personal', copy: 'Choose what resonates with you, not just what is trending.' },
+        { number: '02', title: 'Considered', copy: 'Make fragrance part of the details that define your style.' },
+        { number: '03', title: 'Memorable', copy: 'Let your scent become part of the impression you leave.' },
+      ]
+    : [
+        { number: '01', title: 'Comfort', copy: 'Everyday essentials should feel as good as they look.' },
+        { number: '02', title: 'Confidence', copy: 'Find pieces that make you feel comfortable in your own skin.' },
+        { number: '03', title: 'Your way', copy: 'Choose the styles that feel right for you and your everyday.' },
+      ];
 
   return (
     <>
@@ -35,9 +30,11 @@ export default function About() {
             About {storeName}
           </p>
           <h1 className="max-w-4xl font-heading text-5xl font-medium leading-[0.98] tracking-[-0.045em] text-black sm:text-6xl lg:text-8xl">
-            Fragrance is personal.
-            <br />
-            <span className="">Make it yours.</span>
+            {isYotaabo ? (
+              <>Fragrance is personal.<br /><span>Make it yours.</span></>
+            ) : (
+              <>Comfort is personal.<br /><span>Make it yours.</span></>
+            )}
           </h1>
 
           <div className="mt-10 grid gap-8 border-t border-black/10 pt-8 md:grid-cols-[0.7fr_1.3fr] md:gap-16">
@@ -46,24 +43,23 @@ export default function About() {
             </p>
             <div className="max-w-2xl">
               <p className="text-base leading-[1.9] text-[#444440] sm:text-lg">
-                We believe fragrance is more than a scent. It is an expression
-                of personality, a reflection of mood, and a detail that can
-                make a lasting impression.
+                {isYotaabo
+                  ? 'We believe fragrance is more than a scent. It is an expression of personality, a reflection of mood, and a detail that can make a lasting impression.'
+                  : 'We believe what you wear close to you should feel comfortable, considered, and true to your personal style.'}
               </p>
               <p className="mt-5 text-sm leading-[1.95] text-[#555550]">
-                {storeName} is about discovering fragrances that feel like you.
-                Whether you gravitate towards warm and captivating notes, soft
-                florals, or fresh citrus, the right fragrance should feel
-                personal rather than prescribed.
+                {isYotaabo
+                  ? `${storeName} is about discovering fragrances that feel like you. Whether you gravitate towards warm and captivating notes, soft florals, or fresh citrus, the right fragrance should feel personal rather than prescribed.`
+                  : `${storeName} brings together intimate essentials, everyday underwear, and comfortable sleepwear. From pieces for him and her to relaxed styles for winding down, find what feels right for you.`}
               </p>
               <p className="mt-5 font-heading text-2xl text-black sm:text-3xl">
-                Find your signature. Wear it your way.
+                {isYotaabo ? 'Find your signature. Wear it your way.' : 'Feel comfortable. Feel confident. Be yourself.'}
               </p>
               <Link
                 to={pathFor('services')}
                 className="mt-8 inline-flex items-center gap-5 border-b border-black pb-2 text-xs font-semibold text-black transition-colors hover:text-[var(--color-grey)]"
               >
-                Explore fragrances
+                {isYotaabo ? 'Explore fragrances' : 'Explore collections'}
                 <FiArrowUpRight size={15} aria-hidden="true" />
               </Link>
             </div>

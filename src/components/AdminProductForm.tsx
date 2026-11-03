@@ -415,7 +415,7 @@ export default function AdminProductForm({
 
           <label className="block">
             <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Description</span>
-            <textarea rows={3} value={form.description ?? ''} onChange={(e) => handleChange('description', e.target.value)} className={`resize-none ${inputClass}`} placeholder="A short description of the fragrance..." />
+            <textarea rows={3} value={form.description ?? ''} onChange={(e) => handleChange('description', e.target.value)} className={`resize-none ${inputClass}`} placeholder="Write a short product description..." />
           </label>
 
           <div>

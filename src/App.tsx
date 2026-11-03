@@ -61,7 +61,7 @@ export default function App() {
           <Route path="/yotaabo/cart" element={<CartPage />} />
           <Route path="/yotaabo/*" element={<NotFound />} />
 
-          {/* Porschs storefront */}
+          {/* Poshies storefront */}
           <Route path="/porschs" element={<Home />} />
           <Route path="/porschs/about" element={<About />} />
           <Route path="/porschs/services" element={<ServicesPage />} />

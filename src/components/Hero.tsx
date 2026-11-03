@@ -62,7 +62,11 @@ export default function Hero() {
       <div className="w-full">
         <ProductCarousel
           title="Trending"
-          description="The scents our community loves most."
+          description={
+            storeName === 'Yotaabo'
+              ? "The scents our community loves most."
+              : "Everyday essentials and intimate pieces chosen for comfort and confidence."
+          }
           products={featuredProducts}
           placeholderColor="bg-[#f5f5f5]"
           bgColor="bg-white"

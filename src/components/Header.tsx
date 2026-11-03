@@ -17,11 +17,11 @@ export default function Header({ sticky = false, showBack = false }: HeaderProps
   const [menuHovered, setMenuHovered] = useState(false);
   const { cartItems } = useCart();
   const navigate = useNavigate();
-  const { pathFor, primaryAccent } = useStorefront();
+  const { name: storeName, pathFor, primaryAccent } = useStorefront();
 
   const navLinks = [
     { label: 'Home', to: pathFor() },
-    { label: 'Fragrances', to: pathFor('services') },
+    { label: storeName === 'Yotaabo' ? 'Fragrances' : 'Shop', to: pathFor('services') },
     { label: 'Our story', to: pathFor('about') },
   ];
 

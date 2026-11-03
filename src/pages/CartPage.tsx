@@ -12,7 +12,8 @@ import CheckoutModal from '../components/CheckoutModal';
 import useStorefront from '../hooks/useStorefront';
 
 export default function CartPage() {
-  const { pathFor, primaryAccent } = useStorefront();
+  const { name: storeName, pathFor, primaryAccent } = useStorefront();
+  const isYotaabo = storeName === 'Yotaabo';
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, clearCart } = useCart();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -58,7 +59,9 @@ export default function CartPage() {
 
               {/* Paragraph */}
               <p className="mt-3 max-w-sm font-heading text-base leading-relaxed text-[#696964]">
-                Looks like you haven't added a fragrance yet. Discover our collection and find a scent worth remembering.
+                {isYotaabo
+                  ? "Looks like you haven't added a fragrance yet. Discover our collection and find a scent worth remembering."
+                  : "Looks like you haven't added anything yet. Explore our collection and find pieces for everyday comfort."}
               </p>
 
               {/* CTA */}

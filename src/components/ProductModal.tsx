@@ -46,7 +46,8 @@ export default function ProductModal({
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
 
   const { cartItems, addToCart } = useCart();
-  const { primaryAccent } = useStorefront();
+  const { name: storeName, primaryAccent } = useStorefront();
+  const isYotaabo = storeName === 'Yotaabo';
 
   useEffect(() => {
     if (product) {
@@ -193,7 +194,9 @@ export default function ProductModal({
         {/* 3. Description */}
         <div className="px-5 pt-3">
           <p className="font-heading text-sm leading-relaxed text-[#4d4d4d]/70">
-            {product.description || `Experience the essence of ${product.name}. A carefully crafted fragrance designed to leave a lasting impression, blending premium notes for a sophisticated and memorable profile.`}
+            {product.description || (isYotaabo
+              ? `Experience the essence of ${product.name}. A carefully crafted fragrance designed to leave a lasting impression, blending premium notes for a sophisticated and memorable profile.`
+              : 'A thoughtfully selected piece chosen for comfort, quality, and everyday confidence.')}
           </p>
         </div>
 

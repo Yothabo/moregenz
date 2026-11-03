@@ -27,14 +27,15 @@ type ServiceCategory = {
 export default function Services() {
   const { products, isLoading, error } = useProducts();
   const { categoryOrder, name: storeName, pathFor } = useStorefront();
+  const isYotaabo = storeName === 'Yotaabo';
 
   const categories: ServiceCategory[] = [
     {
       id: 'his',
-      title: 'His',
-      topText: 'REFINED. GROUNDED. REMEMBERED.',
+      title: isYotaabo ? 'His' : 'Him',
+      topText: isYotaabo ? 'REFINED. GROUNDED. REMEMBERED.' : 'EVERYDAY COMFORT. MADE FOR HIM.',
       description:
-        'Crafted for presence. Distinctive scents for the modern man, refined in character, grounded in confidence, and made to be remembered.',
+        isYotaabo ? 'Crafted for presence. Distinctive scents for the modern man, refined in character, grounded in confidence, and made to be remembered.' : 'Everyday underwear designed with comfort in mind. From classic boxers to briefs and trunks, find the essentials that fit your day.',
       bgColor: 'bg-white',
       textColor: 'text-[#4d4d4d]',
       textFill: 'fill-[#8aa89b]',
@@ -44,15 +45,15 @@ export default function Services() {
       hasImage: true,
       imageSrc: '/images/hisimage.webp',
       isDark: false,
-      collectionTitle: 'His Collection',
+      collectionTitle: isYotaabo ? 'His Collection' : 'Him Collection',
       productCategory: 'His',
     },
     {
       id: 'hers',
-      title: 'Hers',
-      topText: 'ELEGANCE IN EVERY NOTE',
+      title: isYotaabo ? 'Hers' : 'Her',
+      topText: isYotaabo ? 'ELEGANCE IN EVERY NOTE' : 'INTIMATE. COMFORTABLE. CONFIDENT.',
       description:
-        'Fragrances crafted to complement elegance and individuality, whether soft and floral or bold and warm.',
+        isYotaabo ? 'Fragrances crafted to complement elegance and individuality, whether soft and floral or bold and warm.' : 'Discover bras, panties, bikinis, lingerie and matching sets chosen to help you feel comfortable and confident.',
       bgColor: 'bg-white',
       textColor: 'text-[#4d4d4d]',
       textFill: 'fill-[#ff1493]',
@@ -67,10 +68,10 @@ export default function Services() {
     },
     {
       id: 'spaces',
-      title: 'Spaces',
-      topText: 'SCENTS FOR EVERY ROOM',
+      title: isYotaabo ? 'Spaces' : 'Lounge',
+      topText: isYotaabo ? 'SCENTS FOR EVERY ROOM' : 'SLOW DOWN. SETTLE IN. FEEL GOOD.',
       description:
-        'Extend your signature into every space. Ambient scents for the home and car, quietly shaping the atmosphere wherever you go.',
+        isYotaabo ? 'Extend your signature into every space. Ambient scents for the home and car, quietly shaping the atmosphere wherever you go.' : 'Comfortable pyjamas, nightwear, robes and relaxed sets for slowing down and enjoying your time at home.',
       bgColor: 'bg-white',
       textColor: 'text-[#4d4d4d]',
       textFill: 'fill-[#c8ad8d]',
@@ -79,18 +80,18 @@ export default function Services() {
       overlayColor: '#e8dec9',
       hasImage: false,
       isDark: false,
-      collectionTitle: 'Collections',
+      collectionTitle: isYotaabo ? 'Collections' : 'Lounge Collection',
       productCategory: 'Spaces',
     },
     {
       id: 'about',
       title: 'about',
-      topText: 'THE STORY BEHIND THE SCENT',
+      topText: isYotaabo ? 'THE STORY BEHIND THE SCENT' : 'THE COMFORT OF BEING YOURSELF',
       description:
-        'Born from a simple, enduring belief: fragrance is not merely something you wear, but a reflection of who you are. We curate distinctive scents that speak quietly yet linger long, carefully designed to become an unforgettable part of how you are remembered.',
+        isYotaabo ? 'Born from a simple, enduring belief: fragrance is not merely something you wear, but a reflection of who you are. We curate distinctive scents that speak quietly yet linger long, carefully designed to become an unforgettable part of how you are remembered.' : 'Poshies is about feeling comfortable and confident in what you wear. From everyday intimate essentials to pieces made for relaxing, we bring together styles that fit naturally into your life.',
       bgColor: 'bg-white',
       textColor: 'text-[#4d4d4d]',
-      textFill: storeName === 'Porschs' ? 'fill-[#ff1493]' : 'fill-[#8aa89b]',
+      textFill: isYotaabo ? 'fill-[#8aa89b]' : 'fill-[#ff1493]',
       accentColor: 'text-[#4d4d4d]',
       hasImage: false,
     },
@@ -182,7 +183,7 @@ export default function Services() {
               {category.hasImage && (
                 <img
                   src={category.imageSrc || "/images/hisimage.webp"}
-                  alt={`${category.title} fragrance`}
+                  alt={`${category.title} collection`}
                   className="pointer-events-none absolute bottom-[15%] right-0 z-40 h-[35vh] w-auto object-contain object-right-bottom drop-shadow-2xl sm:bottom-[20%]"
                 />
               )}

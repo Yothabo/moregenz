@@ -3,6 +3,7 @@ import useStorefront from '../hooks/useStorefront';
 
 export default function BrandStory() {
   const { name: storeName, pathFor } = useStorefront();
+  const isYotaabo = storeName === 'Yotaabo';
   return (
     <section
       id="about"
@@ -11,19 +12,20 @@ export default function BrandStory() {
       <div className="mx-auto grid max-w-[1120px] gap-10 md:grid-cols-[0.7fr_1.3fr] md:gap-16">
         <div>
           <h2 className="max-w-md font-heading text-4xl font-medium leading-[1.02] tracking-[-0.035em] text-black sm:text-5xl lg:text-6xl">
-            A scent should feel like you.
+            {isYotaabo ? 'A scent should feel like you.' : 'Comfort should feel like you.'}
           </h2>
         </div>
 
         <div className="flex flex-col justify-center">
           <p className="max-w-2xl text-sm leading-[1.95] text-[#555550] sm:text-base">
-            Fragrance is more than something you wear. It can express a mood,
-            complete a personal style, and become part of the way people
-            remember you.
+            {isYotaabo
+              ? 'Fragrance is more than something you wear. It can express a mood, complete a personal style, and become part of the way people remember you.'
+              : 'What you wear close to you should feel comfortable, look good, and fit naturally into your everyday life.'}
           </p>
           <p className="mt-5 max-w-2xl text-sm leading-[1.95] text-[#555550] sm:text-base">
-            {storeName} is built around that personal connection: finding scents
-            that feel considered, distinctive, and right for the moment.
+            {isYotaabo
+              ? `${storeName} is built around that personal connection: finding scents that feel considered, distinctive, and right for the moment.`
+              : `${storeName} is built around everyday comfort, thoughtful details, and intimate pieces that let you feel good in your own skin.`}
           </p>
           <Link
             to={pathFor('about')}
