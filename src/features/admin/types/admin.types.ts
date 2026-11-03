@@ -29,8 +29,11 @@ export type OrderItem = {
   qty: number;
 };
 
+export type Storefront = 'yotaabo' | 'poshies';
+
 export type Order = {
   id: string;
+  storefront: Storefront;
   order_number: string;
   customer_name: string;
   customer_phone: string;

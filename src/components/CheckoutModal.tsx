@@ -113,6 +113,7 @@ export default function CheckoutModal({
         body: JSON.stringify({
           customer_name: fullName.trim(),
           customer_phone: phone,
+          storefront: name.toLowerCase(),
           items: cartItems.map((item) => ({
             product_id: item.id,
             quantity: item.quantity,

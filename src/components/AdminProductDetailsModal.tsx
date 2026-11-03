@@ -4,19 +4,7 @@ import MenuIcon from './MenuIcon';
 import { formatPrice } from '../utils/formatPrice';
 import { getCategoryTheme } from '../utils/categoryTheme';
 import Modal from './Modal';
-
-type AdminRow = {
-  id: string;
-  name: string;
-  price: number;
-  category: 'His' | 'Hers' | 'Spaces';
-  subcategory: string;
-  description: string | null;
-  image_url: string | null;
-  is_active: boolean;
-  sort_order: number;
-  created_at: string;
-};
+import type { AdminRow } from '../features/admin/types/admin.types';
 
 type AdminProductDetailsModalProps = {
   product: AdminRow | null;

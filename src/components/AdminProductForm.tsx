@@ -6,6 +6,7 @@ import CustomDropdown from './CustomDropdown';
 
 export type AdminProduct = {
   id?: string;
+  storefront: 'yotaabo' | 'poshies';
   name: string;
   price: number;
   category: 'His' | 'Hers' | 'Spaces';
@@ -23,10 +24,20 @@ type AdminProductFormProps = {
   productToEdit?: AdminProduct | null;
 };
 
-const SUBCATEGORY_OPTIONS: Record<string, string[]> = {
-  His: ['Eau de Parfum', 'Roll-On', 'Deodorant'],
-  Hers: ['Eau de Parfum', 'Roll-On', 'Deodorant'],
-  Spaces: ['Home', 'Car', 'Freshness'],
+const SUBCATEGORY_OPTIONS: Record<
+  'yotaabo' | 'poshies',
+  Record<string, string[]>
+> = {
+  yotaabo: {
+    His: ['Eau de Parfum', 'Roll-On', 'Deodorant'],
+    Hers: ['Eau de Parfum', 'Roll-On', 'Deodorant'],
+    Spaces: ['Home', 'Car', 'Freshness'],
+  },
+  poshies: {
+    His: ['Boxers', 'Briefs', 'Trunks'],
+    Hers: ['Bras', 'Panties', 'Bikinis', 'G-Strings', 'Matching Sets', 'Lingerie'],
+    Spaces: ['Pyjamas', 'Nightwear', 'Dressing Gowns', 'Robes', 'Lounge Sets'],
+  },
 };
 
 const DRAFT_STORAGE_KEY = 'yotaabo-admin-product-form-draft';
@@ -48,6 +59,7 @@ const getProductStoragePath = (imageUrl: string | null | undefined) => {
 };
 
 const emptyProduct: AdminProduct = {
+  storefront: 'yotaabo',
   name: '',
   price: 0,
   category: '' as any,
@@ -95,10 +107,20 @@ export default function AdminProductForm({
         saved.productId === currentProductId &&
         saved.form
       ) {
-        setForm(saved.form);
+        setForm({
+          ...emptyProduct,
+          ...saved.form,
+          storefront: saved.form.storefront === 'poshies' ? 'poshies' : 'yotaabo',
+        });
         setStatusValue(saved.statusValue ?? '');
       } else {
-        setForm(productToEdit ?? { ...emptyProduct });
+        setForm(productToEdit
+          ? {
+              ...emptyProduct,
+              ...productToEdit,
+              storefront: productToEdit.storefront === 'poshies' ? 'poshies' : 'yotaabo',
+            }
+          : { ...emptyProduct });
         setStatusValue(
           productToEdit
             ? productToEdit.is_active ? 'active' : 'hidden'
@@ -106,7 +128,13 @@ export default function AdminProductForm({
         );
       }
     } catch {
-      setForm(productToEdit ?? { ...emptyProduct });
+      setForm(productToEdit
+        ? {
+            ...emptyProduct,
+            ...productToEdit,
+            storefront: productToEdit.storefront === 'poshies' ? 'poshies' : 'yotaabo',
+          }
+        : { ...emptyProduct });
       setStatusValue(
         productToEdit
           ? productToEdit.is_active ? 'active' : 'hidden'
@@ -148,8 +176,14 @@ export default function AdminProductForm({
   const handleChange = (field: keyof AdminProduct, value: any) => {
     setForm((prev) => {
       const updated = { ...prev, [field]: value };
-      if (field === 'category') {
-        updated.subcategory = SUBCATEGORY_OPTIONS[value]?.[0] ?? '';
+      if (field === 'category' || field === 'storefront') {
+        const storefront =
+          field === 'storefront'
+            ? value as 'yotaabo' | 'poshies'
+            : updated.storefront;
+
+        updated.subcategory =
+          SUBCATEGORY_OPTIONS[storefront]?.[updated.category]?.[0] ?? '';
       }
       return updated;
     });
@@ -270,6 +304,7 @@ export default function AdminProductForm({
 
     setIsSaving(true);
     const payload = {
+      storefront: form.storefront,
       name: form.name.trim(),
       price: form.price,
       category: form.category,
@@ -364,6 +399,19 @@ export default function AdminProductForm({
             <input type="text" value={form.name} onChange={(e) => handleChange('name', e.target.value)} className={inputClass} placeholder="e.g. Noir Oud" />
           </label>
 
+          <label className="block">
+            <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Storefront</span>
+            <CustomDropdown
+              value={form.storefront}
+              onChange={(value) => handleChange('storefront', value)}
+              options={[
+                { value: 'yotaabo', label: 'Yotaabo' },
+                { value: 'poshies', label: 'Poshies' },
+              ]}
+              placeholder="Select storefront"
+            />
+          </label>
+
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
               <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Price (R)</span>
@@ -404,7 +452,7 @@ export default function AdminProductForm({
               <CustomDropdown
                 value={form.subcategory}
                 onChange={(v) => handleChange('subcategory', v)}
-                options={(SUBCATEGORY_OPTIONS[form.category] ?? []).map((sub) => ({
+                options={(SUBCATEGORY_OPTIONS[form.storefront]?.[form.category] ?? []).map((sub) => ({
                   value: sub,
                   label: sub,
                 }))}

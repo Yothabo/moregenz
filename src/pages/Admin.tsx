@@ -37,6 +37,7 @@ import type {
   OrderStatus,
   OrderFilter,
   Order,
+  Storefront,
 } from '../features/admin/types/admin.types';
 
 export default function Admin() {
@@ -101,6 +102,8 @@ export default function Admin() {
 
   // Dashboard state
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [storefrontFilter, setStorefrontFilter] =
+    useState<'all' | Storefront>('all');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -313,9 +316,26 @@ export default function Admin() {
     }
   }
 
+  // Apply the shared storefront scope before tab-specific filtering.
+  const storefrontProducts = useMemo(
+    () =>
+      storefrontFilter === 'all'
+        ? products
+        : products.filter((product) => product.storefront === storefrontFilter),
+    [products, storefrontFilter],
+  );
+
+  const storefrontOrders = useMemo(
+    () =>
+      storefrontFilter === 'all'
+        ? orders
+        : orders.filter((order) => order.storefront === storefrontFilter),
+    [orders, storefrontFilter],
+  );
+
   // Product filtering
   const filteredProducts = useMemo(() => {
-    return products
+    return storefrontProducts
       .filter((product) => {
         if (categoryFilter === 'Hidden') {
           if (product.is_active) return false;
@@ -336,11 +356,11 @@ export default function Admin() {
         return true;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [products, categoryFilter, searchQuery]);
+  }, [storefrontProducts, categoryFilter, searchQuery]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [categoryFilter, searchQuery]);
+  }, [storefrontFilter, categoryFilter, searchQuery]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
 
@@ -351,7 +371,7 @@ export default function Admin() {
 
   // Order filtering
   const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
+    return storefrontOrders.filter((order) => {
       if (
         orderFilter !== 'All' &&
         order.status !== orderFilter.toLowerCase()
@@ -372,7 +392,11 @@ export default function Admin() {
 
       return true;
     });
-  }, [orders, orderFilter, orderSearch]);
+  }, [storefrontOrders, orderFilter, orderSearch]);
+
+  useEffect(() => {
+    setOrderPage(1);
+  }, [storefrontFilter, orderFilter, orderSearch]);
 
   const totalOrderPages = Math.ceil(
     filteredOrders.length / ORDERS_PER_PAGE,
@@ -386,22 +410,22 @@ export default function Admin() {
   // Dashboard statistics
   const stats = useMemo(
     () => ({
-      total: products.length,
-      active: products.filter((product) => product.is_active).length,
-      hidden: products.filter((product) => !product.is_active).length,
+      total: storefrontProducts.length,
+      active: storefrontProducts.filter((product) => product.is_active).length,
+      hidden: storefrontProducts.filter((product) => !product.is_active).length,
     }),
-    [products],
+    [storefrontProducts],
   );
 
   const orderStats = useMemo(
     () => ({
-      total: orders.length,
-      pending: orders.filter((order) => order.status === 'pending').length,
-      confirmed: orders.filter((order) => order.status === 'confirmed').length,
-      delivered: orders.filter((order) => order.status === 'delivered').length,
-      cancelled: orders.filter((order) => order.status === 'cancelled').length,
+      total: storefrontOrders.length,
+      pending: storefrontOrders.filter((order) => order.status === 'pending').length,
+      confirmed: storefrontOrders.filter((order) => order.status === 'confirmed').length,
+      delivered: storefrontOrders.filter((order) => order.status === 'delivered').length,
+      cancelled: storefrontOrders.filter((order) => order.status === 'cancelled').length,
     }),
-    [orders],
+    [storefrontOrders],
   );
 
   if (
@@ -514,6 +538,32 @@ export default function Admin() {
       />
 
       <div className="admin-page-shell mx-auto">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <label
+            htmlFor="admin-storefront-filter"
+            className="admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/50"
+          >
+            Storefront
+          </label>
+          <select
+            id="admin-storefront-filter"
+            value={storefrontFilter}
+            onChange={(event) => {
+              setStorefrontFilter(event.target.value as 'all' | Storefront);
+              setViewingProduct(null);
+              setViewingOrder(null);
+              setConfirmDelete(null);
+              setConfirmPermanentDelete(null);
+              setConfirmDeleteOrder(null);
+            }}
+            className="min-w-0 rounded-none border border-solid border-[#4d4d4d]/20 bg-white px-3 py-2 text-sm text-[#4d4d4d] outline-none focus:border-[#4d4d4d]"
+          >
+            <option value="all">All Storefronts</option>
+            <option value="yotaabo">Yotaabo</option>
+            <option value="poshies">Poshies</option>
+          </select>
+        </div>
+
         {activeTab === 'overview' && (
           <AdminOverview
             email={session?.user?.email?.split('@')[0] || 'Admin'}

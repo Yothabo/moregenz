@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import useStorefront from '../hooks/useStorefront';
 
 export type CartItem = {
   id: string;
@@ -23,7 +24,6 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'yotaabo-cart';
 
 // Helper to parse "R 890" into 890
 const parsePrice = (price: string) => {
@@ -32,9 +32,9 @@ const parsePrice = (price: string) => {
 };
 
 // Safe localStorage read
-const loadCart = (): CartItem[] => {
+const loadCart = (storageKey: string): CartItem[] => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed;
@@ -45,28 +45,56 @@ const loadCart = (): CartItem[] => {
 };
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const { name } = useStorefront();
+  const storefront = name.toLowerCase();
+  const storageKey = `${storefront}-cart`;
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const stored = loadCart();
-    setCartItems(stored);
-    setIsHydrated(true);
-  }, []);
+  const [cartState, setCartState] = useState<{
+    storefront: string;
+    items: CartItem[];
+  }>(() => ({
+    storefront,
+    items: loadCart(storageKey),
+  }));
 
-  // Save to localStorage whenever cart changes (only after hydration)
+  const [hydratedStorageKey, setHydratedStorageKey] = useState(storageKey);
+
+  // Load the correct cart whenever the active storefront changes.
   useEffect(() => {
-    if (!isHydrated) return;
+    const stored = loadCart(storageKey);
+    setCartState({ storefront, items: stored });
+    setHydratedStorageKey(storageKey);
+  }, [storageKey, storefront]);
+
+  // Never write an old storefront's cart into the new storefront's key.
+  useEffect(() => {
+    if (
+      hydratedStorageKey !== storageKey ||
+      cartState.storefront !== storefront
+    ) return;
+
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
+      localStorage.setItem(storageKey, JSON.stringify(cartState.items));
     } catch {
       // Ignore quota errors silently
     }
-  }, [cartItems, isHydrated]);
+  }, [cartState, hydratedStorageKey, storageKey, storefront]);
+
+  const cartItems = cartState.storefront === storefront
+    ? cartState.items
+    : [];
+
+  const updateCart = (updater: (items: CartItem[]) => CartItem[]) => {
+    setCartState((previous) => ({
+      storefront,
+      items: updater(
+        previous.storefront === storefront ? previous.items : []
+      ),
+    }));
+  };
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
-    setCartItems((prev) => {
+    updateCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
         return prev.map((i) =>
@@ -78,11 +106,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const removeFromCart = (id: string) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    updateCart((prev) => prev.filter((item) => item.id !== id));
   };
 
   const increaseQuantity = (id: string) => {
-    setCartItems((prev) =>
+    updateCart((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
@@ -90,7 +118,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const decreaseQuantity = (id: string) => {
-    setCartItems((prev) =>
+    updateCart((prev) =>
       prev
         .map((item) =>
           item.id === id
@@ -101,7 +129,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const clearCart = () => setCartItems([]);
+  const clearCart = () => updateCart(() => []);
 
   const cartTotal = cartItems.reduce(
     (total, item) => total + parsePrice(item.price) * item.quantity,

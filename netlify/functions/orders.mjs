@@ -70,9 +70,14 @@ async function requireAdmin(request) {
 }
 
 async function createOrder(body) {
+  const storefront = String(body?.storefront || '').trim().toLowerCase();
   const customerName = String(body?.customer_name || '').trim();
   const customerPhone = String(body?.customer_phone || '').replace(/\D/g, '');
   const submittedItems = body?.items;
+
+  if (!['yotaabo', 'poshies'].includes(storefront)) {
+    return error('Invalid storefront.');
+  }
 
   if (customerName.length < 2 || customerName.length > 120) {
     return error('Please provide a valid full name.');
@@ -108,8 +113,9 @@ async function createOrder(body) {
     `SELECT id, name, price
      FROM public.products
      WHERE id = ANY($1::uuid[])
-       AND is_active IS TRUE`,
-    [productIds]
+       AND is_active IS TRUE
+       AND storefront = $2`,
+    [productIds, storefront]
   );
 
   if (productResult.rowCount !== productIds.length) {
@@ -138,11 +144,11 @@ async function createOrder(body) {
 
     const insertedOrder = await client.query(
       `INSERT INTO public.orders
-         (order_number, customer_name, customer_phone, subtotal, status)
-       VALUES ($1, $2, $3, $4, 'pending')
+         (order_number, customer_name, customer_phone, subtotal, status, storefront)
+       VALUES ($1, $2, $3, $4, 'pending', $5)
        RETURNING id, order_number, customer_name, customer_phone,
-                 subtotal, status, created_at, updated_at`,
-      [orderNumber(), customerName, customerPhone, subtotal]
+                 subtotal, status, storefront, created_at, updated_at`,
+      [orderNumber(), customerName, customerPhone, subtotal, storefront]
     );
 
     const order = insertedOrder.rows[0];
@@ -182,7 +188,7 @@ async function createOrder(body) {
 async function listOrders() {
   const result = await pool.query(
     `SELECT id, order_number, customer_name, customer_phone,
-            subtotal, status, created_at, updated_at
+            subtotal, status, storefront, created_at, updated_at
      FROM public.orders
      ORDER BY created_at DESC`
   );

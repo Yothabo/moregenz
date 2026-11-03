@@ -55,6 +55,9 @@ async function requireAdmin(request) {
 
 function validateProduct(body) {
   const name = String(body?.name || '').trim();
+  const storefront = body?.storefront == null || String(body.storefront).trim() === ''
+    ? null
+    : String(body.storefront).trim().toLowerCase();
   const price = Number(body?.price);
   const category = String(body?.category || '');
   const subcategory = String(body?.subcategory || '').trim();
@@ -73,6 +76,10 @@ function validateProduct(body) {
 
   if (!Number.isFinite(price) || price <= 0 || price > 1000000) {
     return { error: 'Please provide a valid product price.' };
+  }
+
+  if (storefront !== null && !['yotaabo', 'poshies'].includes(storefront)) {
+    return { error: 'Please select a valid storefront.' };
   }
 
   if (!['His', 'Hers', 'Spaces'].includes(category)) {
@@ -102,6 +109,7 @@ function validateProduct(body) {
   return {
     product: {
       name,
+      storefront,
       price: Math.round(price * 100) / 100,
       category,
       subcategory,
@@ -136,6 +144,7 @@ async function saveProduct(body, isUpdate, admin) {
     product.image_url,
     product.is_active,
     product.sort_order,
+    product.storefront,
   ];
 
   const client = await pool.connect();
@@ -153,21 +162,22 @@ async function saveProduct(body, isUpdate, admin) {
         `UPDATE public.products
          SET name = $1, price = $2, category = $3,
              subcategory = $4, description = $5, image_url = $6,
-             is_active = $7, sort_order = $8
-         WHERE id = $9
+             is_active = $7, sort_order = $8,
+             storefront = COALESCE($9, storefront)
+         WHERE id = $10
          RETURNING id, name, price, category, subcategory, description,
-                   image_url, is_active, sort_order`,
+                   image_url, is_active, sort_order, storefront`,
         [...values, body.id]
       );
     } else {
       result = await client.query(
         `INSERT INTO public.products
            (name, price, category, subcategory, description, image_url,
-            is_active, sort_order)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            is_active, sort_order, storefront)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          RETURNING id, name, price, category, subcategory, description,
-                   image_url, is_active, sort_order`,
-        values
+                   image_url, is_active, sort_order, storefront`,
+        [...values.slice(0, 8), product.storefront || 'yotaabo']
       );
     }
 
@@ -190,6 +200,11 @@ async function saveProduct(body, isUpdate, admin) {
 async function listProducts(request) {
   const url = new URL(request.url);
   const isAdminRequest = url.searchParams.get('scope') === 'admin';
+  const requestedStorefront = url.searchParams.get('storefront')?.trim().toLowerCase() || null;
+
+  if (requestedStorefront && !['yotaabo', 'poshies'].includes(requestedStorefront)) {
+    return json({ error: 'Invalid storefront.' }, 400);
+  }
 
   if (isAdminRequest) {
     const admin = await requireAdmin(request);
@@ -198,11 +213,23 @@ async function listProducts(request) {
     }
   }
 
+  const storefrontFilter = requestedStorefront || (isAdminRequest ? null : 'yotaabo');
+  const filters = [];
+  const queryValues = [];
+
+  if (!isAdminRequest) filters.push('is_active = TRUE');
+  if (storefrontFilter) {
+    queryValues.push(storefrontFilter);
+    filters.push(`storefront = $${queryValues.length}`);
+  }
+
+  const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
   const result = await pool.query(
     `SELECT *
      FROM public.products
-     ${isAdminRequest ? '' : 'WHERE is_active = TRUE'}
-     ORDER BY category ASC, sort_order ASC, created_at DESC`
+     ${whereClause}
+     ORDER BY category ASC, sort_order ASC, created_at DESC`,
+    queryValues
   );
 
   return new Response(JSON.stringify({ products: result.rows }), {

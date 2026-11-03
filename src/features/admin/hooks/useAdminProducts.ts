@@ -37,6 +37,7 @@ function normalizeAdminRows(value: unknown): unknown {
 
     return {
       ...item,
+      storefront: item.storefront === 'poshies' ? 'poshies' : 'yotaabo',
       price:
         typeof item.price === 'string' && item.price.trim() !== ''
           ? Number(item.price)
@@ -59,6 +60,7 @@ function isAdminRows(value: unknown): value is AdminRow[] {
 
       return (
         typeof item.id === 'string' &&
+        (item.storefront === 'yotaabo' || item.storefront === 'poshies') &&
         typeof item.name === 'string' &&
         typeof item.price === 'number' &&
         ['His', 'Hers', 'Spaces'].includes(String(item.category)) &&
@@ -325,11 +327,12 @@ export function useAdminProducts(
     const cachedProducts = readAdminSnapshot(
       ADMIN_STORAGE_KEYS.productsCache,
       userId,
-      isAdminRows
+      (value): value is unknown[] =>
+        Array.isArray(value) && isAdminRows(normalizeAdminRows(value))
     );
 
     if (cachedProducts) {
-      setProducts(cachedProducts);
+      setProducts(normalizeAdminRows(cachedProducts) as AdminRow[]);
       setIsLoading(false);
       setHasLoadedProducts(true);
     } else {

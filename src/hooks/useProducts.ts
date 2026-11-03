@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import useStorefront from './useStorefront';
 
 export type ProductCategory = 'His' | 'Hers' | 'Spaces';
 
@@ -18,16 +19,16 @@ export type Product = {
 
 const PRODUCT_CACHE_TTL = 15_000;
 
-let cachedProducts: Product[] | null = null;
-let cacheUpdatedAt = 0;
-let inFlightRequest: Promise<Product[]> | null = null;
+const cachedProducts = new Map<string, Product[]>();
+const cacheUpdatedAt = new Map<string, number>();
+const inFlightRequests = new Map<string, Promise<Product[]>>();
 let cacheVersion = 0;
 
 export function invalidateProductsCache(): void {
   cacheVersion += 1;
-  cachedProducts = null;
-  cacheUpdatedAt = 0;
-  inFlightRequest = null;
+  cachedProducts.clear();
+  cacheUpdatedAt.clear();
+  inFlightRequests.clear();
 }
 
 function timestamp(value: string | null | undefined): number {
@@ -37,14 +38,16 @@ function timestamp(value: string | null | undefined): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-async function fetchProducts(): Promise<Product[]> {
-  if (inFlightRequest) {
-    return inFlightRequest;
+async function fetchProducts(storefront: string): Promise<Product[]> {
+  const existingRequest = inFlightRequests.get(storefront);
+  if (existingRequest) {
+    return existingRequest;
   }
 
   const requestVersion = cacheVersion;
   const request = (async () => {
-    const response = await fetch('/api/products', {
+    const response = await fetch(
+      `/api/products?storefront=${encodeURIComponent(storefront)}`, {
       headers: { Accept: 'application/json' },
     });
 
@@ -59,20 +62,20 @@ async function fetchProducts(): Promise<Product[]> {
       : [];
 
     if (requestVersion === cacheVersion) {
-      cachedProducts = products;
-      cacheUpdatedAt = Date.now();
+      cachedProducts.set(storefront, products);
+      cacheUpdatedAt.set(storefront, Date.now());
     }
 
     return products;
   })();
 
-  inFlightRequest = request;
+  inFlightRequests.set(storefront, request);
 
   try {
     return await request;
   } finally {
-    if (inFlightRequest === request) {
-      inFlightRequest = null;
+    if (inFlightRequests.get(storefront) === request) {
+      inFlightRequests.delete(storefront);
     }
   }
 }
@@ -138,27 +141,38 @@ export function getCategoryProducts(
 }
 
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>(
-    () => cachedProducts ?? []
-  );
+  const { name } = useStorefront();
+  const storefront = name.toLowerCase();
 
-  const [isLoading, setIsLoading] = useState(
-    () => cachedProducts === null
+  const [productState, setProductState] = useState<{
+    storefront: string;
+    products: Product[];
+  }>(() => ({
+    storefront,
+    products: cachedProducts.get(storefront) ?? [],
+  }));
+
+  const [loadingStorefront, setLoadingStorefront] = useState<string | null>(
+    () => cachedProducts.has(storefront) ? null : storefront
   );
 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setError(null);
 
-    const hasCache = cachedProducts !== null;
+    const hasCache = cachedProducts.has(storefront);
     const cacheIsFresh =
-      hasCache && Date.now() - cacheUpdatedAt < PRODUCT_CACHE_TTL;
+      hasCache &&
+      Date.now() - (cacheUpdatedAt.get(storefront) ?? 0) < PRODUCT_CACHE_TTL;
 
     if (hasCache) {
-      const productsSnapshot = cachedProducts as Product[];
-      setProducts(productsSnapshot);
-      setIsLoading(false);
+      setProductState({
+        storefront,
+        products: cachedProducts.get(storefront) ?? [],
+      });
+      setLoadingStorefront(null);
     }
 
     if (cacheIsFresh) {
@@ -168,13 +182,14 @@ export function useProducts() {
     }
 
     if (!hasCache) {
-      setIsLoading(true);
+      setLoadingStorefront(storefront);
     }
 
-    fetchProducts()
+    fetchProducts(storefront)
       .then((data) => {
         if (!cancelled) {
-          setProducts(data);
+          setProductState({ storefront, products: data });
+          setLoadingStorefront(null);
           setError(null);
         }
       })
@@ -189,14 +204,20 @@ export function useProducts() {
       })
       .finally(() => {
         if (!cancelled) {
-          setIsLoading(false);
+          setLoadingStorefront(null);
         }
       });
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [storefront]);
+
+  const products = productState.storefront === storefront
+    ? productState.products
+    : [];
+  const isLoading = loadingStorefront === storefront ||
+    productState.storefront !== storefront;
 
   return { products, isLoading, error };
 }

@@ -7,24 +7,7 @@ import CheckoutItemCard from './CheckoutItemCard';
 import ProductModal from './ProductModal';
 import { getCategoryTheme } from '../utils/categoryTheme';
 import type { AdminProduct } from './AdminProductForm';
-
-type OrderItem = {
-  name: string;
-  price: number;
-  qty: number;
-};
-
-type Order = {
-  id: string;
-  order_number: string;
-  customer_name: string;
-  customer_phone: string;
-  items: OrderItem[];
-  subtotal: number;
-  status: 'pending' | 'confirmed' | 'delivered' | 'cancelled';
-  created_at: string;
-  updated_at: string;
-};
+import type { Order } from '../features/admin/types/admin.types';
 
 type PreviewProduct = AdminProduct & { id: string };
 

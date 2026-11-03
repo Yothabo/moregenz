@@ -11,6 +11,21 @@ import {
   writeAdminSnapshot,
 } from '../utils/adminSnapshot';
 
+function normalizeOrders(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+
+  return value.map((order) => {
+    if (!order || typeof order !== 'object') return order;
+
+    const item = order as Record<string, unknown>;
+
+    return {
+      ...item,
+      storefront: item.storefront === 'poshies' ? 'poshies' : 'yotaabo',
+    };
+  });
+}
+
 function isOrders(value: unknown): value is Order[] {
   const validStatuses: OrderStatus[] = [
     'pending',
@@ -28,6 +43,7 @@ function isOrders(value: unknown): value is Order[] {
 
       return (
         typeof item.id === 'string' &&
+        (item.storefront === 'yotaabo' || item.storefront === 'poshies') &&
         typeof item.order_number === 'string' &&
         typeof item.customer_name === 'string' &&
         typeof item.customer_phone === 'string' &&
@@ -132,7 +148,7 @@ export function useAdminOrders(
 
     try {
       const data = await ordersApi('GET');
-      const latestOrders: unknown = data.orders ?? [];
+      const latestOrders = normalizeOrders(data.orders ?? []);
 
       if (!isOrders(latestOrders)) {
         throw new Error('The orders response has an invalid format.');
@@ -229,11 +245,12 @@ export function useAdminOrders(
     const cachedOrders = readAdminSnapshot(
       ADMIN_STORAGE_KEYS.ordersCache,
       userId,
-      isOrders
+      (value): value is unknown[] =>
+        Array.isArray(value) && isOrders(normalizeOrders(value))
     );
 
     if (cachedOrders) {
-      setOrders(cachedOrders);
+      setOrders(normalizeOrders(cachedOrders) as Order[]);
       setIsLoadingOrders(false);
       setHasLoadedOrders(true);
     } else {
