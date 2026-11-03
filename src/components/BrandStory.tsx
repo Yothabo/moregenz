@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import useStorefront from '../hooks/useStorefront';
 
 export default function BrandStory() {
+  const { name: storeName, pathFor } = useStorefront();
   return (
     <section
       id="about"
@@ -20,11 +22,11 @@ export default function BrandStory() {
             remember you.
           </p>
           <p className="mt-5 max-w-2xl text-sm leading-[1.95] text-[#555550] sm:text-base">
-            Yotaabo is built around that personal connection: finding scents
+            {storeName} is built around that personal connection: finding scents
             that feel considered, distinctive, and right for the moment.
           </p>
           <Link
-            to="/about"
+            to={pathFor('about')}
             className="group mt-8 inline-flex w-fit items-center gap-5 border-b border-black pb-2 text-xs font-semibold text-black transition-colors hover:border-[var(--color-grey)] hover:text-[var(--color-grey)]"
           >
             Discover our story

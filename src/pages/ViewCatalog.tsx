@@ -7,9 +7,11 @@ import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import Header from '../components/Header';
 import ProductModal from '../components/ProductModal';
 import { FiPlus, FiMinus } from 'react-icons/fi';
+import useStorefront from '../hooks/useStorefront';
 
 export default function ViewCatalog() {
-  const categories: Array<'His' | 'Hers' | 'Spaces'> = ['His', 'Hers', 'Spaces'];
+  const { categoryOrder, name: storeName } = useStorefront();
+  const categories = categoryOrder;
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { products: allProducts, isLoading } = useProducts();
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -74,7 +76,7 @@ export default function ViewCatalog() {
           <div className="mx-auto max-w-[1120px] px-6 sm:px-10 lg:px-12">
             <h2 className="font-heading text-3xl italic text-[#4d4d4d]">Newly Added</h2>
             <p className="mt-2 max-w-md font-heading text-base leading-relaxed text-[#4d4d4d]/60">
-              The latest additions to the Yotaabo collection.
+              The latest additions to the {storeName} collection.
             </p>
           </div>
 

@@ -5,12 +5,7 @@ import MenuIcon from './MenuIcon';
 import { FaOpencart } from 'react-icons/fa';
 import { TiArrowBack } from 'react-icons/ti';
 import { useCart } from '../context/CartContext';
-
-const navLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'Fragrances', to: '/services' },
-  { label: 'Our story', to: '/about' },
-];
+import useStorefront from '../hooks/useStorefront';
 
 type HeaderProps = {
   sticky?: boolean;
@@ -22,6 +17,13 @@ export default function Header({ sticky = false, showBack = false }: HeaderProps
   const [menuHovered, setMenuHovered] = useState(false);
   const { cartItems } = useCart();
   const navigate = useNavigate();
+  const { pathFor, primaryAccent } = useStorefront();
+
+  const navLinks = [
+    { label: 'Home', to: pathFor() },
+    { label: 'Fragrances', to: pathFor('services') },
+    { label: 'Our story', to: pathFor('about') },
+  ];
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -62,7 +64,7 @@ export default function Header({ sticky = false, showBack = false }: HeaderProps
         {/* Right Side */}
         <div className="flex items-center gap-4">
           <Link
-            to="/services"
+            to={pathFor('services')}
             className="hidden items-center gap-2 bg-[#4d4d4d] px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-[#3a3a3a] md:inline-flex"
           >
             Explore Collection
@@ -72,12 +74,12 @@ export default function Header({ sticky = false, showBack = false }: HeaderProps
           {/* Cart Icon - Right side, next to menu */}
           {cartItems.length > 0 && (
             <Link
-              to="/cart"
+              to={pathFor('cart')}
               aria-label="View cart"
               className="relative inline-flex h-11 w-11 items-center justify-center border-0 bg-transparent p-0 text-black outline-none transition-colors hover:text-[#777770]"
             >
               <FaOpencart size={26} aria-hidden="true" />
-              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#8aa89b] text-[10px] font-bold text-white">
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: primaryAccent }}>
                 {cartItems.length}
               </span>
             </Link>
@@ -119,7 +121,7 @@ export default function Header({ sticky = false, showBack = false }: HeaderProps
           ))}
 
           <Link
-            to="/services"
+            to={pathFor('services')}
             onClick={closeMenu}
             className="mt-4 flex min-h-12 items-center justify-between bg-[#4d4d4d] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#3a3a3a]"
           >

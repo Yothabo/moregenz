@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { FiArrowUpRight } from 'react-icons/fi';
+import useStorefront from '../hooks/useStorefront';
 
 export default function ContactSection() {
+  const { pathFor } = useStorefront();
   return (
     <section
       id="contact"
@@ -22,7 +24,7 @@ export default function ContactSection() {
           </p>
 
           <Link
-            to="/services"
+            to={pathFor('services')}
             className="inline-flex shrink-0 min-h-12 items-center justify-between gap-8 border border-black bg-black px-5 text-xs font-semibold text-white transition-colors hover:bg-white hover:text-black md:mt-1 md:min-w-[200px]"
           >
             Explore fragrances

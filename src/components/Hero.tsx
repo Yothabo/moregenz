@@ -1,11 +1,13 @@
 import { useProducts, getFeaturedProducts } from '../hooks/useProducts';
 import { formatPrice } from '../utils/formatPrice';
 import ProductCarousel from './ProductCarousel';
+import useStorefront from '../hooks/useStorefront';
 
 const THREADS_COLOR: [number, number, number] = [0.5412, 0.6588, 0.6078];
 
 export default function Hero() {
   const { products, isLoading, error } = useProducts();
+  const { name: storeName, pathFor, primaryAccent } = useStorefront();
 
   const featuredProducts = getFeaturedProducts(products, 5).map((product) => ({
     ...product,
@@ -46,11 +48,11 @@ export default function Hero() {
               style={{
                 fontFamily: '"Anton", sans-serif',
                 fontWeight: 400,
+                fill: primaryAccent,
               }}
-              className="fill-[#8aa89b]"
               fontSize="100"
             >
-              yotaabo
+              {storeName.toLowerCase()}
             </text>
           </svg>
         </div>
@@ -65,12 +67,12 @@ export default function Hero() {
           placeholderColor="bg-[#f5f5f5]"
           bgColor="bg-white"
           textColor="text-black"
-          accentColor="text-[#8aa89b]"
-          themeColor="#8aa89b"
+          accentColor={primaryAccent === "#ff1493" ? "text-[#ff1493]" : "text-[#8aa89b]"}
+          themeColor={primaryAccent}
           isDark={false}
           isLoading={isLoading}
           error={error}
-          viewAllHref="/catalog"
+          viewAllHref={pathFor('catalog')}
           useProductTheme
         />
       </div>

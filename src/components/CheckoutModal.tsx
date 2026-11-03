@@ -3,6 +3,7 @@ import Modal from './Modal';
 import CheckoutItemCard from './CheckoutItemCard';
 import ConfirmModal from './ConfirmModal';
 import ProductModal from './ProductModal';
+import useStorefront from '../hooks/useStorefront';
 import type { CartItem } from '../context/CartContext';
 
 type CheckoutModalProps = {
@@ -20,6 +21,7 @@ export default function CheckoutModal({
   cartTotal,
   onSuccess,
 }: CheckoutModalProps) {
+  const { primaryAccent } = useStorefront();
   const [fullName, setFullName] = useState('');
   const [countryCode, setCountryCode] = useState('+27');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -323,7 +325,7 @@ export default function CheckoutModal({
       product={selectedProduct}
       bgColor="bg-white"
       placeholderColor={selectedProduct?.placeholderColor ?? ''}
-      accentColor="text-[#8aa89b]"
+      accentColor={primaryAccent === "#ff1493" ? "text-[#ff1493]" : "text-[#8aa89b]"}
       isDark={false}
       mode="preview"
       onClose={() => setSelectedProduct(null)}

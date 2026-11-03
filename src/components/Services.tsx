@@ -1,4 +1,5 @@
 import ProductCarousel from './ProductCarousel';
+import useStorefront from '../hooks/useStorefront';
 import {
   useProducts,
   getCategoryProducts,
@@ -25,6 +26,7 @@ type ServiceCategory = {
 
 export default function Services() {
   const { products, isLoading, error } = useProducts();
+  const { categoryOrder, name: storeName, pathFor } = useStorefront();
 
   const categories: ServiceCategory[] = [
     {
@@ -88,15 +90,26 @@ export default function Services() {
         'Born from a simple, enduring belief: fragrance is not merely something you wear, but a reflection of who you are. We curate distinctive scents that speak quietly yet linger long, carefully designed to become an unforgettable part of how you are remembered.',
       bgColor: 'bg-white',
       textColor: 'text-[#4d4d4d]',
-      textFill: 'fill-[#8aa89b]',
+      textFill: storeName === 'Porschs' ? 'fill-[#ff1493]' : 'fill-[#8aa89b]',
       accentColor: 'text-[#4d4d4d]',
       hasImage: false,
     },
   ];
 
+  const orderedCategories = [
+    ...categories
+      .filter((category) => category.productCategory)
+      .sort(
+        (a, b) =>
+          categoryOrder.indexOf(a.productCategory!) -
+          categoryOrder.indexOf(b.productCategory!)
+      ),
+    ...categories.filter((category) => !category.productCategory),
+  ];
+
   return (
     <section id="services" className="w-full bg-white">
-      {categories.map((category) => (
+      {orderedCategories.map((category) => (
         <div key={category.id} className="flex flex-col w-full">
           <div
             className={`relative grid min-h-[100svh] w-full grid-rows-[auto_1fr_auto] overflow-hidden ${category.bgColor} ${category.textColor} px-6 py-12 sm:px-12 lg:px-20 lg:py-16`}
@@ -145,7 +158,7 @@ export default function Services() {
                   /* About: Bottom-Right, not rotated */
                   <div className="absolute bottom-20 right-6 sm:bottom-32 sm:right-12">
                     <span className={`whitespace-nowrap font-accent text-[clamp(80px,12vw,160px)] font-normal leading-[0.7] tracking-normal ${category.accentColor}`}>
-                      yotaabo
+                      {storeName.toLowerCase()}
                     </span>
                   </div>
                 ) : (
@@ -215,7 +228,7 @@ export default function Services() {
                 isDark={category.isDark}
                 isLoading={isLoading}
                 error={error}
-                viewAllHref={`/catalog?category=${category.productCategory}`}
+                viewAllHref={pathFor(`catalog?category=${category.productCategory}`)}
               />
             </div>
           )}

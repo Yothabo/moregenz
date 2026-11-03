@@ -4,6 +4,7 @@ import { FiX, FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import RippleButton from './RippleButton';
+import useStorefront from '../hooks/useStorefront';
 import ConfirmModal from './ConfirmModal';
 
 type Product = {
@@ -45,6 +46,7 @@ export default function ProductModal({
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
 
   const { cartItems, addToCart } = useCart();
+  const { primaryAccent } = useStorefront();
 
   useEffect(() => {
     if (product) {
@@ -202,6 +204,7 @@ export default function ProductModal({
               onClick={() => handleQuantityChange(quantity - 1)}
               className="flex h-12 w-10 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
               ariaLabel="Decrease quantity"
+              rippleColor={primaryAccent}
             >
               <FiMinus size={14} />
             </RippleButton>
@@ -210,6 +213,7 @@ export default function ProductModal({
               onClick={() => handleQuantityChange(quantity + 1)}
               className="flex h-12 w-10 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
               ariaLabel="Increase quantity"
+              rippleColor={primaryAccent}
             >
               <FiPlus size={14} />
             </RippleButton>

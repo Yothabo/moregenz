@@ -5,6 +5,7 @@ type RippleButtonProps = {
   children: ReactNode;
   className?: string;
   ariaLabel?: string;
+  rippleColor?: string;
 };
 
 type Ripple = {
@@ -13,7 +14,7 @@ type Ripple = {
   y: number;
 };
 
-export default function RippleButton({ onClick, children, className = '', ariaLabel }: RippleButtonProps) {
+export default function RippleButton({ onClick, children, className = '', ariaLabel, rippleColor = '#8aa89b' }: RippleButtonProps) {
   const [ripples, setRipples] = useState<Ripple[]>([]);
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -45,12 +46,13 @@ export default function RippleButton({ onClick, children, className = '', ariaLa
       {ripples.map((ripple) => (
         <span
           key={ripple.key}
-          className="pointer-events-none absolute rounded-full bg-[#8aa89b]/40 animate-ripple"
+          className="pointer-events-none absolute rounded-full animate-ripple"
           style={{
             left: ripple.x,
             top: ripple.y,
             width: '200%',
             height: '200%',
+            backgroundColor: `${rippleColor}66`,
           }}
         />
       ))}

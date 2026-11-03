@@ -9,8 +9,10 @@ import toast from 'react-hot-toast';
 import ConfirmModal from '../components/ConfirmModal';
 import ProductModal from '../components/ProductModal';
 import CheckoutModal from '../components/CheckoutModal';
+import useStorefront from '../hooks/useStorefront';
 
 export default function CartPage() {
+  const { pathFor, primaryAccent } = useStorefront();
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, cartTotal, clearCart } = useCart();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -47,7 +49,7 @@ export default function CartPage() {
           {cartItems.length === 0 ? (
             <div className="mt-20 flex flex-col items-center justify-center text-center">
               {/* Cart Icon */}
-              <FaOpencart size={64} className="text-[#8aa89b]" />
+              <FaOpencart size={64} className={primaryAccent === "#ff1493" ? "text-[#ff1493]" : "text-[#8aa89b]"} />
 
               {/* Heading */}
               <h2 className="mt-8 font-heading text-3xl italic text-black">
@@ -61,8 +63,8 @@ export default function CartPage() {
 
               {/* CTA */}
               <Link
-                to="/catalog"
-                className="mt-8 inline-flex min-h-12 items-center justify-center border border-solid border-[#8aa89b] bg-[#8aa89b] px-8 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-transparent hover:text-[#8aa89b]"
+                to={pathFor('catalog')}
+                className={`mt-8 inline-flex min-h-12 items-center justify-center border border-solid px-8 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-transparent ${primaryAccent === "#ff1493" ? "border-[#ff1493] bg-[#ff1493] hover:text-[#ff1493]" : "border-[#8aa89b] bg-[#8aa89b] hover:text-[#8aa89b]"}` }
               >
                 Explore Collection
               </Link>
@@ -120,6 +122,7 @@ export default function CartPage() {
                             onClick={() => decreaseQuantity(item.id)}
                             className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
                             ariaLabel="Decrease quantity"
+                            rippleColor={primaryAccent}
                           >
                             <FiMinus size={16} />
                           </RippleButton>
@@ -130,6 +133,7 @@ export default function CartPage() {
                             onClick={() => increaseQuantity(item.id)}
                             className="flex h-8 w-8 items-center justify-center bg-[#f1f1ee] text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
                             ariaLabel="Increase quantity"
+                            rippleColor={primaryAccent}
                           >
                             <FiPlus size={16} />
                           </RippleButton>
@@ -151,14 +155,14 @@ export default function CartPage() {
 
                 <div className="flex gap-4">
                   <Link
-                    to="/catalog"
+                    to={pathFor('catalog')}
                     className="inline-flex min-h-12 items-center justify-center bg-[#f1f1ee] px-8 text-xs font-semibold tracking-wide text-black/60 transition-colors hover:bg-[#e5e5e1] hover:text-black active:bg-[#dcdcd7]"
                   >
                     Continue Shopping
                   </Link>
                   <button
                     onClick={() => setShowCheckoutModal(true)}
-                    className="inline-flex min-h-12 items-center justify-center border border-solid border-[#8aa89b] bg-[#8aa89b] px-8 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-transparent hover:text-[#8aa89b]"
+                    className={`inline-flex min-h-12 items-center justify-center border border-solid px-8 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-transparent ${primaryAccent === "#ff1493" ? "border-[#ff1493] bg-[#ff1493] hover:text-[#ff1493]" : "border-[#8aa89b] bg-[#8aa89b] hover:text-[#8aa89b]"}` }
                   >
                     Checkout
                   </button>
@@ -173,7 +177,7 @@ export default function CartPage() {
         product={selectedProduct}
         bgColor="bg-white"
         placeholderColor={selectedProduct?.placeholderColor ?? ''}
-        accentColor="text-[#8aa89b]"
+        accentColor={primaryAccent === "#ff1493" ? "text-[#ff1493]" : "text-[#8aa89b]"}
         isDark={false}
         mode="cart"
         cartQuantity={selectedProduct?.quantity ?? 1}

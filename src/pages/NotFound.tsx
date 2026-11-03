@@ -3,8 +3,11 @@ import { FiArrowLeft } from 'react-icons/fi';
 import Footer from '../components/Footer';
 
 import Header from '../components/Header';
+import useStorefront from '../hooks/useStorefront';
 
 export default function NotFound() {
+  const { pathFor } = useStorefront();
+
   return (
     <>
       <Header sticky={false} />
@@ -24,7 +27,7 @@ export default function NotFound() {
           you back to the fragrance collection.
         </p>
         <Link
-          to="/"
+          to={pathFor()}
           className="mx-auto mt-8 inline-flex min-h-12 items-center justify-center gap-3 border border-black bg-black px-6 text-xs font-semibold text-white transition-colors hover:bg-white hover:text-black"
         >
           <FiArrowLeft size={15} aria-hidden="true" />

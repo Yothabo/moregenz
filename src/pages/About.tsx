@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FiArrowUpRight } from 'react-icons/fi';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import useStorefront from '../hooks/useStorefront';
 
 const principles = [
   {
@@ -22,6 +23,8 @@ const principles = [
 ];
 
 export default function About() {
+  const { name: storeName, pathFor } = useStorefront();
+
   return (
     <>
       <Header sticky={false} />
@@ -29,7 +32,7 @@ export default function About() {
       <section className="px-6 pb-16 pt-14 sm:px-10 sm:pb-20 sm:pt-20 lg:px-12 lg:pb-24 lg:pt-24">
         <div className="mx-auto max-w-[1120px]">
           <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--color-grey)]">
-            About Yotaabo
+            About {storeName}
           </p>
           <h1 className="max-w-4xl font-heading text-5xl font-medium leading-[0.98] tracking-[-0.045em] text-black sm:text-6xl lg:text-8xl">
             Fragrance is personal.
@@ -48,7 +51,7 @@ export default function About() {
                 make a lasting impression.
               </p>
               <p className="mt-5 text-sm leading-[1.95] text-[#555550]">
-                Yotaabo is about discovering fragrances that feel like you.
+                {storeName} is about discovering fragrances that feel like you.
                 Whether you gravitate towards warm and captivating notes, soft
                 florals, or fresh citrus, the right fragrance should feel
                 personal rather than prescribed.
@@ -57,7 +60,7 @@ export default function About() {
                 Find your signature. Wear it your way.
               </p>
               <Link
-                to="/services"
+                to={pathFor('services')}
                 className="mt-8 inline-flex items-center gap-5 border-b border-black pb-2 text-xs font-semibold text-black transition-colors hover:text-[var(--color-grey)]"
               >
                 Explore fragrances

@@ -1,6 +1,9 @@
 import { FaInstagram, FaTiktok, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
+import useStorefront from '../hooks/useStorefront';
 
 export default function Footer() {
+  const { name: storeName } = useStorefront();
+
   return (
     <footer className="relative w-full overflow-hidden bg-white py-10 sm:py-12 lg:py-16">
 
@@ -42,7 +45,7 @@ export default function Footer() {
           </div>
 
           <p className="mt-4 text-center font-heading text-sm tracking-[0.15em] text-[#4d4d4d] sm:text-base">
-            © {new Date().getFullYear()} yotaabo
+            © {new Date().getFullYear()} {storeName.toLowerCase()}
           </p>
         </div>
       </div>
