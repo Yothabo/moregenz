@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type * as React from 'react';
-import { recordLifecycleEvent } from '../utils/lifecycleDiagnostics';
 
 import { adminTypography } from '../design-system/tokens/adminTypography';
 import {
@@ -41,14 +40,6 @@ import type {
 } from '../features/admin/types/admin.types';
 
 export default function Admin() {
-  useEffect(() => {
-    recordLifecycleEvent('admin-mounted');
-
-    return () => {
-      recordLifecycleEvent('admin-unmounted');
-    };
-  }, []);
-
   const {
     session,
     isAdmin,
