@@ -2,6 +2,8 @@ import { useProducts, getFeaturedProducts } from '../hooks/useProducts';
 import { formatPrice } from '../utils/formatPrice';
 import ProductCarousel from './ProductCarousel';
 
+const THREADS_COLOR: [number, number, number] = [0.5412, 0.6588, 0.6078];
+
 export default function Hero() {
   const { products, isLoading, error } = useProducts();
 
@@ -22,8 +24,8 @@ export default function Hero() {
       }}
     >
       {/* Hero Wordmark */}
-      <div className="relative mb-12 flex w-full items-center justify-center px-6">
-        <div className="w-full max-w-[1120px]">
+      <div className="relative isolate mb-12 flex min-h-[45vh] w-full items-center justify-center overflow-hidden px-6">
+        <div className="relative z-10 w-full max-w-[1120px]">
           <svg
             aria-hidden="true"
             viewBox="0 0 100 100"
@@ -51,12 +53,6 @@ export default function Hero() {
               yotaabo
             </text>
           </svg>
-        </div>
-
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <p className="font-accent text-[clamp(50px,10vw,130px)] tracking-[0.02em] text-black">
-            Be Remembered
-          </p>
         </div>
       </div>
 

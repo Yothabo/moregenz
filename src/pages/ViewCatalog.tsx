@@ -97,17 +97,17 @@ export default function ViewCatalog() {
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
                   <div className={`aspect-[4/5] w-full overflow-hidden ${getCategoryTheme(product.category).placeholderColor}`}>
-              {product.image_url && (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  loading={index < 2 ? 'eager' : 'lazy'}
-                  fetchPriority={index === 0 ? 'high' : 'auto'}
-                  decoding="async"
-                  className="h-full w-full object-contain p-4"
-                />
-              )}
-            </div>
+                    {product.image_url && (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        loading={index < 2 ? 'eager' : 'lazy'}
+                        fetchPriority={index === 0 ? 'high' : 'auto'}
+                        decoding="async"
+                        className="h-full w-full object-contain p-4"
+                      />
+                    )}
+                  </div>
                   <div className="mt-1 flex flex-col pt-3 pl-3">
                     <h4
                       className="font-heading text-base text-[#4d4d4d]"
@@ -181,16 +181,16 @@ export default function ViewCatalog() {
                                 style={{ WebkitTapHighlightColor: 'transparent' }}
                               >
                                 <div className={`aspect-[4/5] w-full overflow-hidden ${getCategoryTheme(product.category).placeholderColor}`}>
-              {product.image_url && (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-contain p-4"
-                />
-              )}
-            </div>
+                                  {product.image_url && (
+                                    <img
+                                      src={product.image_url}
+                                      alt={product.name}
+                                      loading="lazy"
+                                      decoding="async"
+                                      className="h-full w-full object-contain p-4"
+                                    />
+                                  )}
+                                </div>
                                 <div className="mt-1 flex flex-col pt-3 pl-3">
                                   <h4
                                     className="font-heading text-base text-[#4d4d4d]"

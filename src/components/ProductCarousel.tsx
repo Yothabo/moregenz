@@ -172,9 +172,7 @@ export default function ProductCarousel({
                         userSelect: 'none',
                       }}
                     >
-                      <div
-                        className={`aspect-[4/5] w-full overflow-hidden ${cardPlaceholder}`}
-                      >
+                      <div className={`aspect-[4/5] w-full overflow-hidden ${cardPlaceholder}`}>
                         {product.image_url && (
                           <img
                             src={product.image_url}
