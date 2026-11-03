@@ -21,10 +21,17 @@ export default function ViewCatalog() {
   const [openCategory, setOpenCategory] = useState<'His' | 'Hers' | 'Spaces' | null>(
     initialCategory || null
   );
+  const [mountedCategories, setMountedCategories] = useState<Set<'His' | 'Hers' | 'Spaces'>>(
+    () => new Set(initialCategory ? [initialCategory] : [])
+  );
 
   const toggleCategory = (category: 'His' | 'Hers' | 'Spaces') => {
     const isOpening = openCategory !== category;
     setOpenCategory(openCategory === category ? null : category);
+
+    if (isOpening) {
+      setMountedCategories((previous) => new Set(previous).add(category));
+    }
 
     if (isOpening) {
       setTimeout(() => {
@@ -82,7 +89,7 @@ export default function ViewCatalog() {
                 </div>
               ))
             ) : (
-              newlyAddedProducts.map((product) => (
+              newlyAddedProducts.map((product, index) => (
                 <div
                   key={product.id}
                   onClick={() => setSelectedProduct(product)}
@@ -94,6 +101,9 @@ export default function ViewCatalog() {
                 <img
                   src={product.image_url}
                   alt={product.name}
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                  fetchPriority={index === 0 ? 'high' : 'auto'}
+                  decoding="async"
                   className="h-full w-full object-contain p-4"
                 />
               )}
@@ -149,7 +159,7 @@ export default function ViewCatalog() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  {subcategories.map((sub) => {
+                  {mountedCategories.has(category) && subcategories.map((sub) => {
                     const subItems: Product[] = items.filter((i) => i.subcategory === sub);
                     return (
                       <div key={sub} className="mx-auto max-w-[1120px] px-6 pb-16 sm:px-10 lg:px-12">
@@ -175,6 +185,8 @@ export default function ViewCatalog() {
                 <img
                   src={product.image_url}
                   alt={product.name}
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-contain p-4"
                 />
               )}

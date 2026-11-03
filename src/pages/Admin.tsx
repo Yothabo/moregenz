@@ -14,6 +14,7 @@ import '../design-system/styles/admin-spacing.css';
 import AdminProductForm, {
   type AdminProduct,
 } from '../components/AdminProductForm';
+import { invalidateProductsCache } from '../hooks/useProducts';
 import ConfirmModal from '../components/ConfirmModal';
 import OrderDetailsModal from '../components/OrderDetailsModal';
 import AdminProductDetailsModal from '../components/AdminProductDetailsModal';
@@ -639,6 +640,7 @@ export default function Admin() {
           setEditing(null);
         }}
         onSaved={() => {
+          invalidateProductsCache();
           void loadProducts();
           void loadActivities();
         }}

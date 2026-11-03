@@ -151,7 +151,7 @@ export default function ProductCarousel({
                   <ProductCardSkeleton />
                 </SwiperSlide>
               ))
-            : visibleProducts.map((product) => {
+            : visibleProducts.map((product, index) => {
                 const productTheme = getCategoryTheme(product.category);
                 const cardPlaceholder = useProductTheme
                   ? productTheme.placeholderColor
@@ -179,7 +179,8 @@ export default function ProductCarousel({
                           <img
                             src={product.image_url}
                             alt={product.name}
-                            loading="lazy"
+                            loading={index < 2 ? 'eager' : 'lazy'}
+                            fetchPriority={index === 0 ? 'high' : 'auto'}
                             decoding="async"
                             onError={(event) => {
                               event.currentTarget.style.display = 'none';

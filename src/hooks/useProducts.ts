@@ -16,18 +16,73 @@ export type Product = {
   created_at: string;
 };
 
+const PRODUCT_CACHE_TTL = 15_000;
+
+let cachedProducts: Product[] | null = null;
+let cacheUpdatedAt = 0;
+let inFlightRequest: Promise<Product[]> | null = null;
+let cacheVersion = 0;
+
+export function invalidateProductsCache(): void {
+  cacheVersion += 1;
+  cachedProducts = null;
+  cacheUpdatedAt = 0;
+  inFlightRequest = null;
+}
+
 function timestamp(value: string | null | undefined): number {
   if (!value) return 0;
+
   const parsed = Date.parse(value);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+async function fetchProducts(): Promise<Product[]> {
+  if (inFlightRequest) {
+    return inFlightRequest;
+  }
+
+  const requestVersion = cacheVersion;
+  const request = (async () => {
+    const response = await fetch('/api/products', {
+      headers: { Accept: 'application/json' },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to load products.');
+    }
+
+    const products = Array.isArray(data.products)
+      ? data.products
+      : [];
+
+    if (requestVersion === cacheVersion) {
+      cachedProducts = products;
+      cacheUpdatedAt = Date.now();
+    }
+
+    return products;
+  })();
+
+  inFlightRequest = request;
+
+  try {
+    return await request;
+  } finally {
+    if (inFlightRequest === request) {
+      inFlightRequest = null;
+    }
+  }
 }
 
 /**
  * Hero selection:
  * 1. Active products only.
- * 2. Higher order_count first, when the API supplies it.
- * 3. Lower admin sort_order first for ties.
- * 4. Newest products first as the final tie-breaker.
+ * 2. Higher order_count first.
+ * 3. Lower admin sort_order first.
+ * 4. Newest products first.
  */
 export function getFeaturedProducts(
   products: Product[],
@@ -83,32 +138,47 @@ export function getCategoryProducts(
 }
 
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(
+    () => cachedProducts ?? []
+  );
+
+  const [isLoading, setIsLoading] = useState(
+    () => cachedProducts === null
+  );
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchProducts() {
+    const hasCache = cachedProducts !== null;
+    const cacheIsFresh =
+      hasCache && Date.now() - cacheUpdatedAt < PRODUCT_CACHE_TTL;
+
+    if (hasCache) {
+      const productsSnapshot = cachedProducts as Product[];
+      setProducts(productsSnapshot);
+      setIsLoading(false);
+    }
+
+    if (cacheIsFresh) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (!hasCache) {
       setIsLoading(true);
+    }
 
-      try {
-        const response = await fetch('/api/products', {
-          headers: { Accept: 'application/json' },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Unable to load products.');
-        }
-
+    fetchProducts()
+      .then((data) => {
         if (!cancelled) {
-          setProducts(Array.isArray(data.products) ? data.products : []);
+          setProducts(data);
           setError(null);
         }
-      } catch (fetchError) {
+      })
+      .catch((fetchError) => {
         if (!cancelled) {
           setError(
             fetchError instanceof Error
@@ -116,12 +186,12 @@ export function useProducts() {
               : 'Unable to load products.'
           );
         }
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    }
-
-    fetchProducts();
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      });
 
     return () => {
       cancelled = true;

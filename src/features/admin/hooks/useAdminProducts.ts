@@ -1,5 +1,6 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { supabase } from '../../../utils/supabase';
+import { invalidateProductsCache } from '../../../hooks/useProducts';
 import toast from 'react-hot-toast';
 import { ADMIN_STORAGE_KEYS } from '../constants/admin.constants';
 import {
@@ -197,6 +198,8 @@ export function useAdminProducts(
           is_active: false,
         });
 
+        invalidateProductsCache();
+
         if (adminRef.current && userIdRef.current === userId) {
           toast.success(`${product.name} hidden`);
           await loadProducts();
@@ -227,6 +230,8 @@ export function useAdminProducts(
           is_active: true,
         });
 
+        invalidateProductsCache();
+
         if (adminRef.current && userIdRef.current === userId) {
           toast.success(`${product.name} reactivated`);
           await loadProducts();
@@ -252,6 +257,8 @@ export function useAdminProducts(
     async (product: AdminRow): Promise<boolean> => {
       try {
         const data = await productsApi('DELETE', { id: product.id });
+
+        invalidateProductsCache();
 
         if (adminRef.current && userIdRef.current === userId) {
           toast.success(`${product.name} deleted`);
