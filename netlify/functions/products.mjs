@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { requireAdmin } from './_shared/auth.mjs';
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_DB_URL,
@@ -13,44 +14,6 @@ const uuidPattern =
 
 function json(data, status = 200) {
   return Response.json(data, { status });
-}
-
-async function requireAdmin(request) {
-  const authorization = request.headers.get('authorization') || '';
-  const token = authorization.startsWith('Bearer ')
-    ? authorization.slice(7)
-    : '';
-
-  if (!token) return null;
-
-  const supabaseUrl =
-    process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseKey =
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Supabase authentication environment variables are missing.');
-  }
-
-  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    headers: {
-      apikey: supabaseKey,
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) return null;
-
-  const user = await response.json();
-  if (!user?.id) return null;
-
-  const result = await pool.query(
-    'SELECT id FROM public.admins WHERE id = $1 LIMIT 1',
-    [user.id]
-  );
-
-  return result.rowCount ? user : null;
 }
 
 function validateProduct(body) {
@@ -135,6 +98,19 @@ async function saveProduct(body, isUpdate, admin) {
   }
 
   const product = validation.product;
+
+  if (admin.role === 'store_admin') {
+    if (product.storefront && product.storefront !== admin.store_slug) {
+      return json({ error: 'You cannot manage products for another storefront.' }, 403);
+    }
+
+    product.storefront = admin.store_slug;
+  } else if (!isUpdate && !product.storefront) {
+    return json({ error: 'A storefront is required for a new product.' }, 400);
+  } else if (isUpdate) {
+    product.storefront = null;
+  }
+
   const values = [
     product.name,
     product.price,
@@ -165,9 +141,10 @@ async function saveProduct(body, isUpdate, admin) {
              is_active = $7, sort_order = $8,
              storefront = COALESCE($9, storefront)
          WHERE id = $10
+           AND ($11::text IS NULL OR storefront = $11)
          RETURNING id, name, price, category, subcategory, description,
                    image_url, is_active, sort_order, storefront`,
-        [...values, body.id]
+        [...values, body.id, admin.role === 'store_admin' ? admin.store_slug : null]
       );
     } else {
       result = await client.query(
@@ -200,16 +177,24 @@ async function saveProduct(body, isUpdate, admin) {
 async function listProducts(request) {
   const url = new URL(request.url);
   const isAdminRequest = url.searchParams.get('scope') === 'admin';
-  const requestedStorefront = url.searchParams.get('storefront')?.trim().toLowerCase() || null;
+  let requestedStorefront = url.searchParams.get('storefront')?.trim().toLowerCase() || null;
 
   if (requestedStorefront && !['yotaabo', 'poshies'].includes(requestedStorefront)) {
     return json({ error: 'Invalid storefront.' }, 400);
   }
 
   if (isAdminRequest) {
-    const admin = await requireAdmin(request);
+    const admin = await requireAdmin(request, pool);
+
     if (!admin) {
       return json({ error: 'You are not authorised to view products.' }, 401);
+    }
+
+    if (admin.role === 'store_admin') {
+      if (requestedStorefront && requestedStorefront !== admin.store_slug) {
+        return json({ error: 'You cannot view another storefront.' }, 403);
+      }
+      requestedStorefront = admin.store_slug;
     }
   }
 
@@ -218,6 +203,7 @@ async function listProducts(request) {
   const queryValues = [];
 
   if (!isAdminRequest) filters.push('is_active = TRUE');
+
   if (storefrontFilter) {
     queryValues.push(storefrontFilter);
     filters.push(`storefront = $${queryValues.length}`);
@@ -268,8 +254,9 @@ async function updateProductStatus(body, admin) {
       `UPDATE public.products
        SET is_active = $1
        WHERE id = $2
+         AND ($3::text IS NULL OR storefront = $3)
        RETURNING id, name, is_active`,
-      [body.is_active, id]
+      [body.is_active, id, admin.role === 'store_admin' ? admin.store_slug : null]
     );
 
     if (!result.rowCount) {
@@ -308,8 +295,9 @@ async function deleteProduct(body, admin) {
     result = await client.query(
       `DELETE FROM public.products
        WHERE id = $1
-       RETURNING id, name, image_url`,
-      [id]
+         AND ($2::text IS NULL OR storefront = $2)
+       RETURNING id, name, image_url, storefront`,
+      [id, admin.role === 'store_admin' ? admin.store_slug : null]
     );
 
     if (!result.rowCount) {
@@ -338,7 +326,7 @@ export default async (request) => {
       return json({ error: 'Method not allowed.' }, 405);
     }
 
-    const admin = await requireAdmin(request);
+    const admin = await requireAdmin(request, pool);
     if (!admin) {
       return json({ error: 'You are not authorised to manage products.' }, 401);
     }

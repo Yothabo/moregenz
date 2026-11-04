@@ -23,6 +23,7 @@ import AdminTopBar from '../features/admin/components/AdminTopBar';
 import AdminBottomNavigation from '../features/admin/components/AdminBottomNavigation';
 import AdminOverview from '../features/admin/components/AdminOverview';
 import AdminActivities from '../features/admin/components/AdminActivities';
+import AdminManagement from '../features/admin/components/AdminManagement';
 import AdminProducts from '../features/admin/components/AdminProducts';
 import AdminOrders from '../features/admin/components/AdminOrders';
 import { useAdminAuth } from '../features/admin/hooks/useAdminAuth';
@@ -43,6 +44,7 @@ import type {
 export default function Admin() {
   const {
     session,
+    admin,
     isAdmin,
     isChecking,
     isLoggingIn,
@@ -104,6 +106,14 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [storefrontFilter, setStorefrontFilter] =
     useState<'all' | Storefront>('all');
+
+  useEffect(() => {
+    if (admin?.role === 'store_admin' && admin.storeSlug) {
+      setStorefrontFilter(admin.storeSlug as Storefront);
+    } else if (admin?.role === 'super_admin') {
+      setStorefrontFilter('all');
+    }
+  }, [admin?.role, admin?.storeSlug]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -538,32 +548,6 @@ export default function Admin() {
       />
 
       <div className="admin-page-shell mx-auto">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <label
-            htmlFor="admin-storefront-filter"
-            className="admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/50"
-          >
-            Storefront
-          </label>
-          <select
-            id="admin-storefront-filter"
-            value={storefrontFilter}
-            onChange={(event) => {
-              setStorefrontFilter(event.target.value as 'all' | Storefront);
-              setViewingProduct(null);
-              setViewingOrder(null);
-              setConfirmDelete(null);
-              setConfirmPermanentDelete(null);
-              setConfirmDeleteOrder(null);
-            }}
-            className="min-w-0 rounded-none border border-solid border-[#4d4d4d]/20 bg-white px-3 py-2 text-sm text-[#4d4d4d] outline-none focus:border-[#4d4d4d]"
-          >
-            <option value="all">All Storefronts</option>
-            <option value="yotaabo">Yotaabo</option>
-            <option value="poshies">Poshies</option>
-          </select>
-        </div>
-
         {activeTab === 'overview' && (
           <AdminOverview
             email={session?.user?.email?.split('@')[0] || 'Admin'}
@@ -644,11 +628,59 @@ export default function Admin() {
                 Settings
               </h1>
             </div>
-            <div className="py-16 text-center">
-              <p className="admin-type-supporting text-sm text-[#4d4d4d]/50">
-                Account and store settings will appear here.
-              </p>
-            </div>
+
+            <section className="mb-8 border border-[#4d4d4d]/10 bg-white p-5">
+              <div className="mb-4">
+                <h2 className="admin-type-section-title text-[#4d4d4d]">
+                  Storefront
+                </h2>
+                <p className="admin-type-supporting mt-1 text-sm text-[#4d4d4d]/60">
+                  Choose which storefront data appears across your dashboard.
+                </p>
+              </div>
+
+              {admin?.role === 'super_admin' ? (
+                <select
+                  id="admin-storefront-filter"
+                  value={storefrontFilter}
+                  onChange={(event) => {
+                    setStorefrontFilter(event.target.value as 'all' | Storefront);
+                    setViewingProduct(null);
+                    setViewingOrder(null);
+                    setConfirmDelete(null);
+                    setConfirmPermanentDelete(null);
+                    setConfirmDeleteOrder(null);
+                  }}
+                  className="w-full rounded-none border border-solid border-[#4d4d4d]/20 bg-white px-3 py-3 text-sm text-[#4d4d4d] outline-none focus:border-[#4d4d4d]"
+                >
+                  <option value="all">All Storefronts</option>
+                  <option value="yotaabo">Yotaabo</option>
+                  <option value="poshies">Poshies</option>
+                </select>
+              ) : (
+                <div className="border border-[#4d4d4d]/10 bg-[#f5f5f5] px-3 py-3 text-sm font-medium text-[#4d4d4d]">
+                  {admin?.storeSlug === 'poshies' ? 'Poshies' : 'Yotaabo'}
+                  <p className="mt-1 text-xs font-normal text-[#4d4d4d]/50">
+                    Your account is assigned to this storefront.
+                  </p>
+                </div>
+              )}
+            </section>
+
+            {admin?.role === 'super_admin' && session?.access_token && (
+              <section className="space-y-4">
+                <div>
+                  <h2 className="admin-type-section-title text-[#4d4d4d]">
+                    Admin Management
+                  </h2>
+                  <p className="admin-type-supporting mt-1 text-sm text-[#4d4d4d]/60">
+                    Manage administrator access and storefront assignments.
+                  </p>
+                </div>
+
+                <AdminManagement accessToken={session.access_token} />
+              </section>
+            )}
           </div>
         )}
       </div>
@@ -686,6 +718,12 @@ export default function Admin() {
           void loadActivities();
         }}
         productToEdit={editing}
+        adminRole={admin?.role ?? null}
+        storeSlug={
+          admin?.storeSlug === 'yotaabo' || admin?.storeSlug === 'poshies'
+            ? admin.storeSlug
+            : null
+        }
       />
 
       <ConfirmModal

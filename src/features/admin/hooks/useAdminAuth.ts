@@ -3,8 +3,17 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../utils/supabase';
 import { ADMIN_STORAGE_KEYS } from '../constants/admin.constants';
 
+type AdminContext = {
+  id: string;
+  email: string | null;
+  role: 'super_admin' | 'store_admin';
+  storeId: string | null;
+  storeSlug: string | null;
+};
+
 type UseAdminAuthResult = {
   session: Session | null;
+  admin: AdminContext | null;
   isAdmin: boolean | null;
   isChecking: boolean;
   isLoggingIn: boolean;
@@ -39,6 +48,7 @@ function clearAdminStorage() {
 
 export function useAdminAuth(): UseAdminAuthResult {
   const [session, setSession] = useState<Session | null>(null);
+  const [admin, setAdmin] = useState<AdminContext | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -56,43 +66,70 @@ export function useAdminAuth(): UseAdminAuthResult {
 
       if (!currentSession) {
         clearAdminStorage();
+        setAdmin(null);
         setIsAdmin(false);
         setIsChecking(false);
         return;
       }
 
       for (let attempt = 0; attempt < 3; attempt++) {
-        const { data, error } = await supabase
-          .from('admins')
-          .select('id')
-          .eq('id', currentSession.user.id)
-          .maybeSingle();
+        try {
+          const response = await fetch('/api/admin-context', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${currentSession.access_token}`,
+            },
+            cache: 'no-store',
+          });
 
-        if (!active) return;
+          if (!active) return;
 
-        if (data) {
+          if (response.status === 401) {
+            clearAdminStorage();
+            setAdmin(null);
+            setIsAdmin(false);
+            setIsChecking(false);
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error('Unable to verify admin access.');
+          }
+
+          const payload = await response.json();
+          const verifiedAdmin = payload?.admin;
+
+          if (
+            !verifiedAdmin?.id ||
+            !['super_admin', 'store_admin'].includes(verifiedAdmin.role) ||
+            (verifiedAdmin.role === 'store_admin' &&
+              (!verifiedAdmin.storeId || !verifiedAdmin.storeSlug)) ||
+            (verifiedAdmin.role === 'super_admin' &&
+              verifiedAdmin.storeId !== null)
+          ) {
+            clearAdminStorage();
+            setAdmin(null);
+            setIsAdmin(false);
+            setIsChecking(false);
+            return;
+          }
+
+          setAdmin(verifiedAdmin);
           setIsAdmin(true);
           setIsChecking(false);
           return;
-        }
-
-        if (error) {
+        } catch {
           if (attempt < 2) {
             await new Promise((resolve) =>
               window.setTimeout(resolve, 300 * (attempt + 1))
             );
-            continue;
           }
-        } else {
-          clearAdminStorage();
-          setIsAdmin(false);
-          setIsChecking(false);
-          return;
         }
       }
 
       if (active) {
         clearAdminStorage();
+        setAdmin(null);
         setIsAdmin(false);
         setIsChecking(false);
       }
@@ -182,11 +219,13 @@ export function useAdminAuth(): UseAdminAuthResult {
 
     clearAdminStorage();
     setSession(null);
+    setAdmin(null);
     setIsAdmin(false);
   }
 
   return {
     session,
+    admin,
     isAdmin,
     isChecking,
     isLoggingIn,

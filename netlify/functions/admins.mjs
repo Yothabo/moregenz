@@ -133,7 +133,18 @@ export default async function handler(request) {
       return json({ error: 'Invitation service is not configured.' }, 503);
     }
 
-    const redirectUrl = `${process.env.URL || process.env.DEPLOY_PRIME_URL}/update-password`;
+    const requestOrigin = request.headers.get('origin') || '';
+    const isLocalOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(requestOrigin);
+    const deploymentUrl = process.env.URL || process.env.DEPLOY_PRIME_URL || '';
+
+    const redirectBase = isLocalOrigin ? requestOrigin : deploymentUrl;
+
+    if (!redirectBase) {
+      console.error('Admin invitation redirect URL is not configured.');
+      return json({ error: 'Invitation redirect URL is not configured.' }, 503);
+    }
+
+    const redirectUrl = `${redirectBase.replace(/\/+$/, '')}/update-password`;
     const inviteUrl = `${supabaseUrl}/auth/v1/invite?redirect_to=${encodeURIComponent(redirectUrl)}`;
 
     const authResponse = await fetch(inviteUrl, {

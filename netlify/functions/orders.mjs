@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import { randomBytes } from 'node:crypto';
+import { requireAdmin } from './_shared/auth.mjs';
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_DB_URL,
@@ -29,44 +30,6 @@ function orderNumber() {
   }).format(new Date()).replace(/\//g, '');
 
   return `#YT-${date}-${randomBytes(2).toString('hex').toUpperCase()}`;
-}
-
-async function requireAdmin(request) {
-  const authorization = request.headers.get('authorization') || '';
-  const token = authorization.startsWith('Bearer ')
-    ? authorization.slice(7)
-    : '';
-
-  if (!token) return null;
-
-  const supabaseUrl =
-    process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseKey =
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Supabase authentication environment variables are missing.');
-  }
-
-  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    headers: {
-      apikey: supabaseKey,
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) return null;
-
-  const user = await response.json();
-  if (!user?.id) return null;
-
-  const result = await pool.query(
-    'SELECT id FROM public.admins WHERE id = $1 LIMIT 1',
-    [user.id]
-  );
-
-  return result.rowCount ? user : null;
 }
 
 async function createOrder(body) {
@@ -185,12 +148,14 @@ async function createOrder(body) {
   }
 }
 
-async function listOrders() {
+async function listOrders(admin) {
   const result = await pool.query(
     `SELECT id, order_number, customer_name, customer_phone,
             subtotal, status, storefront, created_at, updated_at
      FROM public.orders
-     ORDER BY created_at DESC`
+     WHERE ($1::text IS NULL OR storefront = $1)
+     ORDER BY created_at DESC`,
+    [admin.role === 'store_admin' ? admin.store_slug : null]
   );
 
   if (!result.rowCount) return json({ orders: [] });
@@ -249,11 +214,11 @@ export default async (request) => {
       return error('Method not allowed.', 405);
     }
 
-    const admin = await requireAdmin(request);
+    const admin = await requireAdmin(request, pool);
     if (!admin) return error('You are not authorised to manage orders.', 401);
 
     if (method === 'GET') {
-      return await listOrders();
+      return await listOrders(admin);
     }
 
     const body = method === 'DELETE' ? {} : await request.json();
@@ -280,8 +245,9 @@ export default async (request) => {
           `UPDATE public.orders
            SET status = $1, updated_at = now()
            WHERE id = $2
+             AND ($3::text IS NULL OR storefront = $3)
            RETURNING id, order_number, status`,
-          [status, id]
+          [status, id, admin.role === 'store_admin' ? admin.store_slug : null]
         );
 
         if (!result.rowCount) {
@@ -313,8 +279,9 @@ export default async (request) => {
       result = await client.query(
         `DELETE FROM public.orders
          WHERE id = $1
+           AND ($2::text IS NULL OR storefront = $2)
          RETURNING id, order_number`,
-        [id]
+        [id, admin.role === 'store_admin' ? admin.store_slug : null]
       );
 
       if (!result.rowCount) {

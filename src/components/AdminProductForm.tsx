@@ -22,6 +22,8 @@ type AdminProductFormProps = {
   onClose: () => void;
   onSaved: () => void;
   productToEdit?: AdminProduct | null;
+  adminRole?: 'super_admin' | 'store_admin' | null;
+  storeSlug?: 'yotaabo' | 'poshies' | null;
 };
 
 const SUBCATEGORY_OPTIONS: Record<
@@ -75,6 +77,8 @@ export default function AdminProductForm({
   onClose,
   onSaved,
   productToEdit,
+  adminRole,
+  storeSlug,
 }: AdminProductFormProps) {
   const [form, setForm] = useState<AdminProduct>(emptyProduct);
   const [statusValue, setStatusValue] = useState<string>('');
@@ -110,7 +114,7 @@ export default function AdminProductForm({
         setForm({
           ...emptyProduct,
           ...saved.form,
-          storefront: saved.form.storefront === 'poshies' ? 'poshies' : 'yotaabo',
+          storefront: adminRole === 'store_admin' && storeSlug ? storeSlug : saved.form.storefront === 'poshies' ? 'poshies' : 'yotaabo',
         });
         setStatusValue(saved.statusValue ?? '');
       } else {
@@ -118,9 +122,12 @@ export default function AdminProductForm({
           ? {
               ...emptyProduct,
               ...productToEdit,
-              storefront: productToEdit.storefront === 'poshies' ? 'poshies' : 'yotaabo',
+              storefront: adminRole === 'store_admin' && storeSlug ? storeSlug : productToEdit.storefront === 'poshies' ? 'poshies' : 'yotaabo',
             }
-          : { ...emptyProduct });
+          : {
+            ...emptyProduct,
+            storefront: adminRole === 'store_admin' && storeSlug ? storeSlug : emptyProduct.storefront,
+          });
         setStatusValue(
           productToEdit
             ? productToEdit.is_active ? 'active' : 'hidden'
@@ -132,9 +139,12 @@ export default function AdminProductForm({
         ? {
             ...emptyProduct,
             ...productToEdit,
-            storefront: productToEdit.storefront === 'poshies' ? 'poshies' : 'yotaabo',
+            storefront: adminRole === 'store_admin' && storeSlug ? storeSlug : productToEdit.storefront === 'poshies' ? 'poshies' : 'yotaabo',
           }
-        : { ...emptyProduct });
+        : {
+            ...emptyProduct,
+            storefront: adminRole === 'store_admin' && storeSlug ? storeSlug : emptyProduct.storefront,
+          });
       setStatusValue(
         productToEdit
           ? productToEdit.is_active ? 'active' : 'hidden'
@@ -143,7 +153,7 @@ export default function AdminProductForm({
     }
 
     setIsDraftHydrated(true);
-  }, [isOpen, productToEdit]);
+  }, [isOpen, productToEdit, adminRole, storeSlug]);
 
   useEffect(() => {
     if (!isOpen || !isDraftHydrated) return;
@@ -399,18 +409,27 @@ export default function AdminProductForm({
             <input type="text" value={form.name} onChange={(e) => handleChange('name', e.target.value)} className={inputClass} placeholder="e.g. Noir Oud" />
           </label>
 
-          <label className="block">
-            <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Storefront</span>
-            <CustomDropdown
-              value={form.storefront}
-              onChange={(value) => handleChange('storefront', value)}
-              options={[
-                { value: 'yotaabo', label: 'Yotaabo' },
-                { value: 'poshies', label: 'Poshies' },
-              ]}
-              placeholder="Select storefront"
-            />
-          </label>
+          {adminRole === 'super_admin' ? (
+            <label className="block">
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Storefront</span>
+              <CustomDropdown
+                value={form.storefront}
+                onChange={(value) => handleChange('storefront', value)}
+                options={[
+                  { value: 'yotaabo', label: 'Yotaabo' },
+                  { value: 'poshies', label: 'Poshies' },
+                ]}
+                placeholder="Select storefront"
+              />
+            </label>
+          ) : (
+            <div>
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Storefront</span>
+              <div className="border border-solid border-[#4d4d4d]/20 px-3 py-2 text-sm text-[#4d4d4d]">
+                {form.storefront === 'poshies' ? 'Poshies' : 'Yotaabo'}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block">

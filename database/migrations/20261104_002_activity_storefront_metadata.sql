@@ -1,0 +1,233 @@
+BEGIN;
+
+CREATE OR REPLACE FUNCTION public.capture_order_activity()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $function$
+DECLARE
+    v_actor_email text;
+BEGIN
+    v_actor_email := COALESCE(
+        NULLIF(current_setting('app.actor_email', true), ''),
+        NULLIF(current_setting('request.jwt.claim.email', true), '')
+    );
+
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO public.admin_activity_log (
+            event_type, entity_type, entity_id,
+            description, actor_email, metadata, created_at
+        )
+        VALUES (
+            'order.received',
+            'order',
+            NEW.id,
+            format('Order %s was received.', NEW.order_number),
+            NULL,
+            jsonb_build_object(
+                'storefront', NEW.storefront,
+                'order_number', NEW.order_number,
+                'status', NEW.status,
+                'subtotal', NEW.subtotal
+            ),
+            COALESCE(NEW.created_at, now())
+        );
+
+        RETURN NEW;
+
+    ELSIF TG_OP = 'UPDATE' THEN
+        IF OLD.status IS DISTINCT FROM NEW.status THEN
+            INSERT INTO public.admin_activity_log (
+                event_type, entity_type, entity_id,
+                description, actor_email, metadata
+            )
+            VALUES (
+                'order.status_changed',
+                'order',
+                NEW.id,
+                format(
+                    'Order %s changed from %s to %s.',
+                    NEW.order_number,
+                    OLD.status,
+                    NEW.status
+                ),
+                v_actor_email,
+                jsonb_build_object(
+                    'storefront', NEW.storefront,
+                    'order_number', NEW.order_number,
+                    'previous_status', OLD.status,
+                    'new_status', NEW.status
+                )
+            );
+        END IF;
+
+        IF (to_jsonb(NEW) - ARRAY[
+                'updated_at',
+                'customer_name',
+                'customer_phone',
+                'status'
+            ])
+           IS DISTINCT FROM
+           (to_jsonb(OLD) - ARRAY[
+                'updated_at',
+                'customer_name',
+                'customer_phone',
+                'status'
+            ]) THEN
+            INSERT INTO public.admin_activity_log (
+                event_type, entity_type, entity_id,
+                description, actor_email, metadata
+            )
+            VALUES (
+                'order.updated',
+                'order',
+                NEW.id,
+                format('Order %s was updated.', NEW.order_number),
+                v_actor_email,
+                jsonb_build_object(
+                    'storefront', NEW.storefront,
+                    'previous', to_jsonb(OLD) -
+                        ARRAY['customer_name', 'customer_phone'],
+                    'current', to_jsonb(NEW) -
+                        ARRAY['customer_name', 'customer_phone']
+                )
+            );
+        END IF;
+
+        RETURN NEW;
+
+    ELSIF TG_OP = 'DELETE' THEN
+        INSERT INTO public.admin_activity_log (
+            event_type, entity_type, entity_id,
+            description, actor_email, metadata
+        )
+        VALUES (
+            'order.deleted',
+            'order',
+            OLD.id,
+            format('Order %s was permanently deleted.', OLD.order_number),
+            v_actor_email,
+            jsonb_build_object(
+                'storefront', OLD.storefront,
+                'order_number', OLD.order_number,
+                'previous_status', OLD.status
+            )
+        );
+
+        RETURN OLD;
+    END IF;
+
+    RETURN NULL;
+END;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.capture_product_activity()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    v_actor_email text;
+BEGIN
+    v_actor_email := COALESCE(
+        NULLIF(current_setting('app.actor_email', true), ''),
+        NULLIF(current_setting('request.jwt.claim.email', true), '')
+    );
+
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO public.admin_activity_log (
+            event_type, entity_type, entity_id,
+            description, actor_email, metadata, created_at
+        )
+        VALUES (
+            'product.created',
+            'product',
+            NEW.id,
+            format('Product "%s" was added to the catalogue.', NEW.name),
+            v_actor_email,
+            jsonb_build_object(
+                'storefront', NEW.storefront,
+                'product_name', NEW.name,
+                'price', NEW.price,
+                'category', NEW.category,
+                'subcategory', NEW.subcategory,
+                'is_active', NEW.is_active
+            ),
+            COALESCE(NEW.created_at, now())
+        );
+
+        RETURN NEW;
+
+    ELSIF TG_OP = 'UPDATE' THEN
+
+        IF (to_jsonb(NEW) - 'is_active' - 'updated_at')
+           IS DISTINCT FROM
+           (to_jsonb(OLD) - 'is_active' - 'updated_at') THEN
+
+            INSERT INTO public.admin_activity_log (
+                event_type, entity_type, entity_id,
+                description, actor_email, metadata
+            )
+            VALUES (
+                'product.updated',
+                'product',
+                NEW.id,
+                format('Product "%s" was updated.', NEW.name),
+                v_actor_email,
+                jsonb_build_object(
+                    'storefront', NEW.storefront,
+                    'previous', to_jsonb(OLD),
+                    'current', to_jsonb(NEW)
+                )
+            );
+        END IF;
+
+        IF OLD.is_active IS DISTINCT FROM NEW.is_active THEN
+            INSERT INTO public.admin_activity_log (
+                event_type, entity_type, entity_id,
+                description, actor_email, metadata
+            )
+            VALUES (
+                CASE
+                    WHEN NEW.is_active THEN 'product.reactivated'
+                    ELSE 'product.hidden'
+                END,
+                'product',
+                NEW.id,
+                CASE
+                    WHEN NEW.is_active
+                        THEN format('Product "%s" was made visible in the store.', NEW.name)
+                    ELSE format('Product "%s" was hidden from the store.', NEW.name)
+                END,
+                v_actor_email,
+                jsonb_build_object(
+                    'storefront', NEW.storefront,
+                    'product_name', NEW.name,
+                    'previous_status', OLD.is_active,
+                    'new_status', NEW.is_active
+                )
+            );
+        END IF;
+
+        RETURN NEW;
+
+    ELSIF TG_OP = 'DELETE' THEN
+        INSERT INTO public.admin_activity_log (
+            event_type, entity_type, entity_id,
+            description, actor_email, metadata
+        )
+        VALUES (
+            'product.deleted',
+            'product',
+            OLD.id,
+            format('Product "%s" was permanently deleted.', OLD.name),
+            v_actor_email,
+            jsonb_build_object('storefront', OLD.storefront, 'product_name', OLD.name)
+        );
+
+        RETURN OLD;
+    END IF;
+
+    RETURN NULL;
+END;
+$function$;
+
+COMMIT;
