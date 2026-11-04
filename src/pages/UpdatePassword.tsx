@@ -48,7 +48,7 @@ export default function UpdatePassword() {
   if (!isReady) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white">
-        <p className="text-sm text-[#4d4d4d]/60">Verifying reset link...</p>
+        <p className="text-sm text-[#4d4d4d]/60">Verifying secure link...</p>
       </main>
     );
   }
@@ -83,7 +83,7 @@ export default function UpdatePassword() {
 
         <form onSubmit={handleSubmit} className="mt-14 flex flex-col gap-4">
           <p className="text-center text-sm text-[#4d4d4d]/70">
-            Choose a new password for your account.
+            Set a password to activate your administrator account or update your existing password.
           </p>
 
           <div className="flex items-center gap-3 rounded-lg border border-black/10 bg-[#f5f5f5] px-4 py-3.5">
