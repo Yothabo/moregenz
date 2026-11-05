@@ -46,6 +46,28 @@ function clearAdminStorage() {
   }
 }
 
+async function updateAppSession(
+  currentSession: Session,
+  action: 'heartbeat' | 'logout'
+) {
+  const response = await fetch('/api/admin-session', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${currentSession.access_token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action }),
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    throw new Error(
+      payload?.error || 'Unable to update administrator session.'
+    );
+  }
+}
+
 export function useAdminAuth(): UseAdminAuthResult {
   const [session, setSession] = useState<Session | null>(null);
   const [admin, setAdmin] = useState<AdminContext | null>(null);
@@ -153,12 +175,19 @@ export function useAdminAuth(): UseAdminAuthResult {
         lastUserIdRef.current = nextUserId;
         setSession(nextSession);
 
+        if (event === 'PASSWORD_RECOVERY') {
+          clearAdminStorage();
+          setAdmin(null);
+          setIsAdmin(false);
+          setIsChecking(false);
+          return;
+        }
+
         const shouldCheckAdmin = [
           'INITIAL_SESSION',
           'SIGNED_IN',
           'SIGNED_OUT',
           'USER_UPDATED',
-          'PASSWORD_RECOVERY',
         ].includes(event);
 
         if (!shouldCheckAdmin) return;
@@ -177,6 +206,18 @@ export function useAdminAuth(): UseAdminAuthResult {
       subscription.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!session || !admin || !isAdmin) return;
+
+    const heartbeat = window.setInterval(() => {
+      void updateAppSession(session, 'heartbeat').catch((error) => {
+        console.error('Admin session heartbeat failed:', error);
+      });
+    }, 60_000);
+
+    return () => window.clearInterval(heartbeat);
+  }, [session, admin, isAdmin]);
 
   async function login(email: string, password: string) {
     setLoginError(null);
@@ -211,7 +252,13 @@ export function useAdminAuth(): UseAdminAuthResult {
   }
 
   async function logout() {
-    const { error } = await supabase.auth.signOut();
+    const currentSession = session;
+
+    if (currentSession) {
+      await updateAppSession(currentSession, 'logout');
+    }
+
+    const { error } = await supabase.auth.signOut({ scope: 'local' });
 
     if (error) {
       throw error;

@@ -7,19 +7,112 @@ const pool = new Pool({
   max: 2,
 });
 
+function json(data, status = 200) {
+  return Response.json(data, {
+    status,
+    headers: { 'Cache-Control': 'private, no-store' },
+  });
+}
+
 export default async (request) => {
+  let client;
+  let databaseCommitted = false;
+
   try {
     if (request.method !== 'GET') {
-      return Response.json({ error: 'Method not allowed.' }, { status: 405 });
+      return json({ error: 'Method not allowed.' }, 405);
     }
 
-    const admin = await requireAdmin(request, pool);
+    // This endpoint is the only route allowed to bootstrap a new app session.
+    const admin = await requireAdmin(request, pool, {
+      allowSessionBootstrap: true,
+    });
 
     if (!admin) {
-      return Response.json({ error: 'Not authorised.' }, { status: 401 });
+      return json({ error: 'Not authorised.' }, 401);
     }
 
-    return Response.json({
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const inserted = await client.query(
+      `INSERT INTO public.admin_sessions (
+         admin_id,
+         supabase_session_id,
+         user_agent
+       )
+       VALUES ($1, $2, $3)
+       ON CONFLICT (supabase_session_id) DO NOTHING
+       RETURNING id`,
+      [
+        admin.id,
+        admin.supabase_session_id,
+        request.headers.get('user-agent')?.slice(0, 1000) || null,
+      ]
+    );
+
+    let appSessionId;
+
+    if (inserted.rowCount) {
+      appSessionId = inserted.rows[0].id;
+
+      await client.query(
+        `INSERT INTO public.admin_activity_log (
+           event_type,
+           entity_type,
+           entity_id,
+           description,
+           actor_email,
+           metadata
+         )
+         VALUES (
+           'admin.login',
+           'admin',
+           $1,
+           'Administrator signed in.',
+           $2,
+           '{}'::jsonb
+         )`,
+        [admin.id, admin.email]
+      );
+    } else {
+      const existing = await client.query(
+        `SELECT id, admin_id, ended_at, revoked_at
+         FROM public.admin_sessions
+         WHERE supabase_session_id = $1
+         LIMIT 1
+         FOR UPDATE`,
+        [admin.supabase_session_id]
+      );
+
+      if (
+        !existing.rowCount ||
+        existing.rows[0].admin_id !== admin.id ||
+        existing.rows[0].ended_at ||
+        existing.rows[0].revoked_at
+      ) {
+        await client.query('ROLLBACK');
+        return json({ error: 'This session is no longer active.' }, 401);
+      }
+
+      appSessionId = existing.rows[0].id;
+
+      await client.query(
+        `UPDATE public.admin_sessions
+         SET last_seen_at = now(),
+             user_agent = COALESCE(user_agent, $2)
+         WHERE id = $1`,
+        [
+          appSessionId,
+          request.headers.get('user-agent')?.slice(0, 1000) || null,
+        ]
+      );
+    }
+
+    await client.query('COMMIT');
+    databaseCommitted = true;
+
+    return json({
       admin: {
         id: admin.id,
         email: admin.email,
@@ -27,14 +120,16 @@ export default async (request) => {
         storeId: admin.store_id,
         storeSlug: admin.store_slug,
       },
-    }, {
-      headers: { 'Cache-Control': 'private, no-store' },
+      sessionId: appSessionId,
     });
   } catch (error) {
+    if (client && !databaseCommitted) {
+      await client.query('ROLLBACK').catch(() => {});
+    }
+
     console.error('Admin context error:', error);
-    return Response.json(
-      { error: 'Unable to verify admin access.' },
-      { status: 500 }
-    );
+    return json({ error: 'Unable to verify admin access.' }, 500);
+  } finally {
+    client?.release();
   }
 };

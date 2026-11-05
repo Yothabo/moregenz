@@ -1,4 +1,28 @@
-export async function requireAdmin(request, pool) {
+function getSupabaseSessionId(token) {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return null;
+
+    const claims = JSON.parse(
+      Buffer.from(payload, 'base64url').toString('utf8')
+    );
+
+    const sessionId = claims.session_id;
+
+    return typeof sessionId === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)
+      ? sessionId
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function requireAdmin(
+  request,
+  pool,
+  { allowSessionBootstrap = false } = {}
+) {
   const authorization = request.headers.get('authorization') || '';
   const token = authorization.startsWith('Bearer ')
     ? authorization.slice(7).trim()
@@ -18,6 +42,7 @@ export async function requireAdmin(request, pool) {
     throw new Error('Supabase authentication configuration is missing.');
   }
 
+  // Validate the bearer token with Supabase before reading its claims.
   const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
     headers: {
       apikey: supabaseKey,
@@ -28,8 +53,10 @@ export async function requireAdmin(request, pool) {
   if (!response.ok) return null;
 
   const user = await response.json();
-
   if (!user?.id) return null;
+
+  const supabaseSessionId = getSupabaseSessionId(token);
+  if (!supabaseSessionId) return null;
 
   const result = await pool.query(
     `SELECT
@@ -54,18 +81,58 @@ export async function requireAdmin(request, pool) {
 
   if (admin.role === 'super_admin') {
     if (admin.store_id !== null) return null;
-    return admin;
-  }
-
-  if (admin.role === 'store_admin') {
-    if (!admin.store_id || !admin.store_slug || admin.store_is_active !== true) {
+  } else if (admin.role === 'store_admin') {
+    if (
+      !admin.store_id ||
+      !admin.store_slug ||
+      admin.store_is_active !== true
+    ) {
       return null;
     }
-
-    return admin;
+  } else {
+    return null;
   }
 
-  return null;
+  const sessionResult = await pool.query(
+    `SELECT id, ended_at, revoked_at
+     FROM public.admin_sessions
+     WHERE supabase_session_id = $1
+       AND admin_id = $2
+     LIMIT 1`,
+    [supabaseSessionId, admin.id]
+  );
+
+  if (!sessionResult.rowCount) {
+    if (!allowSessionBootstrap) return null;
+
+    return {
+      ...admin,
+      supabase_session_id: supabaseSessionId,
+      needs_session_bootstrap: true,
+    };
+  }
+
+  const appSession = sessionResult.rows[0];
+
+  if (appSession.ended_at || appSession.revoked_at) return null;
+
+  const heartbeat = await pool.query(
+    `UPDATE public.admin_sessions
+     SET last_seen_at = now()
+     WHERE id = $1
+       AND admin_id = $2
+       AND ended_at IS NULL
+       AND revoked_at IS NULL`,
+    [appSession.id, admin.id]
+  );
+
+  if (!heartbeat.rowCount) return null;
+
+  return {
+    ...admin,
+    supabase_session_id: supabaseSessionId,
+    app_session_id: appSession.id,
+  };
 }
 
 export function canAccessStore(admin, storefront) {

@@ -9,11 +9,14 @@ export default function UpdatePassword() {
   const [isSaving, setIsSaving] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const navigate = useNavigate();
+  const invitationId = new URLSearchParams(window.location.search).get('invitationId');
 
   useEffect(() => {
-    // Supabase puts the session in the URL after password reset.
-    // We need to detect that the user is authenticated via the recovery link.
+    let mounted = true;
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+
       if (session) {
         setIsReady(true);
       } else {
@@ -21,27 +24,71 @@ export default function UpdatePassword() {
         navigate('/admin');
       }
     });
+
+    return () => {
+      mounted = false;
+    };
   }, [navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('Passwords must contain at least 6 characters');
       return;
     }
+
     if (password !== confirm) {
       toast.error('Passwords do not match');
       return;
     }
+
     setIsSaving(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    setIsSaving(false);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Password updated. Please sign in again.');
-      await supabase.auth.signOut();
+
+    try {
+      const { data, error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      const session = data.user
+        ? (await supabase.auth.getSession()).data.session
+        : null;
+
+      if (session?.access_token && invitationId) {
+        const response = await fetch('/api/admin-invitations-accept', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ invitationId }),
+        });
+
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok || !result?.accepted) {
+          toast.error(
+            result?.error ||
+            'Password updated, but this invitation could not be activated.'
+          );
+          return;
+        }
+
+        toast.success('Password set. Your administrator account is active.');
+      } else {
+        toast.success('Password updated. Please sign in again.');
+      }
+
+      await supabase.auth.signOut({ scope: 'local' });
       navigate('/admin');
+    } catch (error) {
+      console.error('Password update error:', error);
+      toast.error('Unable to complete the password update.');
+    } finally {
+      setIsSaving(false);
     }
   }
 

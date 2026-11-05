@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { requireAdmin } from './_shared/auth.mjs';
 
@@ -11,11 +12,45 @@ const responseHeaders = {
   'Cache-Control': 'private, no-store',
 };
 
+const INVITATION_HOURS = 24;
+
 function json(data, status = 200) {
   return Response.json(data, {
     status,
     headers: responseHeaders,
   });
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character]);
+}
+
+async function deleteAuthUser(supabaseUrl, serviceRoleKey, userId) {
+  const response = await fetch(
+    `${supabaseUrl}/auth/v1/admin/users/${userId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error('Auth user cleanup failed:', {
+      userId,
+      status: response.status,
+    });
+  }
+
+  return response.ok;
 }
 
 export default async function handler(request) {
@@ -44,9 +79,24 @@ export default async function handler(request) {
           s.name AS store_name,
           s.slug AS store_slug,
           a.is_active,
-          a.created_at
+          a.created_at,
+          i.id AS invitation_id,
+          CASE
+            WHEN i.status = 'pending' AND i.expires_at <= now()
+              THEN 'expired'
+            ELSE i.status
+          END AS invitation_status,
+          i.created_at AS invitation_created_at,
+          i.expires_at AS invitation_expires_at
         FROM public.admins a
         LEFT JOIN public.stores s ON s.id = a.store_id
+        LEFT JOIN LATERAL (
+          SELECT id, status, created_at, expires_at
+          FROM public.admin_invitations
+          WHERE admin_id = a.id
+          ORDER BY created_at DESC
+          LIMIT 1
+        ) i ON TRUE
         ORDER BY
           CASE WHEN a.role = 'super_admin' THEN 0 ELSE 1 END,
           a.created_at ASC
@@ -57,7 +107,7 @@ export default async function handler(request) {
 
     const body = await request.json().catch(() => null);
 
-    if (!body || typeof body !== 'object') {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
       return json({ error: 'Invalid request body.' }, 400);
     }
 
@@ -98,7 +148,9 @@ export default async function handler(request) {
       );
 
       if (!storeResult.rowCount) {
-        return json({ error: 'The selected storefront is unavailable.' }, 400);
+        return json({
+          error: 'The selected storefront is unavailable.',
+        }, 400);
       }
 
       storeId = storeResult.rows[0].id;
@@ -117,7 +169,9 @@ export default async function handler(request) {
     );
 
     if (existingAdmin.rowCount) {
-      return json({ error: 'This email is already an administrator.' }, 409);
+      return json({
+        error: 'This email is already an administrator.',
+      }, 409);
     }
 
     const supabaseUrl = (
@@ -127,55 +181,97 @@ export default async function handler(request) {
     ).replace(/\/+$/, '');
 
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const resendFromEmail = process.env.RESEND_FROM_EMAIL;
+    const appUrl = (process.env.PUBLIC_APP_URL || '').replace(/\/+$/, '');
 
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error('Admin invitation configuration is missing.');
-      return json({ error: 'Invitation service is not configured.' }, 503);
+    if (
+      !supabaseUrl ||
+      !serviceRoleKey ||
+      !resendApiKey ||
+      !resendFromEmail ||
+      !appUrl
+    ) {
+      console.error('Admin invitation environment configuration is incomplete.');
+
+      return json({
+        error: 'The administrator invitation service is not configured.',
+      }, 503);
     }
 
-    const requestOrigin = request.headers.get('origin') || '';
-    const isLocalOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(requestOrigin);
-    const deploymentUrl = process.env.URL || process.env.DEPLOY_PRIME_URL || '';
+    let parsedAppUrl;
 
-    const redirectBase = isLocalOrigin ? requestOrigin : deploymentUrl;
-
-    if (!redirectBase) {
-      console.error('Admin invitation redirect URL is not configured.');
-      return json({ error: 'Invitation redirect URL is not configured.' }, 503);
+    try {
+      parsedAppUrl = new URL(appUrl);
+    } catch {
+      return json({ error: 'The application URL is invalid.' }, 500);
     }
 
-    const redirectUrl = `${redirectBase.replace(/\/+$/, '')}/update-password`;
-    const inviteUrl = `${supabaseUrl}/auth/v1/invite?redirect_to=${encodeURIComponent(redirectUrl)}`;
+    if (!['https:', 'http:'].includes(parsedAppUrl.protocol)) {
+      return json({ error: 'The application URL is invalid.' }, 500);
+    }
 
-    const authResponse = await fetch(inviteUrl, {
-      method: 'POST',
-      headers: {
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    });
+    const invitationId = randomUUID();
+    const redirectUrl = `${appUrl}/update-password?invitationId=${invitationId}`;
 
-    const authResult = await authResponse.json().catch(() => null);
+    // Generate an invitation link without sending Supabase's own email.
+    const generateResponse = await fetch(
+      `${supabaseUrl}/auth/v1/admin/generate_link`,
+      {
+        method: 'POST',
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'invite',
+          email,
+          options: {
+            redirectTo: redirectUrl,
+          },
+        }),
+      }
+    );
 
-    if (!authResponse.ok || !authResult?.id) {
-      console.error('Supabase invitation failed:', {
-        status: authResponse.status,
-        message: authResult?.msg || authResult?.message || authResult?.error,
+    const generated = await generateResponse.json().catch(() => null);
+
+    const authUserId = generated?.user?.id || generated?.id;
+    const invitationLink =
+      generated?.action_link ||
+      generated?.properties?.action_link;
+
+    if (
+      !generateResponse.ok ||
+      !authUserId ||
+      !invitationLink
+    ) {
+      console.error('Supabase invitation link generation failed:', {
+        status: generateResponse.status,
+        message: generated?.msg ||
+          generated?.message ||
+          generated?.error ||
+          'No invitation link returned.',
       });
 
-      if (authResponse.status === 422 || authResponse.status === 409) {
+      if ([409, 422].includes(generateResponse.status)) {
         return json({
           error: 'This email may already have a Supabase account or invitation.',
         }, 409);
       }
 
-      return json({ error: 'Unable to send the invitation.' }, 502);
+      return json({
+        error: 'Unable to generate the administrator invitation.',
+      }, 502);
     }
 
+    const client = await pool.connect();
+    let databaseCommitted = false;
+
     try {
-      const insertResult = await pool.query(
+      await client.query('BEGIN');
+
+      const insertAdmin = await client.query(
         `INSERT INTO public.admins (
            id,
            email,
@@ -183,54 +279,203 @@ export default async function handler(request) {
            store_id,
            is_active
          )
-         VALUES ($1, $2, $3, $4, TRUE)
+         VALUES ($1, $2, $3, $4, FALSE)
          RETURNING id, email, role, store_id, is_active, created_at`,
-        [authResult.id, email, role, storeId]
+        [authUserId, email, role, storeId]
       );
+
+      const newAdmin = insertAdmin.rows[0];
+
+      const insertInvitation = await client.query(
+        `INSERT INTO public.admin_invitations (
+           id,
+           admin_id,
+           email,
+           invited_by,
+           status,
+           expires_at
+         )
+         VALUES (
+           $1,
+           $2,
+           $3,
+           $4,
+           'pending',
+           now() + ($5 * interval '1 hour')
+         )
+         RETURNING id, expires_at`,
+        [invitationId, newAdmin.id, email, admin.id, INVITATION_HOURS]
+      );
+
+
+      await client.query(
+        `INSERT INTO public.admin_activity_log (
+           event_type,
+           entity_type,
+           entity_id,
+           description,
+           actor_email,
+           metadata
+         )
+         VALUES (
+           'admin.invited',
+           'admin',
+           $1,
+           'Administrator invitation created.',
+           $2,
+           $3::jsonb
+         )`,
+        [
+          newAdmin.id,
+          admin.email,
+          JSON.stringify({
+            invitation_id: invitationId,
+            invited_email: email,
+            role,
+            store_id: storeId,
+            expires_at: insertInvitation.rows[0].expires_at,
+          }),
+        ]
+      );
+
+      await client.query('COMMIT');
+      databaseCommitted = true;
+
+      const safeEmail = escapeHtml(email);
+      const safeLink = escapeHtml(invitationLink);
+
+      const resendResponse = await fetch(
+        'https://api.resend.com/emails',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: resendFromEmail,
+            to: [email],
+            subject: 'Your Yotaabo administrator invitation',
+            html: `
+              <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:32px 20px;color:#222">
+                <h1 style="font-size:26px">Yotaabo</h1>
+                <h2 style="font-size:21px">You're invited to join the admin team</h2>
+                <p>An administrator has invited you to access the Yotaabo management platform.</p>
+                <p><strong>Account:</strong> ${safeEmail}</p>
+                <p>This invitation expires in ${INVITATION_HOURS} hours.</p>
+                <p style="margin:32px 0">
+                  <a href="${safeLink}" style="background:#222;color:#fff;padding:14px 22px;text-decoration:none;border-radius:5px">
+                    Accept invitation
+                  </a>
+                </p>
+                <p style="font-size:13px;color:#666">If you were not expecting this invitation, you can ignore this email.</p>
+              </div>
+            `,
+            text: [
+              'You have been invited to join the Yotaabo administrator team.',
+              `Account: ${email}`,
+              `Accept your invitation: ${invitationLink}`,
+              `This invitation expires in ${INVITATION_HOURS} hours.`,
+              'If you were not expecting this invitation, you can ignore this email.',
+            ].join('\n\n'),
+          }),
+        }
+      );
+
+      const resendResult = await resendResponse.json().catch(() => null);
+
+      if (!resendResponse.ok || !resendResult?.id) {
+        console.error('Resend invitation delivery failed:', {
+          status: resendResponse.status,
+          message: resendResult?.message || resendResult?.name,
+        });
+
+        await client.query('BEGIN');
+
+        await client.query(
+          `UPDATE public.admin_invitations
+           SET status = 'revoked',
+               revoked_at = now()
+           WHERE id = $1
+             AND status = 'pending'`,
+          [invitationId]
+        );
+
+        await client.query(
+          `DELETE FROM public.admins
+           WHERE id = $1
+             AND is_active IS FALSE`,
+          [authUserId]
+        );
+
+        await client.query('COMMIT');
+
+        await deleteAuthUser(supabaseUrl, serviceRoleKey, authUserId);
+
+        return json({
+          error: 'The invitation email could not be sent. No administrator access was granted.',
+        }, 502);
+      }
 
       return json({
         message: 'Administrator invitation sent successfully.',
-        admin: insertResult.rows[0],
+        admin: newAdmin,
+        invitation: {
+          id: invitationId,
+          expiresAt: insertInvitation.rows[0].expires_at,
+        },
       }, 201);
     } catch (databaseError) {
-      const duplicateEmail =
-        databaseError?.code === '23505' &&
-        databaseError?.constraint === 'admins_email_unique_idx';
-
-      if (duplicateEmail) {
-        console.error('Duplicate administrator email:', email);
-      } else {
-        console.error('Admin registration failed after invitation:', databaseError);
+      if (!databaseCommitted) {
+        await client.query('ROLLBACK').catch(() => {});
       }
 
-      // Remove the newly invited Auth user if database registration fails.
-      const rollbackResponse = await fetch(
-        `${supabaseUrl}/auth/v1/admin/users/${authResult.id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            apikey: serviceRoleKey,
-            Authorization: `Bearer ${serviceRoleKey}`,
-          },
-        }
-      ).catch(() => null);
+      console.error('Administrator invitation database error:', {
+        code: databaseError?.code,
+        constraint: databaseError?.constraint,
+        message: databaseError?.message,
+      });
 
-      if (!rollbackResponse?.ok) {
-        console.error('Auth invitation rollback failed:', authResult.id);
+      if (databaseCommitted && invitationId) {
+        await client.query('BEGIN').catch(() => {});
+
+        await client.query(
+          `UPDATE public.admin_invitations
+           SET status = 'revoked',
+               revoked_at = now()
+           WHERE id = $1
+             AND status = 'pending'`,
+          [invitationId]
+        ).catch(() => {});
+
+        await client.query(
+          `DELETE FROM public.admins
+           WHERE id = $1
+             AND is_active IS FALSE`,
+          [authUserId]
+        ).catch(() => {});
+
+        await client.query('COMMIT').catch(() => {});
       }
 
-      if (duplicateEmail) {
+      await deleteAuthUser(supabaseUrl, serviceRoleKey, authUserId);
+
+      if (databaseError?.code === '23505') {
         return json({
-          error: 'This email is already registered as an administrator.',
+          error: 'An administrator or pending invitation already exists for this email.',
         }, 409);
       }
 
       return json({
         error: 'Administrator registration failed. No access was granted.',
       }, 500);
+    } finally {
+      client.release();
     }
   } catch (error) {
     console.error('Admin management error:', error);
-    return json({ error: 'Unable to process administrator request.' }, 500);
+    return json({
+      error: 'Unable to process administrator request.',
+    }, 500);
   }
 }
