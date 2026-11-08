@@ -754,6 +754,8 @@ Review this document:
 - When monitoring coverage changes.
 - When repeated alerts indicate poor thresholds or missing controls.
 
+Operational acknowledgement, ownership, escalation, maintenance suppression and alert-handling records are governed by `PLATFORM_MONITORING_ALERTING_AND_ESCALATION_STANDARDS.md`.
+
 ## 31. Governing Rule
 
 The parent company must be able to see the health of the platform, understand what is happening and identify who must respond.

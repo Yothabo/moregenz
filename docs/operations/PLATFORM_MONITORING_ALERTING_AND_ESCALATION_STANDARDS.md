@@ -1,4 +1,4 @@
-# Platform Monitoring, Alerting and Escalation Standards
+# Platform Monitoring Alert Handling and Escalation Procedure
 
 ## Document Control
 
@@ -6,477 +6,238 @@
 |---|---|
 | Document ID | DOC-OPS-B26F61BD76 |
 | Category | Operations |
-| Version | Not recorded |
-| Status | Not recorded |
-| Document Owner | Not recorded |
+| Version | 0.1 |
+| Status | DRAFT |
+| Document Owner | Platform Owner |
 | Approving Authority | Not recorded |
 | Creation Date | Not recorded |
-| Last Revision Date | Not recorded |
+| Last Updated | 2026-11-08 |
 | Effective Date | Not recorded |
 | Review Date | Not recorded |
-
-
-| Field | Value |
-|---|---|
-| Document Status | DRAFT |
-| Version | 0.1 |
-| Last Updated | 2026-11-07 |
-| Document Owner | Platform Owner |
 | Review Status | Pending |
 | Classification | Internal |
 
-## Purpose
+## 1. Purpose
 
-Define how platform health, application behaviour, business operations and external dependencies are monitored.
+This procedure defines how monitoring alerts are assigned, acknowledged, assessed, escalated and tracked through resolution.
 
-Establish consistent alerting and escalation practices so that failures are detected, prioritised, investigated and resolved before they cause avoidable disruption.
+It establishes operational accountability without duplicating the platform's technical monitoring and observability requirements.
 
-## Scope
+## 2. Authority and Relationship
 
-These standards apply to:
+`PLATFORM_MONITORING_OBSERVABILITY_AND_ALERTING_STANDARDS.md` is the authoritative specification for:
 
-- Public storefronts.
-- Administrative interfaces.
-- Backend APIs.
-- Databases.
-- Authentication services.
-- Product catalogue.
-- Inventory.
-- Orders and fulfilment.
+- Monitoring architecture and coverage.
+- Infrastructure, application and business-event telemetry.
+- Health checks, logging and distributed tracing.
+- Alert severity definitions and technical alert requirements.
+- Alert routing capabilities and alert-fatigue controls.
+- Dashboards, monitoring access and data retention.
+- Monitoring implementation and technical testing.
+
+This procedure governs the operational handling of alerts after detection.
+
+If this procedure conflicts with the authoritative monitoring standard, the monitoring standard takes precedence for technical monitoring requirements.
+
+Incident declaration, coordination, containment, investigation and recovery must follow `INCIDENT_RESPONSE_PLAYBOOK.md`.
+
+## 3. Scope
+
+This procedure applies to alerts affecting:
+
+- Platform infrastructure and services.
+- Public and administrative storefronts.
+- APIs and databases.
 - Payments and financial processing.
-- Notifications.
-- External integrations.
-- Background jobs.
-- Hosting and deployment infrastructure.
+- Orders and inventory integrity.
 - Security and access controls.
+- External integrations.
+- Background processing.
+- Store-specific operations.
+- Monitoring and alert-delivery systems.
 
-## Monitoring Principles
+It applies to the Platform Owner, technical operators, Store Admins and other authorised responders.
 
-Monitoring must support timely detection and meaningful investigation.
+## 4. Operational Ownership
 
-Alerts must identify actionable conditions rather than generate unnecessary noise.
+The Platform Owner is accountable for monitoring operations and escalation governance.
 
-Monitoring must distinguish platform-wide failures from individual store problems.
+Technical operators are responsible for investigating and resolving infrastructure, application and integration alerts within their authority.
 
-Critical business operations must be monitored alongside technical infrastructure.
+Store Admins are responsible for reporting and investigating store-specific operational issues within their assigned responsibilities.
 
-Monitoring must not expose secrets, credentials or unnecessary personal information.
+Security, financial and organisational authority matters must be escalated to the appropriately authorised decision-maker.
 
-## Monitoring Ownership
+External providers may be engaged when an incident concerns a service they operate. Provider involvement does not remove the platform's responsibility to manage its own operational impact.
 
-The Platform Owner is responsible for platform-wide monitoring governance.
+Every actionable alert must have an identifiable responsible owner or an explicit escalation destination.
 
-Technical operators maintain monitoring configurations and investigate infrastructure and application failures.
+## 5. Escalation Triggers
 
-Store Admins report store-specific operational problems and monitor their own business workflows.
+Escalation is required when:
 
-External providers remain responsible for their own services, subject to available provider status and support arrangements.
+- A critical service becomes unavailable.
+- A security incident or unauthorised access is suspected.
+- Cross-store data exposure or isolation failure is suspected.
+- A payment outcome cannot be established.
+- Financial or inventory records become inconsistent.
+- Backup or recovery processes fail.
+- A critical external integration remains unavailable.
+- An incident exceeds an agreed response expectation.
+- The assigned responder cannot resolve the issue.
+- A decision exceeds the responder's delegated authority.
+- Monitoring or alert delivery failure prevents reliable detection.
 
-## Monitoring Categories
+Escalation must reflect actual business impact, affected services, store scope and potential security or financial consequences.
 
-Monitor the following categories where relevant:
+## 6. Acknowledgement and Response
 
-| Category | Examples |
-|---|---|
-| Availability | Storefront and API availability |
-| Performance | Response times and resource consumption |
-| Application | Exceptions and failed requests |
-| Database | Connections, query performance and errors |
-| Security | Authentication failures and suspicious access |
-| Commerce | Order and payment processing |
-| Inventory | Reservation and stock consistency |
-| Integrations | Provider failures and webhook delays |
-| Notifications | Delivery failures and queue backlogs |
-| Background processing | Failed or delayed jobs |
-| Deployment | Release failures and configuration errors |
-| Business operations | Reconciliation and unresolved exceptions |
+Actionable alerts must be acknowledged and assigned according to the applicable severity and operational arrangements.
 
-## Service Health
+Severity-specific acknowledgement and response targets must be formally agreed and documented before they are treated as service commitments.
 
-Define health checks for critical platform components.
+Responders must not invent or assume response targets.
 
-Health checks should distinguish:
-
-- Service is available.
-- Service is degraded.
-- Service is unavailable.
-- Dependency is unavailable.
-- Health status cannot be established.
-
-A successful process health check must not be treated as proof that all dependent business operations are working.
-
-## Storefront Monitoring
-
-Monitor each independently deployed storefront.
-
-Where possible, monitor:
-
-- Domain resolution.
-- TLS certificate validity.
-- Page availability.
-- Critical page loading.
-- Product catalogue access.
-- Search functionality.
-- Cart operations.
-- Checkout availability.
-- API connectivity.
-- Store-specific configuration errors.
-
-A failure affecting one storefront must not automatically be classified as a platform-wide outage.
-
-## API Monitoring
-
-Monitor API availability and behaviour.
-
-Track:
-
-- Request volume.
-- Response time.
-- Error rates.
-- Authentication failures.
-- Authorisation failures.
-- Rate-limit responses.
-- Validation failures.
-- Unexpected server errors.
-- Endpoint-specific failures.
-
-Monitor sensitive administrative and financial endpoints with appropriate access controls.
-
-## Database Monitoring
-
-Monitor database health and operational capacity.
-
-Relevant indicators include:
-
-- Connection availability.
-- Connection pool usage.
-- Query latency.
-- Slow queries.
-- Lock contention.
-- Deadlocks.
-- Storage consumption.
-- Replication health where applicable.
-- Failed migrations.
-- Backup completion.
-- Backup verification.
-
-Database monitoring must not expose query parameters containing sensitive information.
-
-## Business Transaction Monitoring
-
-Technical availability does not guarantee successful business processing.
-
-Monitor critical workflows including:
-
-- Product publication.
-- Inventory reservation.
-- Order creation.
-- Payment confirmation.
-- Refund processing.
-- Fulfilment updates.
-- Financial reconciliation.
-- Customer notifications.
-
-Where a transaction has an uncertain outcome, investigate its authoritative state before retrying.
-
-## Payment Monitoring
-
-Monitor payment provider connectivity and transaction processing.
-
-Identify:
-
-- Provider outages.
-- Submission failures.
-- Timeouts.
-- Uncertain payment outcomes.
-- Delayed confirmations.
-- Duplicate event attempts.
-- Settlement discrepancies.
-- Refund failures.
-- Webhook processing delays.
-
-Do not infer payment success from a frontend response alone.
-
-## Integration Monitoring
-
-Monitor external integrations for:
-
-- Connectivity.
-- Authentication failures.
-- Rate limits.
-- Provider errors.
-- Webhook delivery.
-- Event persistence.
-- Processing delays.
-- Retry exhaustion.
-- Configuration changes.
-
-Where a provider supports status information, use it as one source of operational evidence.
-
-## Background Job Monitoring
-
-Monitor scheduled and asynchronous processing.
-
-Track:
-
-- Job execution.
-- Completion time.
-- Failure count.
-- Retry count.
-- Queue depth.
-- Oldest pending job.
-- Dead-letter records.
-- Missed schedules.
-- Duplicate processing indicators.
-
-A job must not be silently discarded after repeated failure.
-
-## Security Monitoring
-
-Monitor security-relevant events, including:
-
-- Repeated failed authentication.
-- Suspicious session activity.
-- Privilege changes.
-- Platform Super Admin changes.
-- Store membership changes.
-- Permission escalation attempts.
-- Cross-store access denials.
-- Credential rotation and revocation.
-- Unexpected administrative activity.
-- Sensitive data export activity.
-
-Security alerts must be handled through the incident response process where appropriate.
-
-## Store Isolation Monitoring
-
-Monitor indicators of possible cross-store access or attribution failures.
-
-Investigate:
-
-- Unexpected store identifiers.
-- Invalid ownership relationships.
-- Cross-store access denials.
-- Misrouted webhooks.
-- Incorrect integration attribution.
-- Unexpected shared data access.
-- Store-scoped query failures.
-
-Do not expose another store's information in monitoring dashboards or alerts.
-
-## Alert Severity
-
-Use a consistent severity model.
-
-| Severity | Meaning |
-|---|---|
-| Critical | Active or imminent major security, financial, data-integrity or platform availability impact |
-| High | Significant service degradation or important business workflow failure |
-| Medium | Limited impact requiring investigation and planned action |
-| Low | Informational condition or minor operational issue |
-
-Severity must reflect actual business impact, not only the technical error classification.
-
-## Alert Content
-
-An actionable alert should contain:
+For each material alert, record:
 
 - Alert identifier.
 - Detection time.
-- Affected service or workflow.
-- Environment.
-- Store context where applicable.
-- Severity.
-- Description.
-- Relevant evidence or correlation reference.
-- Suggested investigation path.
-- Escalation destination.
-
-Do not include passwords, tokens, private credentials or unnecessary customer information.
-
-## Alert Routing
-
-Route alerts according to ownership and impact.
-
-Platform-wide issues must reach the designated platform operator.
-
-Store-specific issues should be routed to the relevant Store Admin or authorised support contact.
-
-Security and financial incidents must follow their dedicated escalation procedures.
-
-Provider-specific failures may require escalation to the external provider.
-
-## Escalation Triggers
-
-Escalate when:
-
-- A critical service becomes unavailable.
-- A security incident is suspected.
-- Cross-store data exposure is suspected.
-- Payment outcomes cannot be established.
-- Financial records become inconsistent.
-- Backups or recovery processes fail.
-- A critical integration remains unavailable.
-- A material incident exceeds its expected response window.
-- The responsible owner cannot resolve the issue.
-- A decision requires authority outside the current responder's role.
-
-## Acknowledgement and Response
-
-Define acknowledgement and response expectations for each severity level.
-
-The actual targets must be agreed and documented before being treated as service commitments.
-
-Record:
-
-- Detection time.
 - Acknowledgement time.
+- Affected service and store, where applicable.
+- Severity.
 - Assigned owner.
 - Initial assessment.
-- Escalation.
-- Containment.
-- Recovery.
-- Closure.
+- Actions taken.
+- Escalation decisions and recipients.
+- Containment and recovery actions.
+- Resolution and closure time.
 
-## Alert Deduplication and Noise Control
+Where an alert cannot be acknowledged or assigned, it must be escalated through the available operational channel.
 
-Group repeated alerts when they represent the same underlying incident.
+## 7. Threshold and Alert Rule Changes
 
-Avoid generating repeated notifications for an unchanged condition.
+Alert thresholds must follow the authoritative monitoring standard and reflect measured system behaviour and business impact.
 
-Use suppression carefully so that a genuine escalation is not hidden.
+Thresholds must not be changed merely to silence recurring alerts.
 
-Alert suppression must be documented and periodically reviewed.
+Review alert rules after:
 
-## Threshold Management
-
-Thresholds must reflect measured behaviour and operational requirements.
-
-Avoid arbitrary thresholds that create constant false alarms.
-
-Review thresholds after:
-
-- Significant traffic changes.
-- Architecture changes.
-- Provider changes.
-- Capacity changes.
-- Repeated false alerts.
+- Significant traffic or capacity changes.
+- Architecture or infrastructure changes.
+- External provider changes.
+- Repeated false positives.
+- Missed detections.
 - Major incidents.
+- Changes to business-critical workflows.
 
-Where baseline measurements are unavailable, establish them before introducing strict automated thresholds.
+Material changes to alert rules must record:
 
-## Monitoring Dashboards
+- Reason for the change.
+- Affected service or workflow.
+- Previous and new configuration.
+- Responsible person.
+- Expected operational effect.
+- Validation results.
+- Approval where required by change governance.
 
-Dashboards should present information according to operational responsibility.
+Where reliable baselines are unavailable, establish them before introducing strict automated thresholds.
 
-Platform dashboards may show platform-wide health and appropriately aggregated store information.
+## 8. Maintenance Windows and Alert Suppression
 
-Store dashboards must show only information the relevant store is authorised to access.
+Planned maintenance must be communicated to affected stakeholders through the applicable change and communication processes.
 
-Dashboards should distinguish current status from historical trends.
+Temporary alert suppression must have:
 
-## Incident Coordination
+- A named owner.
+- A defined scope.
+- A documented reason.
+- A start time.
+- An expiry time.
+- A restoration or review action.
 
-Monitoring alerts do not replace incident management.
+Suppression must not conceal critical security, financial or data-integrity events.
 
-When an alert indicates a material incident, follow `INCIDENT_RESPONSE_PLAYBOOK.md`.
+Expired suppression rules must not remain active indefinitely.
 
-The incident authority must determine priority, coordination, containment and communication.
+Monitoring must distinguish expected maintenance conditions from unexpected service failures.
 
-Preserve relevant monitoring evidence for investigation.
+## 9. Monitoring and Alert-Delivery Failure
 
-## Maintenance Windows
+Monitoring systems and alert-delivery mechanisms can fail independently of the services they observe.
 
-Planned maintenance must be communicated to affected stakeholders.
+Where monitoring failure is suspected:
 
-Monitoring should distinguish expected maintenance conditions from unexpected failures.
+1. Establish which monitoring components or data sources are affected.
+2. Determine whether service health can still be verified independently.
+3. Activate an alternative detection or communication method where available.
+4. Notify the responsible operational owner.
+5. Assess whether service incidents may have gone undetected.
+6. Restore monitoring and alert delivery.
+7. Verify telemetry ingestion and alert delivery.
+8. Record the failure, impact and corrective actions.
 
-Temporary alert suppression must have an owner, scope and expiry.
+The absence of alerts must never be treated as proof that services are healthy.
 
-## Monitoring Failure
+A monitoring failure that materially affects incident detection must be escalated.
 
-Monitoring systems can fail independently of the services they observe.
+## 10. Incident Coordination
 
-Where practical, monitor the monitoring and alert delivery mechanisms themselves.
+An alert does not automatically constitute a declared incident.
 
-Define an alternative detection and communication method for critical services.
+When an alert indicates a material service disruption, security event, financial issue or data-integrity problem, the responsible authority must determine whether to declare an incident.
 
-Do not assume the absence of alerts proves that a service is healthy.
+Once declared, the `INCIDENT_RESPONSE_PLAYBOOK.md` governs incident coordination and response.
 
-## Retention and Access
+Responders must preserve relevant monitoring evidence and ensure that alert records can be associated with the corresponding incident.
 
-Monitoring records must follow the applicable retention and data governance requirements.
+Monitoring alerts do not replace incident records, security investigations or financial reconciliation.
 
-Access to monitoring systems must be restricted according to role.
+## 11. Operational Records
 
-Sensitive operational data must not be publicly accessible.
+Material alert handling and escalation decisions must be traceable.
 
-## Testing
+Records must identify the responsible people, timestamps, actions, decisions and outcome.
 
-Test monitoring and alerting configurations.
+Operational records must follow the platform's applicable access-control, security, privacy and retention requirements.
 
-Verify:
+Sensitive credentials, tokens and unnecessary customer information must not be copied into alert records.
 
-- Alert generation.
-- Severity assignment.
-- Routing.
-- Acknowledgement.
-- Escalation.
-- Deduplication.
-- Suppression expiry.
-- Recovery notifications.
-- Access restrictions.
-- Store isolation.
-- Monitoring system failure handling.
+## 12. Open Operational Decisions
 
-## Review and Improvement
+The following decisions remain subject to formal agreement:
 
-Review material alerts and recurring incidents.
+- Approved alert delivery channels.
+- On-call ownership and coverage arrangements.
+- Severity-specific acknowledgement and response targets.
+- Escalation ownership when the primary responder is unavailable.
+- Alternative communication arrangements during monitoring failure.
 
-Identify opportunities to improve:
+Until these decisions are approved and documented, no assumed arrangements may be represented as formal operational commitments.
 
-- Detection.
-- Alert quality.
-- Routing.
-- Thresholds.
-- Operational ownership.
-- Recovery procedures.
-- Service reliability.
+## 13. Review and Maintenance
 
-Repeated alerts must lead to investigation of underlying causes rather than indefinite manual dismissal.
+The Platform Owner is responsible for maintaining this procedure.
 
-## Open Decisions
+Review it:
 
-The following require further agreement:
+- After a major incident.
+- After a material monitoring or escalation failure.
+- When operational ownership changes.
+- When alert delivery or escalation arrangements change.
+- When the authoritative monitoring standard is materially revised.
 
-- Monitoring and observability provider.
-- Alert delivery channels.
-- On-call and escalation ownership.
-- Severity-specific response targets.
-- Dashboard access model.
-- Monitoring data retention.
-- Availability measurement method.
-- External status monitoring.
-- Alert threshold baselines.
-- Monitoring budget and service costs.
+Changes must preserve alignment with monitoring, incident management, change governance and organisational authority requirements.
 
-## Relationship to Other Documents
+## 14. Acceptance Criteria
 
-This document should be read with:
+This procedure is operationally complete when:
 
-- `OBSERVABILITY_AND_LOGGING_STANDARDS.md`
-- `OPERATIONS_RUNBOOK.md`
-- `INCIDENT_RESPONSE_PLAYBOOK.md`
-- `STORE_SUPPORT_AND_ESCALATION_POLICY.md`
-- `BUSINESS_CONTINUITY_AND_AVAILABILITY_STANDARDS.md`
-- `BACKUP_AND_DISASTER_RECOVERY.md`
-- `PRODUCTION_READINESS_CHECKLIST.md`
-- `docs/architecture/OPERATIONS_ARCHITECTURE.md`
-- `docs/architecture/DEPLOYMENT_ARCHITECTURE.md`
-- `docs/architecture/INTEGRATION_ARCHITECTURE.md`
-
-## Document Management
-
-This document is maintained by the Platform Owner.
-
-Changes must be assessed for their effect on detection coverage, alert quality, operational ownership, store isolation and incident response.
+- Every actionable alert has an identifiable owner or escalation destination.
+- Escalation triggers are documented.
+- Acknowledgement and response records are traceable.
+- Response targets are not treated as commitments without approval.
+- Threshold changes are justified and recorded.
+- Maintenance suppression has an owner, scope and expiry.
+- Monitoring failure has an alternative detection and communication process.
+- Material alerts can be linked to incident records.
+- Operational responsibilities remain consistent with organisational authority.
