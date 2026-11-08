@@ -75,22 +75,27 @@ Examples:
 
 Requires tracking and resolution through normal support or development workflows.
 
-## 3. Incident Ownership
+## 3. Incident Ownership and Accountability
 
-Every incident MUST have an assigned incident owner.
+Every incident MUST have an assigned Incident Lead.
 
-The incident owner MUST:
-- Coordinate investigation.
-- Confirm severity and affected scope.
+The Incident Lead is accountable for coordinating the incident response and ensuring that the requirements in this standard are applied. The Incident Lead MUST:
+
+- Confirm and maintain the incident severity and affected scope.
+- Coordinate investigation and response participants.
 - Assign technical and operational responders.
-- Maintain the incident record.
-- Coordinate user communications.
-- Track recovery and verification.
-- Ensure closure requirements are met.
+- Maintain the incident record and decision history.
+- Coordinate communications with affected audiences.
+- Track mitigation, recovery and verification.
+- Ensure that closure and post-incident review requirements are met.
+
+The Incident Lead coordinates the response but does not replace the responsibilities of authorised technical, security, financial or store personnel.
 
 Technical responders remain responsible for diagnosing and resolving their assigned issues.
 
 Security incidents MUST involve authorised information-security and compliance personnel.
+
+Where the Incident Lead changes, the transfer of responsibility MUST be recorded in the incident record.
 
 ## 4. Incident Lifecycle
 
@@ -232,10 +237,17 @@ The review MUST record:
 
 The review MUST focus on improving systems and controls, not assigning blame without evidence.
 
-## 13. Relationship With Existing Specifications
+## 13. Relationship With the Incident Response Playbook and Other Specifications
 
-This specification MUST operate with:
+This standard defines the mandatory incident management, accountability, classification, communication, recovery declaration and review requirements.
 
+The `INCIDENT_RESPONSE_PLAYBOOK.md` defines the operational procedures used to implement those requirements. Responders MUST follow the playbook when carrying out incident triage, containment, investigation, eradication, technical recovery, evidence preservation and specialist incident procedures.
+
+Where the playbook describes operational steps, those steps MUST remain consistent with this standard. If a procedural instruction appears to conflict with a mandatory requirement in this standard, this standard takes precedence until the conflict is formally reviewed and resolved.
+
+This standard MUST also operate with:
+
+- INCIDENT_RESPONSE_PLAYBOOK.md
 - PLATFORM_MONITORING_OBSERVABILITY_AND_ALERTING_STANDARDS.md
 - PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md
 - PLATFORM_RELEASE_AND_DEPLOYMENT_GOVERNANCE_STANDARDS.md

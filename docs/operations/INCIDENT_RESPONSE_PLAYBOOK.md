@@ -7,7 +7,7 @@
 | Document Type | Incident Response Playbook |
 | Version | 0.1 |
 | Status | DRAFT |
-| Last Updated | 2026-11-07 |
+| Last Updated | 2026-11-08 |
 | Document Owner | Platform Owner |
 | Review Status | Pending |
 | Classification | Internal |
@@ -20,9 +20,13 @@
 
 ## 1. Purpose
 
-This playbook defines the practical process for identifying, reporting, containing, investigating, resolving and reviewing incidents affecting the platform and participating stores.
+This playbook defines the operational procedures for identifying, reporting, triaging, containing, investigating, resolving and reviewing incidents affecting the platform and participating stores.
 
-It supplements the Operations Runbook and Security Architecture.
+It implements the mandatory requirements in `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`.
+
+The incident management standard is authoritative for incident severity definitions, accountability, mandatory lifecycle controls, affected-audience communication, recovery declaration requirements and post-incident review thresholds.
+
+This playbook provides the practical response procedures and specialist technical guidance. It supplements the Operations Runbook and relevant security, architecture and recovery documentation.
 
 The procedures apply to production incidents and, where appropriate, serious incidents affecting development, testing or staging environments.
 
@@ -53,27 +57,17 @@ All incident response must follow these principles:
 
 ## 4. Incident Classification
 
-### 4.1 Severity Levels
+### 4.1 Authoritative Severity Definitions
 
-**Severity 1: Critical**
+All incidents MUST be classified using the Severity 1 to Severity 4 definitions and examples in `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`, Section 2.
 
-An incident involving major platform compromise, widespread service outage, significant data exposure, serious financial integrity failure or a threat to multiple stores.
+This playbook does not establish alternative severity definitions or thresholds.
 
-**Severity 2: High**
+The Incident Lead MUST ensure that the classification is recorded and applied consistently with the incident management standard.
 
-An incident materially affecting a store, important platform capability, sensitive information or critical business process, with limited or potentially expanding impact.
+### 4.2 Classification Assessment
 
-**Severity 3: Moderate**
-
-An incident affecting a limited function or group of users where a workaround exists and wider impact is not evident.
-
-**Severity 4: Low**
-
-A minor issue with limited operational impact, no immediate security concern and no material interruption to business activity.
-
-### 4.2 Classification Considerations
-
-Severity must consider:
+When applying the standard's severity definitions, the Incident Lead and responders should assess:
 
 - Number of affected stores and customers.
 - Sensitivity and volume of affected data.
@@ -84,7 +78,7 @@ Severity must consider:
 - Potential for further damage.
 - Legal, contractual or regulatory implications.
 
-Severity may be increased or reduced as reliable information becomes available.
+Severity MUST be reassessed when reliable new information materially changes the known impact or risk. Any change and its rationale MUST be recorded.
 
 ## 5. Incident Roles and Authority
 
@@ -94,27 +88,31 @@ The person identifying the incident must report it promptly and provide availabl
 
 ### 5.2 Incident Lead
 
-The authorised incident lead coordinates investigation, containment, communication, recovery and recordkeeping.
+The Incident Lead is the accountable operational coordinator for the incident, as required by the incident management standard.
+
+The Incident Lead coordinates triage, response participants, containment decisions, communications, recovery and incident records. An Incident Lead MUST be assigned and recorded for every incident, regardless of severity.
 
 ### 5.3 Platform Owner
 
-The Platform Owner provides platform-level incident authority and coordinates incidents affecting shared infrastructure, multiple stores, platform security or platform-wide operations.
+The Platform Owner provides platform-level authority and coordinates incidents affecting shared infrastructure, multiple stores, platform security or platform-wide operations.
+
+The Platform Owner may act as Incident Lead where assigned and appropriately authorised.
 
 ### 5.4 Store Admin
 
-The Store Admin coordinates store-level response within delegated authority and communicates store-specific impact to the incident lead.
+The Store Admin coordinates store-level response within delegated authority and communicates store-specific impact to the Incident Lead.
 
 ### 5.5 Technical Responders
 
-Technical responders investigate and resolve technical failures within their authorised access and responsibilities.
+Technical responders investigate and resolve technical failures within their authorised access and responsibilities. They must record material actions, findings and outcomes in the incident record.
 
 ### 5.6 Incident Authority
-
-The incident lead must be clearly identified for each major incident.
 
 Where immediate containment is necessary to prevent continuing harm, an authorised responder may take proportionate protective action without waiting for prior approval of every individual action.
 
 The action, initiator, reason and outcome must be recorded and promptly reviewed by the appropriate authority.
+
+The Incident Lead coordinates the response but MUST NOT exceed their delegated authority for security, financial, legal or other reserved decisions.
 
 ## 6. Incident Reporting
 
@@ -148,17 +146,21 @@ The incident lead should establish:
 
 Initial triage must not delay urgent containment when harm is continuing.
 
-## 8. Incident Response Lifecycle
+## 8. Operational Response Procedure
 
-### 8.1 Detection
+The incident management standard defines the mandatory incident lifecycle. This section describes the operational actions responders use to carry out that lifecycle.
+
+### 8.1 Detection and Reporting
 
 Identify the incident through monitoring, alerts, reports, provider notifications or operational checks.
 
-### 8.2 Declaration
+Record the available facts using the reporting requirements in Section 6. Do not delay urgent protective action while waiting for a complete report.
 
-Assign an incident identifier, severity, incident lead and response participants.
+### 8.2 Declaration and Coordination
 
-For major incidents, establish a clear coordination channel.
+The Incident Lead must ensure that the incident is recorded and classified in accordance with the incident management standard, and that response participants are assigned.
+
+For major incidents, establish a clear coordination channel and identify the required response participants.
 
 ### 8.3 Containment
 
@@ -175,7 +177,7 @@ Possible actions include:
 - Disabling unsafe background processing.
 - Preventing further unauthorised data access.
 
-Containment must consider the impact on unaffected stores and critical business processes.
+Containment must consider the impact on unaffected stores and critical business processes. Record the action, rationale, authority and outcome.
 
 ### 8.4 Investigation
 
@@ -191,23 +193,27 @@ Remove the underlying cause where established.
 
 Examples include removing malicious access, correcting vulnerable configuration, patching affected software and replacing compromised credentials.
 
-### 8.6 Recovery
+### 8.6 Technical Recovery
 
-Restore affected services through controlled procedures.
+Restore affected services through the applicable controlled operational, deployment, backup or disaster recovery procedures.
 
-Verify security, data integrity, integration behaviour and critical business workflows before returning services to normal operation.
+The Incident Lead must coordinate the business and operational recovery decisions required by the incident management standard and the Business Continuity Plan.
 
-### 8.7 Closure
+Technical responders must perform the relevant verification procedures in Section 18 before recommending restoration to normal operation.
 
-The incident lead must confirm that:
+### 8.7 Closure Preparation
 
-- The incident is contained.
-- Recovery has been verified.
-- Outstanding risks are documented.
+Before recommending closure, the Incident Lead must confirm that:
+
+- Containment and recovery status are recorded.
+- Required verification has been completed or outstanding limitations are explicitly documented.
+- Outstanding risks are documented and escalated.
 - Required notifications have been handled.
-- Evidence and records are preserved.
-- Follow-up actions have owners.
-- Closure is authorised.
+- Evidence and incident records are preserved.
+- Follow-up actions have accountable owners.
+- Closure is submitted to the appropriate authority.
+
+The mandatory closure and recovery declaration requirements in the incident management standard remain authoritative.
 
 ## 9. Security Incident Procedure
 
@@ -325,49 +331,56 @@ For suspected data corruption, missing records or migration failures:
 
 Restoration must not silently overwrite newer valid transactions.
 
-## 16. Communication
+## 16. Communication Procedure
 
-The incident lead coordinates incident communication.
+All incident communications MUST comply with `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`.
 
-Communication should be:
+That standard is authoritative for affected-audience identification, required notice content, communication channels, update expectations, resolution notices and restrictions on sensitive information.
 
-- Accurate and timely.
-- Appropriate to the audience.
-- Clear about known and unknown information.
-- Consistent across affected stores.
-- Careful not to expose sensitive details.
-- Updated when material circumstances change.
+The Incident Lead is responsible for coordinating the practical delivery of incident communications and maintaining the communication record.
 
-Store Admins must communicate relevant store impact to affected operational teams and customers through approved channels.
+Store Admins must communicate relevant store impact to affected operational teams and customers through approved channels, within their delegated authority.
 
 Only authorised persons may make external statements on behalf of the platform.
 
-## 17. Evidence and Incident Records
+Responders MUST NOT invent restoration times, present assumptions as confirmed facts or issue conflicting updates. Where the restoration time is unknown, communications must say so.
 
-Each material incident must have a record containing:
+If normal platform communication channels are unavailable, use an approved alternative channel and preserve the communication record for the incident.
+
+## 17. Evidence Preservation and Incident Records
+
+This section describes how responders preserve and maintain incident evidence. The incident management standard remains authoritative for mandatory incident ownership, recordkeeping, auditability and review requirements.
+
+Each material incident record should contain, where applicable:
 
 - Incident identifier.
-- Severity and classification.
+- Severity and classification history.
 - Detection and declaration times.
-- Incident lead and participants.
+- Incident Lead and response participants.
 - Affected services and stores.
 - Timeline of events.
-- Evidence references.
+- Evidence references and collection details.
 - Containment and recovery actions.
 - Decisions and approvals.
-- Communication records.
+- Communication records or references.
 - Financial or customer impact.
 - Root cause, where established.
-- Follow-up actions.
-- Closure approval.
+- Follow-up actions and accountable owners.
+- Closure decision and approval.
 
-Evidence must be protected against unauthorised alteration and retained according to applicable policies.
+Preserve original logs, audit events, provider references, relevant system records and other evidence in their available source form wherever practical.
 
-## 18. Recovery and Verification
+Record who collected or handled material evidence, when it was collected and where it is stored. Restrict access according to the sensitivity of the evidence.
 
-Recovery must include checks appropriate to the incident.
+Do not alter, delete, expose or unnecessarily duplicate evidence. If evidence must be transformed for analysis, preserve the original and record the transformation.
 
-These may include:
+Retention and disposal MUST follow applicable data governance, security and legal requirements.
+
+## 18. Technical Recovery Verification
+
+This section provides operational verification guidance. The incident management standard defines the minimum requirements that MUST be satisfied before affected services are declared recovered.
+
+Verification must be appropriate to the incident and may include:
 
 - Authentication and permission verification.
 - Store-isolation tests.
@@ -378,26 +391,38 @@ These may include:
 - Notification processing checks.
 - Monitoring and alert verification.
 - Confirmation that compromised credentials or sessions are invalidated.
+- Confirmation that unsafe background jobs or integrations are not continuing harmful activity.
 
-Critical workflows must be tested before normal operation is declared restored.
+Technical responders must record the checks performed, their results, unresolved limitations and any residual risks.
 
-## 19. Post-Incident Review
+Where transactions may have been delayed, duplicated, lost or left in an uncertain state, reconciliation MUST be completed or explicitly tracked with an accountable owner.
 
-Major and recurring incidents should receive a documented review.
+A successful technical health check alone does not establish that business operations or all affected transactions have been fully restored.
 
-The review should establish:
+The Incident Lead must use the results to coordinate the recovery decision and required communications under the incident management standard and applicable business continuity arrangements.
 
-- What happened.
-- When it happened.
-- What systems and stores were affected.
-- How the incident was detected.
-- What worked well.
-- What delayed response or recovery.
-- Root causes and contributing conditions.
-- Whether controls failed or were missing.
-- What corrective actions are required.
+## 19. Post-Incident Review Procedure
 
-The purpose is to improve platform safety and reliability, not to conceal mistakes or assign blame without evidence.
+The incident management standard defines which incidents require a post-incident review and the mandatory review content.
+
+Severity 1 and Severity 2 incidents MUST receive a documented post-incident review. Other incidents SHOULD receive a review where recurring failures or material business impact justify it, in accordance with the standard.
+
+The Incident Lead must coordinate the review and ensure that it is recorded. The review process should:
+
+- Reconstruct the incident timeline from available evidence.
+- Confirm affected services, stores, users and business processes.
+- Assess detection and escalation effectiveness.
+- Evaluate containment, investigation and recovery decisions.
+- Review the accuracy and effectiveness of communications.
+- Identify root causes and contributing conditions where evidence permits.
+- Identify control failures, gaps and opportunities for improvement.
+- Record corrective and preventive actions.
+- Assign accountable owners and appropriate target dates.
+- Track actions through the applicable corrective action process.
+
+The review should focus on improving platform safety and reliability. It must not conceal mistakes or assign blame without evidence.
+
+The standard's review requirements take precedence if this procedure is incomplete or inconsistent.
 
 ## 20. Corrective Action Management
 
@@ -451,7 +476,11 @@ The following matters require further definition:
 
 ## 24. Relationship to Other Documents
 
-This playbook must be read alongside:
+This playbook implements `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`. The standard is authoritative for incident classification, accountability, mandatory lifecycle controls, communications, recovery declaration and post-incident review requirements.
+
+This playbook is authoritative for the operational response procedures described within its scope. It must not introduce conflicting severity definitions, communication rules or governance requirements.
+
+It must also be read alongside:
 
 - OPERATIONS_RUNBOOK.md
 - SECURITY_ARCHITECTURE.md
@@ -462,6 +491,8 @@ This playbook must be read alongside:
 - IDENTITY_AND_ACCESS.md
 - PLATFORM_GOVERNANCE.md
 - ARCHITECTURE_GOVERNANCE.md
+- PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md
+- BACKUP_AND_DISASTER_RECOVERY.md
 
 ## 25. Document Management
 
