@@ -42,7 +42,7 @@ The objective is to restore essential services safely, protect business records 
 2. Recovery must not introduce additional data corruption.
 3. Backups must be protected from the systems they are intended to recover.
 4. Recovery procedures must be documented and tested.
-5. Every major incident must have an accountable incident lead.
+5. Incident ownership and accountability must follow the platform incident management standard.
 6. Store Owners must receive timely and accurate communications.
 7. Recovery priorities must reflect business impact.
 8. No one should claim that data has been restored until verification is complete.
@@ -140,161 +140,58 @@ These targets must be validated against hosting plans, database capabilities, ba
 
 Where a provider cannot support the proposed target, document the actual capability and associated business risk.
 
-## 6. Incident Severity
+## 6. Incident Management Interface
 
-### Severity 1: Critical
+All incidents MUST be classified and managed in accordance with `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`.
 
-Examples:
+That standard is authoritative for:
 
-- Complete platform outage.
-- Confirmed unauthorised access to critical infrastructure.
-- Database loss or widespread corruption.
-- Payment or order processing failure affecting multiple stores.
-- Active incident threatening customer or financial data.
+- Severity definitions and classification.
+- Incident ownership and Incident Lead accountability.
+- Mandatory incident lifecycle.
+- Escalation and incident governance.
+- Audience identification and incident communications.
+- Recovery declaration and resolution communication.
+- Incident closure and post-incident review requirements.
 
-Response:
+`INCIDENT_RESPONSE_PLAYBOOK.md` governs operational triage, containment, investigation, eradication, evidence preservation, technical response and specialist incident procedures.
 
-- Immediate escalation.
-- Assign an incident lead.
-- Protect affected systems.
-- Notify relevant internal decision-makers.
-- Begin recovery or containment.
-- Assess legal and regulatory notification duties.
+This plan does not establish alternative severity definitions, severity-based response instructions, escalation thresholds or incident lifecycle requirements.
 
-### Severity 2: High
+During an incident, business continuity assessment must establish:
 
-Examples:
+- Which critical services and business operations are affected.
+- Which stores, customers and business functions are affected.
+- The operational, financial and privacy implications.
+- Whether essential activities can continue safely.
+- Whether manual or alternative operating arrangements are required.
+- Which business recovery priorities and dependencies apply.
 
-- Several stores unavailable.
-- Major API failure.
-- Admin dashboard unavailable across the platform.
-- Significant payment integration disruption.
-- Important data inconsistency affecting operations.
+The business impact assessment informs the Incident Lead and authorised decision-makers. It does not replace incident classification or response governance.
 
-Response:
+## 7. Business Continuity Activation and Coordination
 
-- Prioritised technical investigation.
-- Store Owner communication where affected.
-- Recovery plan and progress updates.
-- Escalation if the incident worsens.
+Business continuity arrangements should be activated when a disruption threatens the availability of critical services or the organisation's ability to maintain essential business operations.
 
-### Severity 3: Moderate
+Business continuity activation is a business operations decision. It does not create a separate incident declaration, severity classification or response process.
 
-Examples:
+When continuity arrangements are needed, the parent company must:
 
-- One storefront unavailable.
-- Non-critical feature failure.
-- Delayed notifications.
-- Limited reporting disruption.
+1. Identify the critical services and business activities affected.
+2. Assess the number of affected stores, customers and operational functions.
+3. Establish the immediate business and financial consequences.
+4. Identify safe manual procedures or alternative operating arrangements.
+5. Determine which services and business activities require priority.
+6. Identify the personnel and provider dependencies needed to maintain operations.
+7. Communicate continuity requirements and business decisions to the Incident Lead.
+8. Record material continuity decisions, limitations and outstanding risks.
+9. Review whether the arrangements remain safe and effective as conditions change.
 
-Response:
+Continuity measures must not bypass security, payment, privacy, financial or store-isolation controls.
 
-- Assign an owner.
-- Record impact.
-- Apply a controlled fix.
-- Confirm service restoration.
+The Incident Lead and response participants must continue to follow the incident standard and playbook. Technical containment, investigation and restoration must follow the applicable specialist procedures.
 
-### Severity 4: Low
-
-Examples:
-
-- Minor visual defect.
-- Non-critical performance issue.
-- Small administrative inconvenience.
-
-Response:
-
-- Record and schedule remediation.
-- Escalate if impact increases.
-
-## 7. Incident Response Procedure
-
-Every significant incident must follow a controlled process.
-
-### Step 1: Detection
-
-An incident may be detected through:
-
-- Automated monitoring.
-- Error alerts.
-- Customer reports.
-- Store Owner reports.
-- Payment provider notifications.
-- Hosting provider notifications.
-- Internal operational checks.
-
-### Step 2: Registration
-
-Create an incident record containing:
-
-- Incident ID.
-- Date and time detected.
-- Reporter.
-- Affected systems.
-- Affected stores.
-- Initial severity.
-- Known symptoms.
-- Suspected cause.
-- Incident lead.
-
-### Step 3: Assessment
-
-Determine:
-
-- What is unavailable?
-- Which stores are affected?
-- Are customers affected?
-- Are payments or orders affected?
-- Is data integrity at risk?
-- Is the incident security-related?
-- Are third-party providers involved?
-- Is manual operation possible?
-
-### Step 4: Containment
-
-Take appropriate steps to prevent further damage.
-
-Examples:
-
-- Disable an affected integration.
-- Restrict compromised credentials.
-- Stop unsafe deployments.
-- Suspend affected background jobs.
-- Isolate compromised systems.
-- Disable affected checkout functionality.
-- Prevent additional writes to corrupted data.
-
-Do not delete evidence or destroy logs during containment.
-
-### Step 5: Recovery
-
-Restore services using approved procedures.
-
-Recovery must be controlled, verified and documented.
-
-### Step 6: Validation
-
-Confirm:
-
-- Services are responding.
-- Authentication works.
-- Store isolation remains intact.
-- Products and inventory are accurate.
-- Orders are present and consistent.
-- Payments reconcile.
-- Customer information remains protected.
-- Background jobs are functioning.
-- Notifications are operating.
-
-### Step 7: Closure
-
-Close the incident only after:
-
-- Service restoration is confirmed.
-- Remaining risks are documented.
-- Affected parties have been informed.
-- Financial and data reconciliation is complete or assigned.
-- Follow-up actions have owners and deadlines.
+Business continuity arrangements remain active until authorised decision-makers determine that normal business operations can safely resume.
 
 ## 8. Backup and Technical Recovery Governance
 
@@ -392,7 +289,7 @@ Never silently recreate orders or payments without an audit record.
 
 ## 13. Store Owner Communication
 
-The parent company must maintain a communication process for affected Store Owners.
+The parent company must maintain a communication process for affected Store Owners. Incident communication channels, mandatory notices and update requirements are governed by `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`; this section addresses continuity-specific information.
 
 Updates should explain:
 
@@ -413,7 +310,7 @@ Store Owners should receive closure communication when the incident materially a
 
 ## 14. Customer Communication
 
-Where customers are affected, communication must be accurate and proportionate.
+Where customers are affected, communication must be accurate and proportionate. Customer incident notices must follow the incident management standard and applicable privacy requirements.
 
 Depending on the incident, customers may need information about:
 
@@ -429,26 +326,25 @@ Customer communications must not expose another customer's information or disclo
 
 Where a personal information breach occurs, assess applicable POPIA notification obligations and obtain appropriate legal guidance.
 
-## 15. Security Incident Recovery
+## 15. Security Incident Continuity
 
-Security incidents require coordination between incident response and disaster recovery.
+Security incidents must be reported and managed under `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`, `INCIDENT_RESPONSE_PLAYBOOK.md` and the applicable security policies.
 
-The parent company must:
+The incident response playbook governs security investigation, containment, evidence preservation, eradication and technical response. Technical backup and restoration requirements remain governed by `BACKUP_AND_DISASTER_RECOVERY.md`.
 
-1. Contain the threat.
-2. Preserve relevant evidence.
-3. Identify affected systems and data.
-4. Revoke compromised credentials.
-5. Rotate affected secrets.
-6. Investigate persistence mechanisms.
-7. Confirm that recovery systems are safe.
-8. Restore from trusted sources.
-9. Patch the underlying vulnerability.
-10. Monitor for recurrence.
+From a business continuity perspective, the parent company must:
 
-Do not restore compromised backups without investigating whether they contain the same threat.
+- Identify critical business services and operations affected by the security incident.
+- Assess the impact on stores, customers, financial records and business information.
+- Determine which affected services must remain restricted to prevent further harm.
+- Identify safe alternative operating arrangements.
+- Assess provider and infrastructure dependencies.
+- Coordinate business recovery priorities with authorised technical and security personnel.
+- Determine the business conditions required before affected operations resume.
 
-Security incident handling must follow the platform's existing incident response and security policies.
+A service or system must not be returned to normal business use solely because it is technically available. Authorised personnel must establish that the relevant security risks have been addressed and required technical verification has been completed.
+
+Do not restore from potentially compromised recovery sources without the investigation and validation required by the applicable technical and security procedures.
 
 ## 16. Third-Party Dependency Failure
 
@@ -523,35 +419,39 @@ Avoid relying on a single person's personal email address or phone number for cr
 
 Emergency access must be logged and reviewed.
 
-## 19. Recovery Roles
+## 19. Business Continuity Functions and Responsibilities
 
-The parent company must assign clear responsibilities.
+Incident ownership, Incident Lead accountability and response participant assignments are governed by the incident management standard and incident response playbook.
 
-### Incident Lead
+For business continuity, the parent company must ensure that the following functions are covered by appropriately authorised personnel:
 
-Coordinates the response, assigns actions and manages escalation.
+### Business Continuity Coordination
 
-### Technical Recovery Lead
+Maintain business impact assessments, critical service priorities and continuity arrangements. Coordinate business continuity decisions with the Incident Lead.
 
-Responsible for infrastructure, application, database and service restoration.
+### Technical Recovery
 
-### Security Lead
+Coordinate the technical personnel responsible for restoring infrastructure, applications, databases and services under the applicable backup and disaster recovery procedures.
 
-Assesses security exposure, containment and safe restoration.
+### Security and Compliance
 
-### Finance Lead
+Provide authorised security, privacy and compliance assessment for continuity decisions involving compromised systems, sensitive information or regulatory obligations.
 
-Coordinates payment verification, transaction reconciliation and financial corrections.
+### Finance and Reconciliation
 
-### Store Operations Lead
+Coordinate payment verification, transaction reconciliation, financial exposure assessment and authorised financial corrections.
 
-Coordinates Store Owner communication and operational workarounds.
+### Store Operations
 
-### Communications Lead
+Coordinate Store Owner impact assessments, safe workarounds, manual operating arrangements and store-level recovery requirements.
 
-Manages approved internal, Store Owner and customer updates.
+### Communications
 
-One person may hold multiple roles in a small team, but responsibilities must remain clear.
+Coordinate continuity-related information for internal teams, Store Owners and customers in accordance with the incident communication standard.
+
+One person may cover multiple functions in a small organisation, provided responsibilities and decision-making authority remain clear.
+
+This section defines business continuity functions. It does not appoint individuals, grant additional authority or replace the responsibilities established by specialist governance documents.
 
 ## 20. Business Continuity Documentation
 
@@ -605,47 +505,47 @@ Each exercise must record:
 
 Recovery exercises must be planned to avoid unnecessary production disruption.
 
-## 22. Post-Incident Review
+## 22. Continuity Lessons and Improvement
 
-Major incidents require a documented review.
+Formal incident review requirements are governed by `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`.
 
-The review should identify:
+This plan focuses on evaluating whether business continuity arrangements were effective during an actual disruption or recovery exercise.
 
-- Root cause.
-- Timeline.
-- Affected stores and customers.
-- Financial impact.
-- Data impact.
-- Recovery effectiveness.
-- Communication effectiveness.
-- Control failures.
-- Contributing factors.
-- Corrective actions.
+The continuity assessment should consider:
 
-The review must focus on preventing recurrence rather than assigning blame without evidence.
+- Whether critical business services were correctly prioritised.
+- Whether the business impact assessment was accurate.
+- Whether manual or alternative operating arrangements were workable.
+- Whether payment, order and financial records remained controlled.
+- Whether affected stores and customers received useful continuity information.
+- Whether provider dependencies created unexpected disruption.
+- Whether business recovery objectives were achievable.
+- Whether recovery decisions introduced additional business risk.
 
-Corrective actions must have accountable owners and completion dates.
+Material findings must be supplied to the applicable incident review or exercise review process.
 
-## 23. Platform Implementation Requirements
+Continuity improvements must have accountable owners, appropriate priorities and traceable completion records. This section does not establish a separate incident review threshold or replace mandatory post-incident review requirements.
 
-Where the platform provides continuity-related functionality, it should support:
+## 23. Business Continuity Platform Requirements
 
-- Central incident records.
-- Incident severity.
-- Affected-store relationships.
-- Incident ownership.
-- Status tracking.
-- Communication history.
-- Recovery activity logs.
-- Backup verification records.
-- Recovery exercise records.
-- Post-incident actions.
+Where the platform provides business continuity functionality, it should support:
 
-Access must be restricted according to role.
+- A maintained inventory of critical services and dependencies.
+- Identification of affected stores and business functions.
+- Business impact assessment records.
+- Critical service and recovery priority records.
+- Continuity activation decisions.
+- Approved manual and alternative operating arrangements.
+- Provider dependency and recovery information.
+- Continuity-related communications.
+- Recovery exercise evidence.
+- Continuity findings and corrective actions.
 
-Store Owners must only see incident information relevant to their stores unless broader communication is authorised.
+Access must be restricted according to role and information sensitivity.
 
-Incident records must not expose sensitive security details to unauthorised users.
+Store Owners must only see continuity information relevant to their stores unless broader communication is authorised.
+
+Incident classification, Incident Lead assignment, incident lifecycle, incident records and incident communication governance remain subject to the incident management standard and incident response playbook.
 
 ## 24. Testing Requirements
 
@@ -661,7 +561,7 @@ Automated and operational tests should verify:
 8. Media files remain associated with the correct store and product.
 9. Recovery does not create duplicate orders.
 10. Access controls remain enforced after restoration.
-11. Incident records retain an audit trail.
+11. Continuity exercise records, findings and corrective actions remain traceable.
 12. Recovery communications can be issued to affected stores.
 13. Manual orders can be reconciled after service restoration.
 
