@@ -6,7 +6,7 @@
 |---|---|
 | Document Status | DRAFT |
 | Version | 0.1 |
-| Last Updated | 2026-11-07 |
+| Last Updated | 2026-11-08 |
 | Document Owner | Platform Owner |
 | Review Status | Pending |
 | Classification | Internal |
@@ -222,6 +222,8 @@ Check:
 - Error rates and unusual response times.
 
 Investigate material failures and record unresolved issues.
+
+Monitoring architecture, observability requirements, health checks, alert definitions and technical monitoring controls are governed by `PLATFORM_MONITORING_OBSERVABILITY_AND_ALERTING_STANDARDS.md`. Operational alert acknowledgement, handling and escalation are governed by `PLATFORM_MONITORING_ALERTING_AND_ESCALATION_STANDARDS.md`. The daily checks in this runbook do not replace those requirements.
 
 ### 7.2 Background Processing
 
@@ -634,194 +636,189 @@ Marketing communication rules must not override transactional or security requir
 
 ## 17. Incident Management
 
-### 17.1 Incident Identification
+This section defines the operational routing of incidents. Mandatory incident governance is defined by `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`. Operational response procedures are defined by `INCIDENT_RESPONSE_PLAYBOOK.md`.
+
+The incident management standard is authoritative for severity definitions, Incident Lead accountability, the mandatory incident lifecycle, affected-audience communication, recovery declaration, closure and post-incident review requirements.
+
+The playbook is authoritative for triage, containment, investigation, eradication, evidence preservation, technical recovery and specialist incident procedures.
+
+### 17.1 Initial Identification
 
 An incident may be identified through monitoring, personnel reports, customer reports, provider notifications or security alerts.
 
-### 17.2 Incident Classification
+Record the available facts, detection time, affected service or store and known operational impact. Do not delay urgent protective action while waiting for a complete report.
 
-Classify incidents according to severity, affected services, data exposure, financial impact and business disruption.
+### 17.2 Incident Assignment and Routing
 
-### 17.3 Incident Ownership
+An Incident Lead MUST be assigned and recorded for every incident, regardless of severity.
 
-Assign an incident owner responsible for coordination, updates, action tracking and closure.
+Classify the incident using the incident management standard. Do not introduce a separate severity scheme or substitute an informal incident owner.
 
-### 17.4 Major Incident Authority
+Refer responders to the incident response playbook for the applicable operational procedures.
 
-The Platform Owner or an explicitly authorised delegate may declare a major platform incident.
+### 17.3 Operational Coordination
 
-The designated incident lead coordinates response and escalation.
+The Incident Lead coordinates incident response and communications within the authority assigned to that role.
 
-### 17.5 Immediate Containment
+Platform and Store Admin personnel must provide relevant operational information and support without exceeding their delegated authority.
 
-Take proportionate action to prevent further harm.
+Urgent protective action may be taken by an authorised responder where delay would increase harm. Record the action, reason, initiator and outcome, and arrange the required review.
 
-Examples include disabling a compromised credential, restricting an affected integration, suspending a vulnerable endpoint or temporarily limiting an affected store operation.
+All incident communications, recovery declarations, closure decisions and post-incident reviews MUST follow the incident management standard.
 
-Emergency containment must not require prior approval for every individual protective action when delay would increase harm.
-
-Record the action and arrange prompt review.
-
-### 17.6 Investigation
-
-Establish the affected systems, timeline, cause, scope and business impact.
-
-Preserve relevant logs, audit records and other evidence.
-
-### 17.7 Communication
-
-Provide accurate and appropriately scoped updates to affected personnel and stores.
-
-Do not disclose sensitive investigation details to unauthorised parties.
-
-### 17.8 Recovery
-
-Restore affected services through controlled recovery procedures.
-
-Verify data integrity, permissions, integrations and critical workflows before declaring recovery complete.
-
-### 17.9 Incident Closure
-
-Record the cause, impact, actions, recovery evidence, unresolved risks and corrective actions.
-
-Major incidents must receive a post-incident review.
+This runbook does not establish alternative incident response or closure requirements.
 
 ## 18. Security Operations
 
-### 18.1 Security Monitoring
+This section covers routine operational security activities. Security architecture and approved security policies remain authoritative for technical security requirements. Active security incidents MUST be handled under `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md` and `INCIDENT_RESPONSE_PLAYBOOK.md`.
 
-Monitor authentication failures, unusual privileged activity, access changes, suspicious API behaviour and other relevant security events.
+### 18.1 Routine Security Monitoring
 
-### 18.2 Suspected Account Compromise
+Review relevant authentication failures, unusual privileged activity, access changes, suspicious API behaviour and other security events.
 
-Restrict affected access where necessary.
+Investigate material anomalies through authorised procedures and preserve relevant references for further assessment.
 
-Invalidate relevant sessions and credentials, preserve evidence and follow the account recovery procedure.
+### 18.2 Access and Configuration Controls
 
-### 18.3 Suspected Data Exposure
+Review privileged settings, production access, public endpoints, storage permissions and secret exposure risks according to the applicable security and identity requirements.
 
-Contain the exposure and identify the affected stores, records and individuals where possible.
+Revoke access and rotate credentials through controlled procedures when authorised and necessary.
 
-Escalate for appropriate privacy, legal and security assessment.
+### 18.3 Vulnerability Handling
 
-### 18.4 Vulnerability Handling
-
-Assess reported vulnerabilities according to severity and exposure.
+Record reported vulnerabilities and refer them for assessment under the applicable security and change-management processes.
 
 Prioritise vulnerabilities affecting authentication, authorisation, store isolation, payment integrity and sensitive information.
 
-### 18.5 Security Configuration
+### 18.4 Suspected Security Incidents
 
-Review privileged settings, secret exposure risks, public endpoints, storage permissions and production access.
+Suspected account compromise, unauthorised access, data exposure or active exploitation MUST be escalated through the incident process.
 
-### 18.6 Security Review
+Responders must use the incident response playbook for containment, investigation, evidence preservation, recovery and specialist procedures.
 
-Material security incidents and significant access-boundary changes must receive documented review.
+This runbook does not establish separate security incident notification, containment or recovery rules.
+
+### 18.5 Security Review
+
+Material security incidents and significant access-boundary changes must receive the reviews required by the applicable security and incident governance documents.
 
 ## 19. Backup and Recovery Operations
 
-### 19.1 Backup Monitoring
+Technical backup, restoration and disaster recovery procedures are governed by `BACKUP_AND_DISASTER_RECOVERY.md`.
 
-Monitor scheduled backup execution and investigate failures.
+Business continuity priorities, critical service decisions, continuity responsibilities and stakeholder communication are governed by `PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md`.
 
-Record backup coverage, completion time, retention and any known limitations.
+This section provides operational coordination guidance only. It does not establish separate backup schedules, retention periods, recovery objectives or technical restoration instructions.
 
-### 19.2 Recovery Point
+### 19.1 Recovery Need Identification
 
-Identify the latest verified recovery point before a recovery operation.
+Identify the affected service, store, dataset or infrastructure and the reason recovery may be necessary.
 
-Understand which transactions or changes may not be included.
+Preserve relevant incident, deployment, provider and operational records.
 
-### 19.3 Restoration Authorisation
+### 19.2 Recovery Authorisation and Handover
 
-Restoration must be authorised by the responsible authority and performed by personnel with appropriate access.
+Refer the recovery requirement to the authority responsible for the affected service and follow the applicable business continuity and incident procedures.
 
-### 19.4 Restoration Scope
+Technical restoration MUST be performed by authorised personnel using the technical backup and disaster recovery plan.
 
-Identify whether recovery affects the entire platform, a shared service, a specific dataset or an individual store.
+Do not initiate an improvised restoration or select a recovery point without following the governing technical procedure.
 
-Avoid broad restoration where a narrower safe recovery method is available.
+### 19.3 Recovery Coordination
 
-### 19.5 Post-Restoration Verification
+Coordinate the operational impact, affected stores, required personnel and business decisions with the Incident Lead or designated continuity authority.
 
-Verify application availability, data integrity, store isolation, access permissions, financial records and integration behaviour.
+Technical recovery verification and reconciliation MUST follow the technical recovery plan and incident response requirements.
 
-### 19.6 Recovery Records
+### 19.4 Recovery Records
 
-Record the reason, authorisation, recovery point, actions, outcome and any reconciliations required after restoration.
+Ensure that the recovery record identifies the authorisation, affected scope, responsible personnel, relevant recovery reference, outcome, verification evidence and unresolved risks.
 
+Do not treat restored infrastructure health alone as proof that all business operations and transactions are reconciled.
 
 ## 20. Deployment and Change Operations
 
+Production release, deployment approval, release controls and deployment execution are governed by `PLATFORM_RELEASE_AND_DEPLOYMENT_GOVERNANCE_STANDARDS.md` and the applicable change-management requirements.
+
+This runbook provides operational coordination guidance and does not create a competing release approval or deployment process.
+
 ### 20.1 Deployment Authority
 
-Production deployments must be performed by authorised personnel through approved deployment processes.
+Production deployments and material configuration changes MUST follow the approved release and change governance procedures.
 
-### 20.2 Pre-Deployment Checks
+Only authorised personnel may perform the assigned deployment activities.
 
-Before deployment, verify:
+### 20.2 Operational Readiness
 
-- Required approvals are recorded.
-- Automated tests and required quality checks have passed.
-- Configuration and secrets are available.
-- Database migrations have been reviewed.
-- Backup and recovery requirements are satisfied.
-- A rollback or recovery procedure is available.
-- Affected services and stores are identified.
+Before a deployment, confirm that the responsible personnel can identify:
+
+- The approved release and deployment record.
+- The affected services and stores.
+- Required approvals and outstanding conditions.
+- Relevant database migrations and dependencies.
+- Required backup and recovery arrangements.
+- The applicable deployment and verification procedures.
+- The responsible technical and operational contacts.
+
+The governing release procedure determines the required gates and acceptance criteria.
 
 ### 20.3 Deployment Coordination
 
-Coordinate application releases and database migrations to prevent conflicting deployments.
+Coordinate application releases, database migrations, background processing and affected shared services to avoid conflicting operational changes.
 
-Shared platform changes must be assessed for their impact on all participating stores.
+Record material deployment activity through the approved change and release records.
 
-### 20.4 Post-Deployment Verification
+### 20.4 Post-Deployment Operations
 
-Verify service health, critical API operations, authentication, store isolation, integrations and relevant business workflows.
+Perform the post-deployment checks required by the release procedure.
+
+Record material failures, unexpected behaviour and unresolved risks.
 
 ### 20.5 Failed Deployment
 
-If a deployment causes material disruption, follow the approved rollback or recovery plan.
+A failed deployment MUST be handled under the approved deployment recovery procedure.
 
-Preserve logs and deployment evidence for investigation.
+Where it causes an incident or material service disruption, invoke the incident management standard and incident response playbook.
 
-### 20.6 Configuration Changes
-
-Production configuration changes must be authorised, recorded and verified.
-
-Avoid undocumented manual changes that cannot be reproduced or traced.
+Do not improvise an alternative rollback or recovery process from this runbook.
 
 ## 21. Service Continuity
 
-### 21.1 Continuity Planning
+Business continuity governance, critical service priorities, continuity responsibilities, manual continuity decisions and stakeholder communication are governed by `PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md`.
 
-Identify critical business services and the operational activities required to maintain them during disruption.
+Technical backup, restoration and disaster recovery execution are governed by `BACKUP_AND_DISASTER_RECOVERY.md`.
 
-### 21.2 Service Dependencies
+### 21.1 Routine Continuity Readiness
 
 Maintain awareness of dependencies on hosting, databases, identity providers, payment providers, communication services, storage and other external systems.
 
-### 21.3 Provider Outages
+Report material dependency changes and operational risks through the applicable governance process.
 
-When an external provider is unavailable, identify affected operations and communicate any limitations.
+### 21.2 Provider Disruption
 
-Do not report an operation as completed when its provider-side outcome remains uncertain.
+When an external provider is unavailable, identify the affected services and business workflows.
 
-### 21.4 Manual Workarounds
+Treat uncertain transaction outcomes as unresolved until verified through the provider or trusted transaction records.
 
-Use manual workarounds only when authorised and when they preserve sufficient transaction evidence and data integrity.
+Communicate material service limitations through the approved incident and continuity communication procedures.
 
-Document how manually handled operations will be reconciled with the platform after service restoration.
+### 21.3 Manual Workarounds
 
-### 21.5 Extended Disruption
+Manual workarounds may be used only when authorised and when they preserve sufficient transaction evidence and data integrity.
 
-For prolonged disruption, the incident lead must coordinate business continuity decisions with affected stores.
+The business continuity plan governs continuity decisions. Reconciliation with platform records must be completed through the applicable operational and financial procedures.
 
-Prioritise critical services and communicate realistic recovery expectations.
+### 21.4 Extended Disruption
 
-### 21.6 Continuity Review
+For prolonged disruption, refer continuity activation, service prioritisation, responsibilities and stakeholder communication to the business continuity plan.
 
-Review continuity arrangements after major incidents, material architecture changes and significant provider changes.
+Where an incident is active, the Incident Lead coordinates the response in accordance with the incident management standard.
+
+### 21.5 Continuity Review
+
+Review operational readiness after material provider changes, major incidents, recovery exercises and significant architecture changes.
+
+Do not establish or imply unapproved recovery targets or continuity commitments in this runbook.
 
 ## 22. Performance and Capacity Operations
 
@@ -855,42 +852,35 @@ Material decisions require human review and documented justification.
 
 ## 23. Store Support and Escalation
 
-### 23.1 Support Intake
+`STORE_SUPPORT_AND_ESCALATION_POLICY.md` is authoritative for support categories, request information, priority classification, support channels, support lifecycle, escalation levels, service expectations, complaints and support records.
 
-Record support requests with the affected store, issue description, impact, priority and available evidence.
+This runbook defines only the operational boundaries and routing principles needed by platform personnel.
 
-### 23.2 Support Classification
+### 23.1 Operational Routing
 
-Distinguish among:
+Ordinary store-level questions and operational issues should be directed to the responsible Store Admin.
 
-- General operational questions.
-- Store-specific configuration issues.
-- Product, inventory or order problems.
-- Customer and privacy requests.
-- Financial discrepancies.
-- Integration failures.
-- Platform-wide service incidents.
-- Security incidents.
+Issues involving shared platform services, platform configuration or central technical support should be routed through the approved platform support process.
 
-### 23.3 Escalation
+### 23.2 Specialist and Incident Escalation
 
-Escalate issues to the responsible platform or store authority.
+Security, privacy, suspected fraud, financial integrity and cross-store access issues MUST be escalated through the applicable incident and specialist procedures.
 
-Security incidents, suspected fraud, financial integrity failures and cross-store access problems require priority handling.
+A support request must not delay urgent protective action where an authorised response is necessary.
 
-### 23.4 Support Boundaries
+### 23.3 Support Authority Boundaries
 
-Support personnel must not make unauthorised commercial decisions, alter financial records or bypass store-level permissions to resolve ordinary requests.
+Support personnel must not make unauthorised commercial decisions, alter financial records, change store ownership or bypass store-level permissions to resolve ordinary requests.
 
-### 23.5 Support Resolution
+Support access to production systems must remain authorised, purpose-limited and recorded.
 
-Record the investigation, action taken, outcome and any remaining risks.
+### 23.4 Resolution and Handover
 
-Confirm resolution with the requesting party where appropriate.
+Record material investigation findings, actions, decisions and unresolved risks through the approved support or incident record.
 
-### 23.6 Repeated Issues
+When an issue is transferred to another person or process, preserve the relevant context and confirm who is responsible for the next action.
 
-Identify recurring problems and assess whether they require a technical fix, process change, training or provider escalation.
+Support must not be treated as complete solely because an issue has been referred to another team.
 
 ## 24. Operational Reviews
 
@@ -995,6 +985,19 @@ This runbook must be read alongside:
 - Migration Plan.
 - Testing Strategy.
 - Development Standards.
+
+The following operational standards and procedures also govern the activities covered by this runbook:
+
+- `PLATFORM_MONITORING_OBSERVABILITY_AND_ALERTING_STANDARDS.md`
+- `PLATFORM_MONITORING_ALERTING_AND_ESCALATION_STANDARDS.md`
+- `PLATFORM_INCIDENT_MANAGEMENT_AND_SERVICE_DISRUPTION_COMMUNICATION_STANDARDS.md`
+- `INCIDENT_RESPONSE_PLAYBOOK.md`
+- `PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md`
+- `BACKUP_AND_DISASTER_RECOVERY.md`
+- `PLATFORM_RELEASE_AND_DEPLOYMENT_GOVERNANCE_STANDARDS.md`
+- `PLATFORM_CHANGE_COMMUNICATION_AND_FEATURE_ANNOUNCEMENT_STANDARDS.md`
+- `STORE_SUPPORT_AND_ESCALATION_POLICY.md`
+- `SECURITY_ARCHITECTURE.md`
 
 Detailed technical requirements remain governed by the relevant architecture and implementation documents.
 
