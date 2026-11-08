@@ -18,7 +18,7 @@
 
 ## 1. Purpose
 
-This document defines how the parent company prepares for, responds to and recovers from incidents that threaten the availability, integrity or continuity of the multi-store platform.
+This document defines how the parent company prepares for, responds to and maintains business operations during incidents that threaten the availability, integrity or continuity of the multi-store platform. It establishes business priorities, continuity decisions, responsibilities and communication requirements. Technical backup and restoration execution is governed by BACKUP_AND_DISASTER_RECOVERY.md.
 
 The plan covers:
 
@@ -296,123 +296,55 @@ Close the incident only after:
 - Financial and data reconciliation is complete or assigned.
 - Follow-up actions have owners and deadlines.
 
-## 8. Backup Policy
+## 8. Backup and Technical Recovery Governance
 
-Backups must cover critical business information.
+The parent company must ensure that critical business information is protected through documented and tested backup and recovery arrangements.
 
-### 8.1 Database Backups
+The technical requirements for backup scope, backup types, frequency, retention, encryption, storage isolation, access controls and restoration procedures are governed by `BACKUP_AND_DISASTER_RECOVERY.md`.
 
-The backup strategy must define:
+From a business continuity perspective, the parent company must ensure that:
 
-- Backup frequency.
-- Backup type.
-- Retention period.
-- Encryption.
-- Storage location.
-- Access permissions.
-- Backup verification.
-- Restoration procedures.
+- Critical business information and services are identified.
+- Each critical information category has an accountable owner.
+- Business recovery priorities are documented.
+- Backup and recovery arrangements support approved business recovery objectives.
+- Provider limitations and material recovery risks are visible to decision-makers.
+- Unresolved backup and recovery dependencies are tracked before production readiness approval.
 
-The database backup scope should include:
+This plan does not establish competing technical backup configurations or retention requirements.
 
-- Store records.
-- Store Owner assignments.
-- Customer accounts.
-- Customer consent records.
-- Product catalogue.
-- Store-specific product listings.
-- Inventory.
-- Orders.
-- Payments and reconciliation records.
-- Refunds and returns.
-- Supplier records.
-- Marketing and creative records.
-- Audit history.
-- Platform configuration.
+## 9. Backup Assurance and Recovery Readiness
 
-### 8.2 File and Media Backups
+The parent company must obtain sufficient evidence that the technical backup and recovery arrangements can support business continuity.
 
-Protect:
+Backup verification, restoration testing, technical validation and evidence requirements are defined in `BACKUP_AND_DISASTER_RECOVERY.md`.
 
-- Original product photographs.
-- Optimised product images.
-- Videos.
-- Store branding assets.
-- Creative deliverables.
-- Documents.
-- Relevant configuration files.
+Business continuity reviews must consider:
 
-Media backups must preserve relationships between files and their owning stores or products.
+- Whether critical services and business information are covered.
+- Whether restoration exercises address the highest-impact business scenarios.
+- Whether actual recovery performance is consistent with approved business objectives.
+- Whether identified recovery gaps have accountable owners and corrective actions.
+- Whether Store Owner and customer continuity arrangements remain workable during recovery.
 
-### 8.3 Configuration Backups
+A successful backup report must not be treated as proof that the business can resume normal operations.
 
-Maintain protected copies of:
+## 10. Technical Recovery Activation
 
-- Infrastructure configuration.
-- DNS configuration.
-- Deployment configuration.
-- Environment variable names and required configuration references.
-- Database migration history.
-- CI/CD workflows.
-- Application source code.
-- Critical operational documentation.
+When a disruption requires database, file, object storage, application or infrastructure restoration, the Incident Lead must coordinate the business decisions and ensure that authorised technical personnel follow `BACKUP_AND_DISASTER_RECOVERY.md`.
 
-Never store plaintext production secrets in source control or ordinary backup archives.
+The business continuity plan governs:
 
-### 8.4 Backup Isolation
+- The business priority of affected services.
+- The stores, customers and operations affected.
+- Whether manual or alternative operating arrangements are required.
+- The business impact of the proposed recovery point.
+- The authority required to accept residual data loss or recovery risk.
+- The conditions for resuming affected business operations.
 
-At least one recovery copy should be protected against compromise of the primary production environment.
+Technical personnel must not treat a successful restoration as permission to resume business processing. Required integrity checks, transaction reconciliation, store-isolation verification and recovery approval must be completed under the technical recovery procedure.
 
-Use appropriate access separation, encryption and retention controls.
-
-A backup stored in the same account with unrestricted production access may be vulnerable to the same incident.
-
-## 9. Backup Verification and Restore Testing
-
-A successful backup job does not prove that restoration will work.
-
-The parent company must periodically:
-
-1. Confirm that backups completed.
-2. Verify backup integrity.
-3. Confirm encryption and access controls.
-4. Restore a backup into an isolated environment.
-5. Verify database relationships and constraints.
-6. Check media references.
-7. Run application health checks.
-8. Validate representative orders and financial records.
-9. Record restoration duration.
-10. Document any failures.
-
-Restore testing must not overwrite production data.
-
-The testing schedule must reflect system criticality and the actual backup capabilities.
-
-## 10. Database Recovery
-
-Database recovery must follow a controlled procedure.
-
-Before restoration:
-
-- Identify the failure.
-- Determine the affected database and tables.
-- Identify the latest valid backup.
-- Assess whether point-in-time recovery is available.
-- Preserve current database evidence where appropriate.
-- Obtain approval for the restoration approach.
-
-After restoration:
-
-- Verify schema and migration state.
-- Check foreign-key relationships.
-- Check store ownership and assignment records.
-- Validate order and payment records.
-- Confirm inventory consistency.
-- Check audit history.
-- Review data created after the recovery point.
-- Reconcile missing or duplicated transactions.
-
-Never assume that restoring the database automatically restores external payment, email or storage systems.
+Payment, financial and order continuity requirements remain governed by the dedicated sections of this plan and the applicable payment, financial and order-management standards.
 
 ## 11. Payment and Financial Continuity
 
@@ -627,8 +559,7 @@ Maintain a protected continuity repository containing:
 
 - Current system architecture.
 - Service dependency register.
-- Backup inventory.
-- Restore procedures.
+- Current backup inventory and restore-procedure references maintained under `BACKUP_AND_DISASTER_RECOVERY.md`.
 - Provider support details.
 - Infrastructure recovery instructions.
 - DNS and domain records.
@@ -720,9 +651,9 @@ Incident records must not expose sensitive security details to unauthorised user
 
 Automated and operational tests should verify:
 
-1. Backup jobs report success or failure.
-2. Backup records include timestamps and scope.
-3. Restore procedures can recreate a usable environment.
+1. The technical backup and recovery standard defines verifiable backup completion and coverage evidence.
+2. Business continuity reviews can obtain current backup and restoration evidence from the responsible technical owner.
+3. Recovery exercises demonstrate whether critical business services can be restored within approved objectives.
 4. Restored records preserve store isolation.
 5. Customer and order relationships remain valid.
 6. Inventory remains consistent.
@@ -749,10 +680,16 @@ Review it:
 
 Recovery targets must be updated when actual infrastructure capabilities or business priorities change.
 
-## 26. Governing Rule
+## 26. Relationship to Backup and Disaster Recovery
 
-The platform must be designed and operated on the assumption that failures will eventually happen.
+This plan establishes business continuity priorities, impact assessments, recovery decision-making, operational workarounds and stakeholder communication.
 
-The parent company must be able to identify what failed, protect affected information, restore critical services and account for every important transaction.
+`BACKUP_AND_DISASTER_RECOVERY.md` is the technical authority for backup governance, backup protection, verification, restoration testing and technical recovery execution.
 
-A recovery plan is only credible when its backups, procedures, responsibilities and recovery objectives have been tested.
+The two documents must be maintained together. Changes to critical services, business priorities or approved recovery objectives must be reflected in the technical recovery arrangements. Changes to actual backup or restoration capabilities must be assessed for their business continuity impact.
+
+## 27. Governing Rule
+
+The parent company must be able to identify what failed, protect affected information, maintain essential operations, restore critical services and account for every important transaction.
+
+A business continuity plan is only credible when its priorities, responsibilities, alternative operating arrangements and recovery objectives are supported by tested technical recovery capabilities.

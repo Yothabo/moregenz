@@ -7,7 +7,7 @@
 | Document Type | Backup and Disaster Recovery Plan |
 | Version | 0.1 |
 | Status | DRAFT |
-| Last Updated | 2026-11-07 |
+| Last Updated | 2026-11-08 |
 | Document Owner | Platform Owner |
 | Review Status | Pending |
 | Classification | Internal |
@@ -20,13 +20,13 @@
 
 ## 1. Purpose
 
-This document establishes the requirements for protecting platform data, recovering from data loss and restoring services following a major failure.
+This document establishes the technical requirements for protecting platform data, recovering from data loss and restoring services following a major failure.
 
-It covers backup governance, recovery responsibilities, restoration procedures, disaster scenarios, verification and continuity.
+It is the technical authority for backup governance, backup security, verification, restoration testing and recovery execution. Business priorities, continuity decisions, critical-service impact assessments and stakeholder communication are governed by `PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md`.
 
 It supplements the Deployment Architecture, Operations Runbook and Incident Response Playbook.
 
-## 2. Recovery Objectives
+## 2. Protected Information
 
 The backup and recovery strategy must protect:
 
@@ -222,7 +222,9 @@ RPOs must reflect transaction volume, business impact and available recovery tec
 
 RTO and RPO values must be approved by the appropriate platform authority after considering cost, technical capability and business requirements.
 
-This document does not assign numerical targets.
+Business-level proposed targets and service priorities are documented in `PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md`. Once approved, the applicable targets must be reflected in technical recovery arrangements and assessed against actual provider and platform capabilities.
+
+This document does not assign or approve numerical targets.
 
 ## 12. Disaster Scenarios
 
@@ -493,7 +495,7 @@ These matters must be resolved before production readiness is approved.
 ## 25. Relationship to Other Documents
 
 This plan must be read alongside:
-
+- PLATFORM_BUSINESS_CONTINUITY_AND_DISASTER_RECOVERY_PLAN.md
 - DEPLOYMENT_ARCHITECTURE.md
 - OPERATIONS_ARCHITECTURE.md
 - OPERATIONS_RUNBOOK.md
