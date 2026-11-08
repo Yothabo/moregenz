@@ -37,14 +37,24 @@ def extract_metadata(path):
         path.stem.replace("_", " ").title()
     )
 
+    lifecycle = get("Document Status", "Status", "Lifecycle Status")
+    valid_statuses = {
+        "DRAFT", "UNDER REVIEW", "APPROVED", "SUPERSEDED", "RETIRED"
+    }
+    if lifecycle.upper() not in valid_statuses:
+        lifecycle = "Not recorded"
+
     return {
         "title": title,
         "document_id": get("Document ID", "Document Identifier"),
         "owner": get("Document Owner", "Owner"),
         "version": get("Version", "Document Version"),
-        "status": get("Document Status", "Status", "Lifecycle Status"),
+        "status": lifecycle,
+        "created": get("Creation Date", "Created Date", "Date Created"),
+        "last_revised": get("Last Revision Date", "Last Revised", "Last Updated"),
         "effective": get("Effective Date"),
-        "approval": get("Approval Status", "Review Status"),
+        "review_date": get("Review Date", "Next Review Date"),
+        "approval": get("Approval Status", "Approval", "Approving Authority", "Review Status"),
         "content": "\n".join(lines),
     }
 
@@ -89,8 +99,8 @@ def cell(value):
     return str(value).replace("|", r"\|").replace("\n", " ").strip()
 
 rows = [
-    "| Registry Ref | Document ID | Title | Category | Status | Owner | Version | Effective Date | Approval / Review | Related Documents | Repository Path |",
-    "|---|---|---|---|---|---|---|---|---|---|---|",
+    "| Registry Ref | Document ID | Title | Category | Status | Owner | Version | Creation Date | Last Revision | Effective Date | Review Date | Approval / Approving Authority | Related Documents | Repository Path |",
+    "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
 ]
 
 for record in records:
@@ -111,7 +121,10 @@ for record in records:
         record["status"],
         record["owner"],
         record["version"],
+        record["created"],
+        record["last_revised"],
         record["effective"],
+        record["review_date"],
         record["approval"],
         related_text,
         f"`{record['path']}`",
