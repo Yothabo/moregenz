@@ -1,5 +1,21 @@
 # Business Requirements, User Stories and Acceptance Criteria Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-IMP-3AA6AE7E72 |
+| Category | Implementation |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 | Field | Value |
 |---|---|
 | Document Status | DRAFT |

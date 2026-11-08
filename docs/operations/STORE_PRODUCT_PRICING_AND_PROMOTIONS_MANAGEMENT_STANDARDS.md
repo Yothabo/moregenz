@@ -1,5 +1,21 @@
 # Store Product Pricing and Promotions Management Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-7163346E9C |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines how Store Owners set product prices, create promotions, manage discounts and communicate offers to customers.

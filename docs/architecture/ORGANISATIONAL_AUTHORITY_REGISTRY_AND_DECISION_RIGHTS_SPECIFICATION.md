@@ -1,5 +1,21 @@
 # Organisational Authority Registry and Decision Rights Specification
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-DC34D20023 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines how decision-making authority is represented, assigned, checked and audited across the parent company and its stores.

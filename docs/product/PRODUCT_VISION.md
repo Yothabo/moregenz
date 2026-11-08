@@ -1,5 +1,18 @@
 # Product Vision
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-PRD-A66256DC50 |
+| Category | Product requirements |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** APPROVED
 **Version:** 1.0
 **Last updated:** 2026-11-05

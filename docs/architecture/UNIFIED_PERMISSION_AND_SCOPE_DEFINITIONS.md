@@ -1,5 +1,20 @@
 # Unified Permission and Scope Definitions
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-F2BA1F11D8 |
+| Category | Architecture |
+| Version | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** Authoritative access-control specification
 **Applies to:** Parent company, departments, shared services and all stores
 **Related documents:**

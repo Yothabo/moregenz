@@ -1,5 +1,21 @@
 # Store Owner Onboarding and Store Launch Procedure
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-981295E453 |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines the operational procedure for onboarding an approved Store Owner and preparing their assigned store for public launch.

@@ -1,5 +1,21 @@
 # Store Supplier Onboarding and Procurement Management Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-34451593BB |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document establishes how suppliers are identified, assessed, approved and managed across participating stores.

@@ -1,5 +1,21 @@
 # Parent Company Organisational and Access Control Architecture
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-DA2D024976 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Document authority
 
 This document defines the mandatory organisational and access-control architecture for the parent company.

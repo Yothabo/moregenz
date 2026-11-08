@@ -1,5 +1,21 @@
 # Store Marketing Campaign Request and Approval Workflow
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-9D745B5D41 |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines the operational workflow for requesting, planning, approving, executing and evaluating marketing campaigns for participating stores.

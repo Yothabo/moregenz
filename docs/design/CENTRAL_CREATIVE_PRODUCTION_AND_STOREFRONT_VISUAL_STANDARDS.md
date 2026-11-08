@@ -1,5 +1,19 @@
 # Central Creative Production and Storefront Visual Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-DES-0F26276DC4 |
+| Category | Design |
+| Version | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Document type:** Operational and design governance standard
 **Applies to:** Parent company, creative production team, developers, Store Owners and participating stores
 **Status:** Proposed operating standard

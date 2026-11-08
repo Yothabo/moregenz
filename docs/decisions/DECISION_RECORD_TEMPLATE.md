@@ -8,6 +8,15 @@
 | Template Version | 1.0 |
 | Document Owner | Platform Owner |
 | Classification | Internal |
+| Document ID | DOC-DEC-B34FF1264F |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
 
 ## 1. Purpose
 

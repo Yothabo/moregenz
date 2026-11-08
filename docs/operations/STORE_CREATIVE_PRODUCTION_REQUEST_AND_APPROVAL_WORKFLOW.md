@@ -1,5 +1,21 @@
 # Store Creative Production Request and Approval Workflow
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-583E49D87D |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document establishes the operational workflow for requesting, planning, producing, reviewing and delivering creative assets for participating stores.

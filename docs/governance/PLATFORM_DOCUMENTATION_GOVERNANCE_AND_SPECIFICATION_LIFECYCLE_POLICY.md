@@ -1,5 +1,21 @@
 # Platform Documentation Governance and Specification Lifecycle Policy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-BD897C3635 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This policy establishes how authoritative platform documentation is created, approved, maintained, superseded and enforced.

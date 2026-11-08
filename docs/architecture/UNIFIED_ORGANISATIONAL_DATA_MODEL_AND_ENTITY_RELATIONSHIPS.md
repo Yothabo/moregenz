@@ -1,5 +1,21 @@
 # Unified Organisational Data Model and Entity Relationships
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-519DED6675 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines the logical data model for the parent company and all participating stores.

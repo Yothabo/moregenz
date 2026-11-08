@@ -1,5 +1,21 @@
 # Platform Dispute, Complaint and Appeal Resolution Policy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-16CAB5F4E0 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This policy establishes a fair, consistent and traceable process for receiving, investigating and resolving disputes and complaints involving the platform.

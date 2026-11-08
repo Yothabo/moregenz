@@ -1,5 +1,21 @@
 # Platform Ethical Conduct, Anti-Fraud and Anti-Bribery Policy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-B98A0109A5 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This policy establishes ethical conduct standards and controls intended to prevent fraud, bribery, corruption, dishonesty and abuse of authority across the platform's business operations.

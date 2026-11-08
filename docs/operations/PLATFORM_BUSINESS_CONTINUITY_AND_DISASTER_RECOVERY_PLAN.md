@@ -1,5 +1,21 @@
 # Platform Business Continuity and Disaster Recovery Plan
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-302ED5158F |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines how the parent company prepares for, responds to and recovers from incidents that threaten the availability, integrity or continuity of the multi-store platform.

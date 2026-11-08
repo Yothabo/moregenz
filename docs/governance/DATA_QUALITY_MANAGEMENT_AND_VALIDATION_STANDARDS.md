@@ -1,5 +1,21 @@
 # Data Quality Management and Validation Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-2977525521 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 | Field | Value |
 |---|---|
 | Document Status | DRAFT |

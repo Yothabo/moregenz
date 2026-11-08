@@ -1,5 +1,21 @@
 # Platform Enterprise Risk Management and Risk Register Policy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-2594D8328A |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This policy establishes a consistent framework for identifying, assessing, recording, treating and monitoring risks across the platform and its business operations.

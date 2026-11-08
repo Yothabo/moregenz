@@ -11,6 +11,12 @@
 | Document Owner | Platform Owner |
 | Review Status | Pending |
 | Classification | Internal |
+| Document ID | DOC-USR-96FD65E6D7 |
+| Category | User guidance |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
 
 ## 1. Purpose
 

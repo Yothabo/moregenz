@@ -1,5 +1,19 @@
 # Design Reference Sources and Usage Guidelines
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-DES-EE046FA324 |
+| Category | Design |
+| Version | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Document type:** Design research and governance standard
 **Applies to:** Parent company, designers, developers, creative team and participating storefronts
 **Status:** Proposed design standard

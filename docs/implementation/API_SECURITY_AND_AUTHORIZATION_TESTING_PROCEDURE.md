@@ -1,5 +1,21 @@
 # API Security, Authentication and Authorisation Testing Procedure
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-IMP-1C3E19F114 |
+| Category | Implementation |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 | Field | Value |
 |---|---|
 | Document Status | DRAFT |

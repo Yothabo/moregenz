@@ -1,5 +1,21 @@
 # Platform Change Communication and Feature Announcement Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-055D406CAF |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines how the parent company communicates platform changes to everyone affected by them.

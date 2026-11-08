@@ -1,5 +1,18 @@
 # Operations Architecture
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-40979EE8A4 |
+| Category | Architecture |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** APPROVED
 **Version:** 1.0
 **Last updated:** 2026-11-05

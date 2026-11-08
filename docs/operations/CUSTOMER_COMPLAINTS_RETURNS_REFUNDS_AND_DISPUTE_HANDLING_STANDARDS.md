@@ -1,5 +1,21 @@
 # Customer Complaints, Returns, Refunds and Dispute Handling Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-DB1E8281F2 |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document establishes a consistent framework for handling customer complaints, returns, refunds, exchanges and disputes across all participating stores.

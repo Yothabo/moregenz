@@ -1,5 +1,18 @@
 # Implementation Roadmap
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-IMP-495F4BBB2E |
+| Category | Implementation |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Document Status:** DRAFT
 **Version:** 0.1
 **Last Updated:** 2026-11-07

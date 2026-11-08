@@ -1,5 +1,21 @@
 # Unified Platform Role Catalogue and Permission Matrix
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-A63FD3DC8D |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document is the index and authority register for the platform's role and permission specifications.

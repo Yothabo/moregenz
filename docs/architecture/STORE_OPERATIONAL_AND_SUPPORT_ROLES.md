@@ -1,5 +1,20 @@
 # Store Operational and Support Roles
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-724E1F439F |
+| Category | Architecture |
+| Version | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** Authoritative role specification
 **Applies to:** All stores operating on the platform
 **Related documents:**

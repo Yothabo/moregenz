@@ -1,5 +1,21 @@
 # Platform Technical Debt and Architecture Deviation Management Standard
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-FB3E7FEA3B |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This standard governs technical debt, temporary engineering compromises and deviations from approved architecture.

@@ -1,5 +1,19 @@
 # AI-First SEO, Search and Agent-Ready Commerce Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-DES-01BC3F8C44 |
+| Category | Design |
+| Version | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Document type:** Search, discoverability and technical architecture standard
 **Applies to:** Parent company, developers, SEO specialists, content team, creative team and participating stores
 **Status:** Proposed technical and design standard

@@ -1,5 +1,21 @@
 # Multi-Store Product Catalogue and Inventory Isolation Architecture
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-B8E871DF35 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines how products and inventory are represented across the parent company's multi-store platform.

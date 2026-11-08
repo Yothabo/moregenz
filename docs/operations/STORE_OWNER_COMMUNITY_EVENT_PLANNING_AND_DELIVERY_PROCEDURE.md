@@ -1,5 +1,21 @@
 # Store Owner Community Event Planning and Delivery Procedure
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-EF2E5A200E |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This procedure defines how the parent company plans, approves, organises, delivers and evaluates Store Owner community events.

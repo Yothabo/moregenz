@@ -1,5 +1,21 @@
 # Unified Organisational Audit Trail and Change History Specification
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-809E2FE3F5 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines the central audit and historical record system for organisational and access-control activity.

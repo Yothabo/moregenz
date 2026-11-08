@@ -1,5 +1,21 @@
 # Supplier Partnership and Central Vendor Governance Framework
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-0B5E38C7A9 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This framework defines how the parent company establishes, manages and governs strategic supplier relationships and commercial partnerships that may benefit multiple participating stores.

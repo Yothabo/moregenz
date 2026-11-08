@@ -1,5 +1,21 @@
 # Reporting and Analytics Governance
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-576AAB0219 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 | Field | Value |
 |---|---|
 | Status | DRAFT |

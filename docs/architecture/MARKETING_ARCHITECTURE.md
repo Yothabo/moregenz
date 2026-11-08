@@ -1,5 +1,18 @@
 # Marketing Architecture
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-D5CCFAD17A |
+| Category | Architecture |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** APPROVED
 **Version:** 1.0
 **Last updated:** 2026-11-05

@@ -1,5 +1,21 @@
 # Platform Release and Deployment Governance Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-422C9E9649 |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines how application and infrastructure changes move from development into production.

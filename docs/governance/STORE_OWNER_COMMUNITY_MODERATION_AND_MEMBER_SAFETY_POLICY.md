@@ -1,5 +1,21 @@
 # Store Owner Community Moderation and Member Safety Policy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-6C45390028 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This policy establishes the rules and enforcement processes for maintaining a professional, respectful and constructive Store Owner community.

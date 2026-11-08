@@ -1,5 +1,20 @@
 # Role Assignment, Delegation and Access Review
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-B1BDE96373 |
+| Category | Architecture |
+| Version | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** Authoritative access lifecycle specification
 **Applies to:** Parent company, departments, shared services and all stores
 **Related documents:**

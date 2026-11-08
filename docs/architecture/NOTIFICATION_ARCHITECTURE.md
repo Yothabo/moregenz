@@ -1,5 +1,18 @@
 # Notification Architecture
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-CA47A9CB28 |
+| Category | Architecture |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** DRAFT
 **Version:** 0.1
 **Last updated:** 2026-11-06

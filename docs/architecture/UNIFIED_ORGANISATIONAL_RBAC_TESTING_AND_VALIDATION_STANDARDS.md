@@ -1,5 +1,21 @@
 # Unified Organisational RBAC Testing and Validation Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-87C81154AB |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines mandatory testing for the organisational model, role-based access control, authority assignments and permission evaluation engine.

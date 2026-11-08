@@ -1,5 +1,20 @@
 # Marketing, Creative and Growth Roles
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-9B5A55058D |
+| Category | Architecture |
+| Version | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** Authoritative role specification
 **Applies to:** Parent company marketing agency and authorised store services
 **Related documents:**

@@ -1,5 +1,21 @@
 # Unified Organisational Reporting and Management Dashboard Specification
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-DBF0E53AB9 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines the reporting and management dashboard architecture for the parent company, departments, teams and stores.

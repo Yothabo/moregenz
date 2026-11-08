@@ -1,5 +1,18 @@
 # Testing Strategy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-IMP-F0675DF2BE |
+| Category | Implementation |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Document Status:** DRAFT
 **Version:** 0.1
 **Last Updated:** 2026-11-07

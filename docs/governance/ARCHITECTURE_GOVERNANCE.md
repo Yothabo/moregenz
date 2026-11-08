@@ -1,5 +1,18 @@
 # Architecture Governance
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-FAF87B48BB |
+| Category | Governance |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** DRAFT
 **Version:** 0.1
 **Last updated:** 2026-11-07

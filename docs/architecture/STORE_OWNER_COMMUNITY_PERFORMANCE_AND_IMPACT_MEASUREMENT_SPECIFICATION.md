@@ -1,5 +1,21 @@
 # Store Owner Community Performance and Impact Measurement Specification
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-554F124325 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This specification defines how the platform measures the participation, quality and business-development impact of the Store Owner Community programme.

@@ -1,5 +1,21 @@
 # Central Marketing Agency and Shared Growth Strategy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-0A261B09B8 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines the parent company's central marketing agency function and its role in supporting the growth of participating stores.

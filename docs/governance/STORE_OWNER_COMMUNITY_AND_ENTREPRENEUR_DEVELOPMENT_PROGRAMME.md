@@ -1,5 +1,21 @@
 # Store Owner Community and Entrepreneur Development Programme
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-CE08782C72 |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 The parent company MUST operate a structured community programme that helps Store Owners develop as entrepreneurs, build professional relationships, exchange practical knowledge and learn from one another's business experiences.

@@ -1,5 +1,21 @@
 # Unified Platform Organisation, Role-Based Access Control and Authority Specification
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-E2FFE6DD04 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Document Authority
 
 This document is the authoritative specification for organisational identity, organisational relationships, role-based access control (RBAC), permission assignment, authority boundaries and access governance across the entire platform.

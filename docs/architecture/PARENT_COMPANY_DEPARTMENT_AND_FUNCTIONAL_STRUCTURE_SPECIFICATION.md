@@ -1,5 +1,20 @@
 # Parent Company Department and Functional Structure
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-649B5E9027 |
+| Category | Architecture |
+| Version | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** Authoritative organisational specification
 **Applies to:** Parent company and its shared-service functions
 

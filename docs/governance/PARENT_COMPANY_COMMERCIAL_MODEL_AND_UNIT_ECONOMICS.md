@@ -1,5 +1,21 @@
 # Parent Company Commercial Model and Unit Economics
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-F2CE5C34FD |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines the proposed commercial model through which the parent company provides e-commerce infrastructure, central creative production, operational support and optional marketing services to participating Store Owners.

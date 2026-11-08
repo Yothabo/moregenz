@@ -1,5 +1,17 @@
 # Customer Support Case Management Standards
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-IMP-7C45A012DF |
+| Category | Implementation |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** DRAFT
 **Version:** 0.1
 **Last Updated:** 2026-11-07

@@ -1,5 +1,21 @@
 # Store Owner Peer Networking and Collaboration Specification
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-E3D68CDDF8 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 The platform MUST provide structured opportunities for Store Owners to connect, learn about one another's businesses and establish voluntary professional relationships.

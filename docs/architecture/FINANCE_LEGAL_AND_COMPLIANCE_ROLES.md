@@ -1,5 +1,20 @@
 # Finance, Legal and Compliance Roles
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-809ADF703F |
+| Category | Architecture |
+| Version | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** Authoritative role specification
 **Applies to:** Parent company and authorised shared-service functions
 **Related documents:**

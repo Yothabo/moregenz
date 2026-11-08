@@ -1,5 +1,21 @@
 # Store Owner Community Programme Funding and Sponsorship Policy
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-GOV-10CE04353D |
+| Category | Governance |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This policy governs how the parent company funds, sponsors and financially administers the Store Owner Community and Entrepreneur Development Programme.

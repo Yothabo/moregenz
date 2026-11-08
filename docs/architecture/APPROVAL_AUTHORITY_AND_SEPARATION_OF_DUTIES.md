@@ -1,5 +1,20 @@
 # Approval Authority and Separation of Duties
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-DF31451362 |
+| Category | Architecture |
+| Version | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 **Status:** Authoritative governance and access-control specification
 **Applies to:** Parent company, departments, shared services and all stores
 **Related documents:**

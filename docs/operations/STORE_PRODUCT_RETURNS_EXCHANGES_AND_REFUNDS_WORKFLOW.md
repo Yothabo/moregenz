@@ -1,5 +1,21 @@
 # Store Product Returns, Exchanges and Refunds Workflow
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-OPS-22A0342CB5 |
+| Category | Operations |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 This document defines the operational workflow for customer returns, exchanges, cancellations and refunds across participating stores.

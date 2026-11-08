@@ -1,5 +1,21 @@
 # Store Owner Community Knowledge Base and Learning Library Specification
 
+## Document Control
+
+| Field | Value |
+|---|---|
+| Document ID | DOC-ARCH-647B3EFF49 |
+| Category | Architecture |
+| Version | Not recorded |
+| Status | Not recorded |
+| Document Owner | Not recorded |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Last Revision Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
+
+
 ## 1. Purpose
 
 The knowledge base MUST preserve practical knowledge generated through Store Owner meetups, workshops, discussions, competitions and business experiences.

@@ -11,6 +11,12 @@
 | Document Owner | Platform Owner |
 | Review Status | Pending |
 | Classification | Internal |
+| Document ID | DOC-DEC-EE93AC0565 |
+| Category | Architecture |
+| Approving Authority | Not recorded |
+| Creation Date | Not recorded |
+| Effective Date | Not recorded |
+| Review Date | Not recorded |
 
 ## 1. Purpose
 
