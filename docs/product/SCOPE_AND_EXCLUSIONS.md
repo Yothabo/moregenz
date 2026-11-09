@@ -15,7 +15,7 @@
 
 **Status:** APPROVED
 **Version:** 1.0
-**Last updated:** 2026-11-05
+**Last updated:** 2026-11-09
 **Approval:** Approved by business owner
 
 ## 1. Purpose
@@ -68,13 +68,18 @@ The following capability areas are within the overall platform scope.
 
 ### 3.3 Identity and Permissions
 
-- Platform-level roles and permissions.
-- Store-level roles and permissions.
-- Store employee accounts.
-- Invitation and account lifecycle workflows.
-- Delegated employee administration.
-- Access restrictions between stores.
-- Authentication, session and security controls.
+The current two-store application uses a deliberately limited administrator model:
+
+- One Super Admin account with platform-wide authority over both stores.
+- One Store Admin account for Yotaabo.
+- One Store Admin account for Porschs.
+- Invitations are restricted to creating or assigning the two Store Admin positions.
+- Store-scoped access ensures each Store Admin can administer only their own store, while the Super Admin can administer both.
+- Authentication, session management, account security and auditable access changes.
+
+The current application does not include employee accounts, employee invitations, delegated administrators, nested roles, departments or a configurable organisational hierarchy.
+
+The broader role, employee and delegation models remain documented as future platform capabilities and are not current implementation requirements.
 
 ### 3.4 Product Catalogue
 
@@ -161,7 +166,7 @@ The platform provides shared infrastructure and central governance. Each store r
 | Area | Platform scope | Store scope |
 |---|---|---|
 | Administration | Platform governance and oversight | Store administration |
-| Identity | Platform access and security | Store users and delegated roles |
+| Identity | Super Admin access, platform security and store-admin appointments | One Store Admin account per store; access limited to that store |
 | Branding | Shared platform standards | Store identity and presentation |
 | Products | Catalogue infrastructure and ownership controls | Authorised product management |
 | Pricing | Shared pricing capabilities and applicable policies | Store-specific prices and promotions |
@@ -191,11 +196,14 @@ The following are foundational capabilities:
 
 ### 5.2 Access Control
 
-- Platform-level Super Admin capability.
-- Store Admin capability.
-- Store employee roles and permissions.
+- Exactly one Super Admin account for the current platform.
+- Exactly one Store Admin account for Yotaabo.
+- Exactly one Store Admin account for Porschs.
+- Invitations limited to the two Store Admin positions.
+- No employee accounts, employee invitations or delegated administrator accounts.
+- No departments, nested leadership or configurable organisational hierarchy.
 - Secure authentication and session management.
-- Store-scoped authorisation.
+- Store-scoped authorisation, with the Super Admin able to administer both stores.
 
 ### 5.3 Core Store Operations
 
@@ -285,6 +293,19 @@ Access to consolidated information must follow platform permissions and confiden
 - Logistics and fulfilment integrations.
 - Other approved external services.
 
+### 6.6 Advanced Organisation and Workforce Management
+
+The broader platform may later introduce:
+
+- Multiple platform administrators and delegated platform responsibilities.
+- Employee accounts and employee invitations.
+- Store teams, departments and reporting structures.
+- Employee roles, permission templates and delegated authority.
+- Nested leadership and approval workflows.
+- Employee onboarding, role changes and offboarding.
+
+These capabilities are future platform proposals. They are explicitly outside the current Yotaabo and Porschs application scope.
+
 Each integration must have a defined purpose, security assessment and ownership of operational responsibilities.
 
 ## 7. Explicit Exclusions
@@ -328,6 +349,14 @@ Specific statutory responsibilities and contractual arrangements must be establi
 External services, integrations and third-party capabilities are not included merely because they may be technically possible.
 
 They require an approved business purpose, scope and implementation decision.
+
+### 7.8 Expanded Workforce and Organisational Administration in the Current Release
+
+The current application does not include employee management, staff invitations, delegated administrators, department structures, nested leadership, multiple layers of platform administration or complex role hierarchies.
+
+The current administrator model is limited to one Super Admin and one Store Admin for each of the two stores, Yotaabo and Porschs. Invitations must be restricted to the two Store Admin positions.
+
+The broader workforce and organisational capabilities remain preserved in the future-platform documentation. Their presence in those documents does not authorise their implementation in the current application.
 
 ## 8. Scope Change Control
 

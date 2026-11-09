@@ -15,7 +15,7 @@
 
 **Status:** APPROVED
 **Version:** 1.0
-**Last updated:** 2026-11-05
+**Last updated:** 2026-11-09
 **Approval:** Approved by business owner
 
 ## 1. Purpose
@@ -31,37 +31,38 @@ It does not define database tables, API contracts or detailed technical implemen
 The store operating model is based on the following principles:
 
 1. The platform provides the shared infrastructure and central oversight.
-2. Each store operates as a distinct business unit within the platform.
-3. Store Admins control the day-to-day operation of their own stores.
-4. Store employees operate within permissions delegated by their Store Admin.
-5. The Platform Owner retains platform-wide governance authority.
-6. Yotaabo follows the same store operating rules as every other participating store.
-7. All important actions must be attributable and auditable.
-8. Platform oversight must not unnecessarily interfere with normal store operations.
+2. Yotaabo and Porschs operate as two distinct stores on the same application.
+3. One Super Admin has platform-wide authority over both stores.
+4. Each store has exactly one Store Admin responsible for that store's day-to-day operation.
+5. Each Store Admin is restricted to their own store; the Super Admin can administer both.
+6. Invitations are limited to the two Store Admin positions.
+7. The current application does not include employee accounts, delegated administrators or organisational hierarchies.
+8. All important actions must be attributable and auditable.
 9. Store-level data must remain separated where the business model requires it.
 10. Support, intervention and commercial arrangements must be transparent.
 
+The employee, team, department and delegated-authority structures described in future-platform documents are not part of this current operating arrangement.
+
 ## 3. Operating structure
 
-The operating structure has three primary levels.
+The current application has two administrator levels: one Super Admin and one Store Admin for each participating store. It does not implement the broader organisational hierarchy described in future-platform specifications.
 
 ### 3.1 Platform level
 
-The Platform Owner is responsible for:
+One Super Admin is responsible for:
 
-- Overall platform direction and governance.
+- Overall platform direction and administration.
 - Platform policies and operating standards.
-- Approving stores for participation.
-- Appointing and removing Store Admins.
+- Managing the Yotaabo and Porschs store records.
+- Appointing, inviting, suspending and removing the two Store Admin accounts.
 - Managing platform-wide access and security.
+- Viewing and administering both stores within the Super Admin's authority.
 - Monitoring store performance.
-- Conducting business reviews and audits.
 - Coordinating platform marketing and growth initiatives.
-- Reviewing requests for stock or capital assistance.
-- Managing platform revenue and service arrangements.
-- Suspending or closing stores where justified.
+- Managing platform-level operational communication with each store.
+- Recording important administrative decisions and actions.
 
-The Platform Owner may delegate specific platform responsibilities, but delegation does not automatically transfer platform ownership.
+The current application does not provide additional Super Admin accounts, delegated platform administrators or nested platform leadership positions.
 
 ### 3.2 Store level
 
@@ -75,30 +76,21 @@ The Store Admin is responsible for:
 - Maintaining inventory records.
 - Processing and monitoring orders.
 - Managing customer-facing store operations.
-- Managing store employees and delegated administrators.
-- Reviewing store performance.
+- Reviewing the store's performance.
 - Maintaining operational accuracy.
+- Communicating with platform administration through the store's authorised channel.
 - Raising support requests with the platform.
 - Meeting agreed platform obligations.
 
-A Store Admin may delegate operational duties to authorised employees without transferring overall store accountability.
+Each store has one Store Admin account in the current application. Store Admins cannot invite employees, create additional administrators or delegate access to other accounts.
 
-### 3.3 Employee level
+### 3.3 Future organisational and employee model
 
-Store employees perform duties assigned by the Store Admin.
+Employee accounts, staff invitations, delegated duties, team structures and employee permission assignments belong to the broader future platform.
 
-Their responsibilities may include:
+They are not part of the current Yotaabo and Porschs application. The current application has only the Super Admin and the two Store Admin accounts described above.
 
-- Product administration.
-- Inventory updates.
-- Order processing.
-- Customer support.
-- Marketing activities.
-- Reporting and operational administration.
-
-Employees must only access information and functions permitted by their assigned roles.
-
-The detailed permission model belongs in the Role and Permission Model specification.
+The existing Role and Permission Model and organisational specifications preserve the future direction. They must not be interpreted as approval to build employee management, departments, nested leadership or delegated administration into the current release.
 
 ## 4. Store independence and platform oversight
 
@@ -130,10 +122,10 @@ The onboarding process should cover:
 2. Platform approval.
 3. Appointment of the Store Admin.
 4. Store identity and branding configuration.
-5. Store access and employee setup.
+5. Creation or invitation of the single Store Admin account for that store.
 6. Product and inventory setup.
 7. Pricing and operational configuration.
-8. Staff orientation and operating procedures.
+8. Store Admin orientation and operating procedures.
 9. Final readiness review.
 10. Activation.
 
@@ -207,22 +199,13 @@ Detailed workflows belong in the Order Management specification.
 
 ## 9. Employee management
 
-Store Admins are responsible for managing their own employees.
+Employee management is not included in the current application.
 
-They may assign duties, invite staff, delegate responsibilities and manage store-level access within the permissions allowed by the platform.
+Store Admins cannot invite staff, create employee accounts, assign employee roles or delegate application access. The only invitations supported by the current operating model are invitations to the Yotaabo Store Admin and Porschs Store Admin positions, controlled by the Super Admin.
 
-The platform retains authority over:
+The broader platform may later support employee onboarding, role assignment, delegated responsibilities and store-level workforce administration. Those capabilities remain future scope and require a separate implementation decision.
 
-- Platform-level administrator appointments.
-- Platform-wide access policies.
-- Security requirements.
-- Cross-store access.
-- Platform-level account restrictions.
-- Enforcement of platform policies.
-
-The platform should not be required to approve every employee permission change that falls within a Store Admin's delegated authority.
-
-All access changes must be recorded.
+All administrator account creation, invitation, suspension, removal and access changes must be recorded.
 
 ## 10. Marketing and growth operations
 
@@ -374,7 +357,7 @@ The platform must maintain sufficient records to reconstruct important store act
 Records should cover:
 
 - Store onboarding and lifecycle changes.
-- Administrator and employee access changes.
+- Super Admin and Store Admin account access changes.
 - Product ownership and sharing changes.
 - Inventory movements and adjustments.
 - Orders, refunds and cancellations.
@@ -399,7 +382,7 @@ The following boundaries must remain clear:
 | Area | Store responsibility | Platform responsibility |
 |---|---|---|
 | Daily operations | Manage store activities | Set standards and oversee |
-| Employees | Manage store staff | Govern platform access and policies |
+| Administrator access | Use the single Store Admin account assigned to the store | Manage one Super Admin account and appoint one Store Admin per store; no employee invitations or delegated accounts in the current application |
 | Products | Manage authorised product records | Maintain shared product infrastructure |
 | Inventory | Maintain store stock records | Define controls and audit |
 | Orders | Manage store orders | Establish shared operating standards |
@@ -417,7 +400,7 @@ The following matters require further definition:
 - Minimum onboarding requirements.
 - Store readiness and activation criteria.
 - Store operating standards and service levels.
-- Employee role templates and delegation limits.
+- Future employee role templates and delegation limits, if workforce management is approved for a later platform phase.
 - Order fulfilment and customer service standards.
 - Inventory counting frequency and adjustment approvals.
 - Store-to-store stock transfer procedures.
