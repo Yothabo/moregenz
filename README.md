@@ -1,12 +1,32 @@
-# Yotaabo
+# Simatu Cooperative
 
-Yotaabo is a fragrance commerce platform built to support multiple storefronts through one shared application.
+Simatu is a multi-store commerce and administration platform developed for Simatu Cooperative.
 
-The platform currently supports Yotaabo and Porschs. Each storefront operates within the shared platform while maintaining its own store-scoped administration.
+The platform provides shared infrastructure for operating multiple independent storefronts through one application. Each storefront maintains its own identity, catalogue, customer-facing experience and store-scoped administration while using shared backend services.
 
-## Project Status
+## Storefronts
 
-Active development takes place on the `perfume-business` branch. This branch is used for feature development, beta releases and testing.
+The platform currently supports:
+
+- **Yotaabo**: An independent storefront.
+- **Poshies**: An independent storefront.
+
+Both storefronts operate within the same platform and share the underlying product and commerce infrastructure. Store-specific data and administrative access are scoped to the appropriate storefront.
+
+Simatu Cooperative is the organisation behind the platform. It is not a storefront.
+
+## Platform Capabilities
+
+The platform provides:
+
+- Multiple storefronts within one application.
+- Shared product and commerce infrastructure.
+- Store-scoped product and order management.
+- Separate storefront experiences.
+- Centralised platform administration.
+- Store-specific administrator access.
+- Shared authentication and backend services.
+- Administrative activity tracking.
 
 ## Technology Stack
 
@@ -16,6 +36,7 @@ Active development takes place on the `perfume-business` branch. This branch is 
 - Tailwind CSS
 - Material UI
 - Supabase
+- PostgreSQL
 - Netlify Functions
 
 ## Getting Started
@@ -58,19 +79,27 @@ Start Vite and local Netlify Functions:
 | `npm run lint` | Run ESLint |
 | `npm run preview` | Preview the production build |
 
-## Current Administration Model
+## Administration and Access Control
 
-The platform uses one shared application for two storefronts.
+The platform uses a centralised administrative model:
 
-The current administrative model consists of:
+- **Platform Super Admin:** Oversees the platform and manages Store Administrator assignments.
+- **Yotaabo Store Admin:** Manages the Yotaabo storefront only.
+- **Poshies Store Admin:** Manages the Poshies storefront only.
 
-- One Platform Super Admin.
-- One Yotaabo Store Admin.
-- One Porschs Store Admin.
+Store Administrators cannot manage other storefronts or appoint additional administrators.
 
-Each Store Admin is restricted to their assigned store. Platform-level administration manages both stores and their Store Admin assignments.
+Platform-level administration controls access assignments.
 
-Employee accounts, delegated administrators and expanded workforce permissions are future capabilities. They are not part of the current administrative baseline.
+Employee accounts, delegated administrators and expanded workforce permissions are future capabilities and are not part of the current administrative baseline.
+
+## Platform Architecture
+
+The application uses shared backend infrastructure with storefront-specific access and presentation.
+
+Storefronts share the underlying product and commerce services while maintaining their own storefront identity and administrative boundaries.
+
+Access restrictions are enforced by the backend and are not dependent solely on frontend navigation or visibility.
 
 ## Branch and Deployment Workflow
 
@@ -90,8 +119,6 @@ The project follows a beta-to-production release workflow.
 5. Merge into `main` only after the release is fully tested and approved.
 6. Deploy the production release through Vercel.
 
-This workflow applies to the current fragrance business and future business functionality.
-
 Unfinished or unapproved beta work must never be merged into `main`.
 
 The beta and production deployment pipelines remain separate.
@@ -102,7 +129,7 @@ The documentation status and development handover checkpoint is maintained at:
 
 [Documentation Status and Development Handover](docs/DOCUMENTATION_STATUS.md)
 
-Additional architecture, implementation, identity, operations and store documentation is maintained under `docs/`.
+Additional architecture, implementation, identity, operations and storefront documentation is maintained under `docs/`.
 
 ## Environment and Security
 

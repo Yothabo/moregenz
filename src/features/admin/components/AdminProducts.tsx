@@ -52,7 +52,7 @@ export default function AdminProducts({
           </button>
         }
         filters={
-          (['All', 'His', 'Hers', 'Spaces', 'Hidden'] as CategoryFilter[]).map((cat) => (
+          (['All', 'His', 'Hers', 'Spaces', 'Lounge', 'Hidden'] as CategoryFilter[]).map((cat) => (
             <button
               key={cat}
               type="button"

@@ -9,8 +9,10 @@ export type AdminProduct = {
   storefront: 'yotaabo' | 'poshies';
   name: string;
   price: number;
-  category: 'His' | 'Hers' | 'Spaces';
+  category: string;
+  category_id: string | null;
   subcategory: string;
+  subcategory_id: string | null;
   description: string | null;
   image_url: string | null;
   is_active: boolean;
@@ -26,20 +28,21 @@ type AdminProductFormProps = {
   storeSlug?: 'yotaabo' | 'poshies' | null;
 };
 
-const SUBCATEGORY_OPTIONS: Record<
-  'yotaabo' | 'poshies',
-  Record<string, string[]>
-> = {
-  yotaabo: {
-    His: ['Eau de Parfum', 'Roll-On', 'Deodorant'],
-    Hers: ['Eau de Parfum', 'Roll-On', 'Deodorant'],
-    Spaces: ['Home', 'Car', 'Freshness'],
-  },
-  poshies: {
-    His: ['Boxers', 'Briefs', 'Trunks'],
-    Hers: ['Bras', 'Panties', 'Bikinis', 'G-Strings', 'Matching Sets', 'Lingerie'],
-    Spaces: ['Pyjamas', 'Nightwear', 'Dressing Gowns', 'Robes', 'Lounge Sets'],
-  },
+type CatalogueSubcategory = {
+  id: string;
+  name: string;
+  slug: string;
+  sort_order: number;
+  is_active: boolean;
+};
+
+type CatalogueCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  sort_order: number;
+  is_active: boolean;
+  subcategories: CatalogueSubcategory[];
 };
 
 const DRAFT_STORAGE_KEY = 'yotaabo-admin-product-form-draft';
@@ -64,8 +67,10 @@ const emptyProduct: AdminProduct = {
   storefront: 'yotaabo',
   name: '',
   price: 0,
-  category: '' as any,
+  category: '',
+  category_id: null,
   subcategory: '',
+  subcategory_id: null,
   description: '',
   image_url: '',
   is_active: true,
@@ -85,6 +90,10 @@ export default function AdminProductForm({
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isDraftHydrated, setIsDraftHydrated] = useState(false);
+  const [categories, setCategories] = useState<CatalogueCategory[]>([]);
+  const [categoriesStorefront, setCategoriesStorefront] = useState<string | null>(null);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [categoryLoadError, setCategoryLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -156,6 +165,129 @@ export default function AdminProductForm({
   }, [isOpen, productToEdit, adminRole, storeSlug]);
 
   useEffect(() => {
+    if (!isOpen || !isDraftHydrated) {
+      setCategories([]);
+      setCategoriesStorefront(null);
+      setCategoryLoadError(null);
+      return;
+    }
+
+    let cancelled = false;
+    const storefront = form.storefront;
+
+    setCategories([]);
+    setCategoriesStorefront(null);
+    setCategoryLoadError(null);
+    setIsLoadingCategories(true);
+
+    fetch(`/api/categories?storefront=${encodeURIComponent(storefront)}`)
+      .then(async (response) => {
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load categories.');
+        }
+
+        if (!Array.isArray(data.categories)) {
+          throw new Error('The categories response is invalid.');
+        }
+
+        return data.categories as CatalogueCategory[];
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setCategories(data);
+        setCategoriesStorefront(storefront);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setCategoryLoadError(
+          error instanceof Error ? error.message : 'Unable to load categories.'
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingCategories(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, isDraftHydrated, form.storefront]);
+
+  useEffect(() => {
+    if (
+      !isOpen ||
+      !isDraftHydrated ||
+      isLoadingCategories ||
+      categoryLoadError ||
+      categoriesStorefront !== form.storefront ||
+      categories.length === 0
+    ) {
+      return;
+    }
+
+    setForm((prev) => {
+      const legacyCategoryName =
+        prev.storefront === 'poshies' && prev.category.toLowerCase() === 'spaces'
+          ? 'Lounge'
+          : prev.category;
+
+      const category =
+        categories.find((item) => item.id === prev.category_id) ||
+        categories.find(
+          (item) => item.name.toLowerCase() === legacyCategoryName.toLowerCase()
+        ) ||
+        (!prev.category && !prev.category_id
+          ? categories.find((item) => item.is_active)
+          : undefined);
+
+      if (!category) return prev;
+
+      const subcategory =
+        category.subcategories.find(
+          (item) => item.id === prev.subcategory_id
+        ) ||
+        category.subcategories.find(
+          (item) => item.name.toLowerCase() === prev.subcategory.toLowerCase()
+        ) ||
+        (!prev.subcategory && !prev.subcategory_id
+          ? category.subcategories.find((item) => item.is_active)
+          : undefined);
+
+      const nextSubcategory = subcategory ?? null;
+
+      if (
+        prev.category_id === category.id &&
+        prev.category === category.name &&
+        prev.subcategory_id === (nextSubcategory?.id ?? null) &&
+        prev.subcategory === (nextSubcategory?.name ?? '')
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        category_id: category.id,
+        category: category.name,
+        subcategory_id: nextSubcategory?.id ?? null,
+        subcategory: nextSubcategory?.name ?? '',
+      };
+    });
+  }, [
+    isOpen,
+    isDraftHydrated,
+    isLoadingCategories,
+    categoryLoadError,
+    categoriesStorefront,
+    form.storefront,
+    form.category,
+    form.category_id,
+    form.subcategory,
+    form.subcategory_id,
+    categories,
+  ]);
+
+  useEffect(() => {
     if (!isOpen || !isDraftHydrated) return;
 
     try {
@@ -184,19 +316,51 @@ export default function AdminProductForm({
   };
 
   const handleChange = (field: keyof AdminProduct, value: any) => {
-    setForm((prev) => {
-      const updated = { ...prev, [field]: value };
-      if (field === 'category' || field === 'storefront') {
-        const storefront =
-          field === 'storefront'
-            ? value as 'yotaabo' | 'poshies'
-            : updated.storefront;
+    if (field === 'category') {
+      const selected = categories.find((item) => item.id === value);
+      if (!selected) return;
 
-        updated.subcategory =
-          SUBCATEGORY_OPTIONS[storefront]?.[updated.category]?.[0] ?? '';
-      }
-      return updated;
-    });
+      const firstSubcategory =
+        selected.subcategories.find((item) => item.is_active) ?? null;
+
+      setForm((prev) => ({
+        ...prev,
+        category: selected.name,
+        category_id: selected.id,
+        subcategory: firstSubcategory?.name ?? '',
+        subcategory_id: firstSubcategory?.id ?? null,
+      }));
+      return;
+    }
+
+    if (field === 'subcategory') {
+      const selected = categories
+        .find((item) => item.id === form.category_id)
+        ?.subcategories.find((item) => item.id === value);
+
+      if (!selected) return;
+
+      setForm((prev) => ({
+        ...prev,
+        subcategory: selected.name,
+        subcategory_id: selected.id,
+      }));
+      return;
+    }
+
+    if (field === 'storefront') {
+      setForm((prev) => ({
+        ...prev,
+        storefront: value,
+        category: '',
+        category_id: null,
+        subcategory: '',
+        subcategory_id: null,
+      }));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -309,8 +473,10 @@ export default function AdminProductForm({
     if (!form.name.trim()) return toast.error('Name is required');
     if (form.price <= 0) return toast.error('Price must be greater than 0');
     if (!statusValue) return toast.error('Status is required');
-    if (!form.category) return toast.error('Category is required');
-    if (!form.subcategory) return toast.error('Subcategory is required');
+    if (isLoadingCategories) return toast.error('Categories are still loading');
+    if (categoryLoadError) return toast.error('Categories could not be loaded');
+    if (!form.category_id) return toast.error('Select a valid category');
+    if (!form.subcategory_id) return toast.error('Select a valid subcategory');
 
     setIsSaving(true);
     const payload = {
@@ -318,7 +484,9 @@ export default function AdminProductForm({
       name: form.name.trim(),
       price: form.price,
       category: form.category,
+      category_id: form.category_id,
       subcategory: form.subcategory,
+      subcategory_id: form.subcategory_id,
       description: form.description?.trim() || null,
       image_url: form.image_url?.trim() || null,
       is_active: form.is_active,
@@ -393,6 +561,24 @@ export default function AdminProductForm({
     }
   };
 
+  const selectedCategory = categories.find(
+    (item) => item.id === form.category_id
+  );
+
+  const categoryOptions = categories
+    .filter((item) => item.is_active || item.id === form.category_id)
+    .map((item) => ({
+      value: item.id,
+      label: item.is_active ? item.name : `${item.name} (Inactive)`,
+    }));
+
+  const subcategoryOptions = (selectedCategory?.subcategories ?? [])
+    .filter((item) => item.is_active || item.id === form.subcategory_id)
+    .map((item) => ({
+      value: item.id,
+      label: item.is_active ? item.name : `${item.name} (Inactive)`,
+    }));
+
   const inputClass =
     'w-full border-0 bg-[#f5f5f5] px-4 py-3 admin-type-body text-[#4d4d4d] outline-none ring-0 transition-colors placeholder:text-[#4d4d4d]/40 focus:border-0 focus:outline-none focus:ring-0';
 
@@ -455,27 +641,32 @@ export default function AdminProductForm({
             <label className="block">
               <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Category</span>
               <CustomDropdown
-                value={form.category}
+                value={form.category_id ?? ''}
                 onChange={(v) => handleChange('category', v)}
-                options={[
-                  { value: 'His', label: 'His' },
-                  { value: 'Hers', label: 'Hers' },
-                  { value: 'Spaces', label: 'Spaces' },
-                ]}
-                placeholder="Select"
+                options={categoryOptions}
+                placeholder={
+                  isLoadingCategories
+                    ? 'Loading categories...'
+                    : categoryLoadError
+                      ? 'Categories unavailable'
+                      : 'Select'
+                }
               />
             </label>
 
             <label className="block">
               <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Subcategory</span>
               <CustomDropdown
-                value={form.subcategory}
+                value={form.subcategory_id ?? ''}
                 onChange={(v) => handleChange('subcategory', v)}
-                options={(SUBCATEGORY_OPTIONS[form.storefront]?.[form.category] ?? []).map((sub) => ({
-                  value: sub,
-                  label: sub,
-                }))}
-                placeholder="Select"
+                options={subcategoryOptions}
+                placeholder={
+                  !form.category_id
+                    ? 'Select category first'
+                    : isLoadingCategories
+                      ? 'Loading subcategories...'
+                      : 'Select'
+                }
               />
             </label>
           </div>

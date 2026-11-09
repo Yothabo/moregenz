@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { requireAdmin } from './_shared/auth.mjs';
+import { buildAdminInvitationEmail } from './_shared/admin-invitation-email.mjs';
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_DB_URL,
@@ -127,38 +128,33 @@ export default async function handler(request) {
       return json({ error: 'Enter a valid email address.' }, 400);
     }
 
-    if (!['super_admin', 'store_admin'].includes(role)) {
-      return json({ error: 'Invalid administrator role.' }, 400);
+    if (role !== 'store_admin') {
+      return json({
+        error: 'Only Store Admin invitations can be created.',
+      }, 403);
     }
 
-    let storeId = null;
+    if (!['yotaabo', 'poshies'].includes(storeSlug)) {
+      return json({ error: 'Select a valid storefront.' }, 400);
+    }
 
-    if (role === 'store_admin') {
-      if (!['yotaabo', 'poshies'].includes(storeSlug)) {
-        return json({ error: 'Select a valid storefront.' }, 400);
-      }
+    const storeResult = await pool.query(
+      `SELECT id, name
+       FROM public.stores
+       WHERE slug = $1
+         AND is_active IS TRUE
+       LIMIT 1`,
+      [storeSlug]
+    );
 
-      const storeResult = await pool.query(
-        `SELECT id
-         FROM public.stores
-         WHERE slug = $1
-           AND is_active IS TRUE
-         LIMIT 1`,
-        [storeSlug]
-      );
-
-      if (!storeResult.rowCount) {
-        return json({
-          error: 'The selected storefront is unavailable.',
-        }, 400);
-      }
-
-      storeId = storeResult.rows[0].id;
-    } else if (storeSlug != null && storeSlug !== '') {
+    if (!storeResult.rowCount) {
       return json({
-        error: 'Super Admin accounts cannot have a storefront assignment.',
+        error: 'The selected storefront is unavailable.',
       }, 400);
     }
+
+    const storeId = storeResult.rows[0].id;
+    const storeName = storeResult.rows[0].name;
 
     const existingAdmin = await pool.query(
       `SELECT id
@@ -341,8 +337,13 @@ export default async function handler(request) {
       await client.query('COMMIT');
       databaseCommitted = true;
 
-      const safeEmail = escapeHtml(email);
-      const safeLink = escapeHtml(invitationLink);
+      const invitationEmail = buildAdminInvitationEmail({
+        storeName,
+        storeSlug,
+        email,
+        invitationLink,
+        expiresInHours: INVITATION_HOURS,
+      });
 
       const resendResponse = await fetch(
         'https://api.resend.com/emails',
@@ -355,29 +356,7 @@ export default async function handler(request) {
           body: JSON.stringify({
             from: resendFromEmail,
             to: [email],
-            subject: 'Your Yotaabo administrator invitation',
-            html: `
-              <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:32px 20px;color:#222">
-                <h1 style="font-size:26px">Yotaabo</h1>
-                <h2 style="font-size:21px">You're invited to join the admin team</h2>
-                <p>An administrator has invited you to access the Yotaabo management platform.</p>
-                <p><strong>Account:</strong> ${safeEmail}</p>
-                <p>This invitation expires in ${INVITATION_HOURS} hours.</p>
-                <p style="margin:32px 0">
-                  <a href="${safeLink}" style="background:#222;color:#fff;padding:14px 22px;text-decoration:none;border-radius:5px">
-                    Accept invitation
-                  </a>
-                </p>
-                <p style="font-size:13px;color:#666">If you were not expecting this invitation, you can ignore this email.</p>
-              </div>
-            `,
-            text: [
-              'You have been invited to join the Yotaabo administrator team.',
-              `Account: ${email}`,
-              `Accept your invitation: ${invitationLink}`,
-              `This invitation expires in ${INVITATION_HOURS} hours.`,
-              'If you were not expecting this invitation, you can ignore this email.',
-            ].join('\n\n'),
+            ...invitationEmail,
           }),
         }
       );

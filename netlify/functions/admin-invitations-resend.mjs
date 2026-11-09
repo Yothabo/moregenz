@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { requireAdmin } from './_shared/auth.mjs';
+import { buildAdminInvitationEmail } from './_shared/admin-invitation-email.mjs';
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_DB_URL,
@@ -102,9 +103,13 @@ export default async function handler(request) {
          a.email,
          a.role,
          a.is_active,
+         s.name AS store_name,
+         s.slug AS store_slug,
+         s.is_active AS store_is_active,
          i.id AS invitation_id,
          i.status AS invitation_status
        FROM public.admins a
+       LEFT JOIN public.stores s ON s.id = a.store_id
        LEFT JOIN LATERAL (
          SELECT id, status
          FROM public.admin_invitations
@@ -123,6 +128,15 @@ export default async function handler(request) {
     }
 
     const existing = existingResult.rows[0];
+
+    if (
+      !existing.store_name ||
+      !['yotaabo', 'poshies'].includes(existing.store_slug) ||
+      existing.store_is_active !== true
+    ) {
+      await client.query('ROLLBACK');
+      return json({ error: 'The administrator storefront is unavailable.' }, 409);
+    }
 
     if (existing.is_active) {
       await client.query('ROLLBACK');
@@ -231,8 +245,14 @@ export default async function handler(request) {
 
     const invitation = invitationResult.rows[0];
 
-    const safeEmail = escapeHtml(existing.email);
-    const safeLink = escapeHtml(invitationLink);
+    const invitationEmail = buildAdminInvitationEmail({
+      storeName: existing.store_name,
+      storeSlug: existing.store_slug,
+      email: existing.email,
+      invitationLink,
+      expiresInHours: INVITATION_HOURS,
+      isResend: true,
+    });
 
     // Send the email before committing. Delivery failure rolls back
     // the replacement invitation and preserves the previous database state.
@@ -247,28 +267,7 @@ export default async function handler(request) {
         body: JSON.stringify({
           from: resendFromEmail,
           to: [existing.email],
-          subject: 'Your new Yotaabo administrator invitation',
-          html: `
-            <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:32px 20px;color:#222">
-              <h1 style="font-size:26px">Yotaabo</h1>
-              <h2 style="font-size:21px">Your administrator invitation has been renewed</h2>
-              <p>A new invitation has been issued for your administrator account.</p>
-              <p><strong>Account:</strong> ${safeEmail}</p>
-              <p>This invitation expires in ${INVITATION_HOURS} hours.</p>
-              <p style="margin:32px 0">
-                <a href="${safeLink}" style="background:#222;color:#fff;padding:14px 22px;text-decoration:none;border-radius:5px">
-                  Continue to your account
-                </a>
-              </p>
-              <p style="font-size:13px;color:#666">If you were not expecting this email, contact your administrator.</p>
-            </div>
-          `,
-          text: [
-            'Your Yotaabo administrator invitation has been renewed.',
-            `Account: ${existing.email}`,
-            `Continue to your account: ${invitationLink}`,
-            `This invitation expires in ${INVITATION_HOURS} hours.`,
-          ].join('\n\n'),
+          ...invitationEmail,
         }),
       },
     );

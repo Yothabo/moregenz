@@ -81,7 +81,7 @@ export default function Services() {
       hasImage: false,
       isDark: false,
       collectionTitle: isYotaabo ? 'Collections' : 'Lounge Collection',
-      productCategory: 'Spaces',
+      productCategory: isYotaabo ? 'Spaces' : 'Lounge',
     },
     {
       id: 'about',

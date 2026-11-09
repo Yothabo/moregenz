@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 
-export type StorefrontCategory = 'His' | 'Hers' | 'Spaces';
+export type StorefrontCategory = 'His' | 'Hers' | 'Spaces' | 'Lounge';
 
 const STOREFRONTS = {
   yotaabo: {
@@ -9,19 +9,19 @@ const STOREFRONTS = {
     primaryAccent: '#8aa89b',
     categoryOrder: ['His', 'Hers', 'Spaces'] as StorefrontCategory[],
   },
-  porschs: {
+  poshies: {
     name: 'Poshies',
-    basePath: '/porschs',
+    basePath: '/poshies',
     primaryAccent: '#ff1493',
-    categoryOrder: ['Hers', 'His', 'Spaces'] as StorefrontCategory[],
+    categoryOrder: ['Hers', 'His', 'Lounge'] as StorefrontCategory[],
   },
 } as const;
 
 export default function useStorefront() {
   const { pathname } = useLocation();
 
-  const store = pathname === '/porschs' || pathname.startsWith('/porschs/')
-    ? STOREFRONTS.porschs
+  const store = pathname === '/poshies' || pathname.startsWith('/poshies/')
+    ? STOREFRONTS.poshies
     : STOREFRONTS.yotaabo;
 
   const pathFor = (path = '') => {

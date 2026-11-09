@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import { requireAdmin } from './_shared/auth.mjs';
+import { validateProduct, uuidPattern } from './_shared/product-validation.mjs';
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_DB_URL,
@@ -9,79 +10,8 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 
-const uuidPattern =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
 function json(data, status = 200) {
   return Response.json(data, { status });
-}
-
-function validateProduct(body) {
-  const name = String(body?.name || '').trim();
-  const storefront = body?.storefront == null || String(body.storefront).trim() === ''
-    ? null
-    : String(body.storefront).trim().toLowerCase();
-  const price = Number(body?.price);
-  const category = String(body?.category || '');
-  const subcategory = String(body?.subcategory || '').trim();
-  const description = body?.description
-    ? String(body.description).trim()
-    : null;
-  const imageUrl = body?.image_url
-    ? String(body.image_url).trim()
-    : null;
-  const isActive = body?.is_active;
-  const sortOrder = Number(body?.sort_order ?? 0);
-
-  if (name.length < 1 || name.length > 160) {
-    return { error: 'Product name must be between 1 and 160 characters.' };
-  }
-
-  if (!Number.isFinite(price) || price <= 0 || price > 1000000) {
-    return { error: 'Please provide a valid product price.' };
-  }
-
-  if (storefront !== null && !['yotaabo', 'poshies'].includes(storefront)) {
-    return { error: 'Please select a valid storefront.' };
-  }
-
-  if (!['His', 'Hers', 'Spaces'].includes(category)) {
-    return { error: 'Please select a valid category.' };
-  }
-
-  if (!subcategory || subcategory.length > 100) {
-    return { error: 'Please provide a valid subcategory.' };
-  }
-
-  if (typeof isActive !== 'boolean') {
-    return { error: 'Please provide a valid product status.' };
-  }
-
-  if (!Number.isInteger(sortOrder) || sortOrder < 0) {
-    return { error: 'Please provide a valid sort order.' };
-  }
-
-  if (description && description.length > 10000) {
-    return { error: 'Product description is too long.' };
-  }
-
-  if (imageUrl && imageUrl.length > 2048) {
-    return { error: 'Product image URL is too long.' };
-  }
-
-  return {
-    product: {
-      name,
-      storefront,
-      price: Math.round(price * 100) / 100,
-      category,
-      subcategory,
-      description,
-      image_url: imageUrl,
-      is_active: isActive,
-      sort_order: sortOrder,
-    },
-  };
 }
 
 async function saveProduct(body, isUpdate, admin) {
@@ -107,21 +37,7 @@ async function saveProduct(body, isUpdate, admin) {
     product.storefront = admin.store_slug;
   } else if (!isUpdate && !product.storefront) {
     return json({ error: 'A storefront is required for a new product.' }, 400);
-  } else if (isUpdate) {
-    product.storefront = null;
   }
-
-  const values = [
-    product.name,
-    product.price,
-    product.category,
-    product.subcategory,
-    product.description,
-    product.image_url,
-    product.is_active,
-    product.sort_order,
-    product.storefront,
-  ];
 
   const client = await pool.connect();
   let result;
@@ -133,28 +49,163 @@ async function saveProduct(body, isUpdate, admin) {
       [admin.email || '']
     );
 
+    // On updates, retain the product's existing storefront.
+    // Store admins are restricted to products belonging to their own store.
+    let existingProduct = null;
+
+    if (isUpdate) {
+      const existing = await client.query(
+        `SELECT storefront, category_id, subcategory_id
+         FROM public.products
+         WHERE id = $1
+           AND ($2::text IS NULL OR storefront = $2)
+         FOR UPDATE`,
+        [body.id, admin.role === 'store_admin' ? admin.store_slug : null]
+      );
+
+      if (!existing.rowCount) {
+        await client.query('ROLLBACK');
+        return json({ error: 'Product not found.' }, 404);
+      }
+
+      existingProduct = existing.rows[0];
+      product.storefront = existingProduct.storefront;
+    }
+
+    const storeResult = await client.query(
+      `SELECT id
+       FROM public.stores
+       WHERE slug = $1`,
+      [product.storefront]
+    );
+
+    if (!storeResult.rowCount) {
+      await client.query('ROLLBACK');
+      return json({ error: 'The selected storefront does not exist.' }, 400);
+    }
+
+    const storeId = storeResult.rows[0].id;
+
+    // Resolve category IDs within the effective storefront.
+    // Legacy Poshies "Spaces" submissions resolve to canonical "Lounge".
+    const categoryResult = product.category_id
+      ? await client.query(
+          `SELECT id, name, is_active
+           FROM public.categories
+           WHERE id = $1
+             AND store_id = $2
+             AND (is_active IS TRUE OR id = $3)`,
+          [product.category_id, storeId, existingProduct?.category_id ?? null]
+        )
+      : await client.query(
+          `SELECT id, name, is_active
+           FROM public.categories
+           WHERE store_id = $1
+             AND is_active IS TRUE
+             AND lower(name) = lower(
+               CASE
+                 WHEN $2 = 'poshies' AND lower(trim($3)) = 'spaces'
+                   THEN 'Lounge'
+                 ELSE trim($3)
+               END
+             )`,
+          [storeId, product.storefront, product.category]
+        );
+
+    if (!categoryResult.rowCount) {
+      await client.query('ROLLBACK');
+      return json({ error: 'The selected category is not available in this storefront.' }, 400);
+    }
+
+    const category = categoryResult.rows[0];
+
+    // Resolve the subcategory within the selected category and storefront.
+    const subcategoryResult = product.subcategory_id
+      ? await client.query(
+          `SELECT id, name
+           FROM public.subcategories
+           WHERE id = $1
+             AND store_id = $2
+             AND category_id = $3
+             AND (is_active IS TRUE OR id = $4)
+             AND ( $5::boolean IS TRUE OR id = $4 )`,
+          [
+            product.subcategory_id,
+            storeId,
+            category.id,
+            existingProduct?.subcategory_id ?? null,
+            category.is_active,
+          ]
+        )
+      : await client.query(
+          `SELECT id, name
+           FROM public.subcategories
+           WHERE store_id = $1
+             AND category_id = $2
+             AND is_active IS TRUE
+             AND lower(name) = lower(trim($3))`,
+          [storeId, category.id, product.subcategory]
+        );
+
+    if (!subcategoryResult.rowCount) {
+      await client.query('ROLLBACK');
+      return json({ error: 'The selected subcategory is not available under this category.' }, 400);
+    }
+
+    const subcategory = subcategoryResult.rows[0];
+
+    const values = [
+      product.name,
+      product.price,
+      category.name,
+      subcategory.name,
+      product.description,
+      product.image_url,
+      product.is_active,
+      product.sort_order,
+      product.storefront,
+      storeId,
+      category.id,
+      subcategory.id,
+    ];
+
     if (isUpdate) {
       result = await client.query(
         `UPDATE public.products
-         SET name = $1, price = $2, category = $3,
-             subcategory = $4, description = $5, image_url = $6,
-             is_active = $7, sort_order = $8,
-             storefront = COALESCE($9, storefront)
-         WHERE id = $10
-           AND ($11::text IS NULL OR storefront = $11)
-         RETURNING id, name, price, category, subcategory, description,
-                   image_url, is_active, sort_order, storefront`,
-        [...values, body.id, admin.role === 'store_admin' ? admin.store_slug : null]
+         SET name = $1,
+             price = $2,
+             category = $3,
+             subcategory = $4,
+             description = $5,
+             image_url = $6,
+             is_active = $7,
+             sort_order = $8,
+             storefront = $9,
+             store_id = $10,
+             category_id = $11,
+             subcategory_id = $12
+         WHERE id = $13
+           AND ($14::text IS NULL OR storefront = $14)
+         RETURNING id, name, price, category, subcategory,
+                   description, image_url, is_active, sort_order,
+                   storefront, store_id, category_id, subcategory_id`,
+        [
+          ...values,
+          body.id,
+          admin.role === 'store_admin' ? admin.store_slug : null,
+        ]
       );
     } else {
       result = await client.query(
         `INSERT INTO public.products
            (name, price, category, subcategory, description, image_url,
-            is_active, sort_order, storefront)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-         RETURNING id, name, price, category, subcategory, description,
-                   image_url, is_active, sort_order, storefront`,
-        [...values.slice(0, 8), product.storefront || 'yotaabo']
+            is_active, sort_order, storefront, store_id, category_id,
+            subcategory_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+         RETURNING id, name, price, category, subcategory,
+                   description, image_url, is_active, sort_order,
+                   storefront, store_id, category_id, subcategory_id`,
+        values
       );
     }
 

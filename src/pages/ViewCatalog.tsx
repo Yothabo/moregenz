@@ -18,16 +18,24 @@ export default function ViewCatalog() {
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const initialCategory = queryParams.get('category') as 'His' | 'Hers' | 'Spaces' | null;
-
-  const [openCategory, setOpenCategory] = useState<'His' | 'Hers' | 'Spaces' | null>(
-    initialCategory || null
+  const requestedCategory = queryParams.get('category');
+  const initialCategory = (
+    storeName === 'Poshies' && requestedCategory === 'Spaces'
+      ? 'Lounge'
+      : requestedCategory
   );
-  const [mountedCategories, setMountedCategories] = useState<Set<'His' | 'Hers' | 'Spaces'>>(
-    () => new Set(initialCategory ? [initialCategory] : [])
+  const validInitialCategory = categoryOrder.find(
+    (category) => category === initialCategory
+  ) ?? null;
+
+  const [openCategory, setOpenCategory] = useState<string | null>(
+    validInitialCategory
+  );
+  const [mountedCategories, setMountedCategories] = useState<Set<string>>(
+    () => new Set(validInitialCategory ? [validInitialCategory] : [])
   );
 
-  const toggleCategory = (category: 'His' | 'Hers' | 'Spaces') => {
+  const toggleCategory = (category: string) => {
     const isOpening = openCategory !== category;
     setOpenCategory(openCategory === category ? null : category);
 
@@ -47,15 +55,15 @@ export default function ViewCatalog() {
 
   // Auto-scroll to the expanded category on initial load
   useEffect(() => {
-    if (initialCategory && categoryRefs.current[initialCategory]) {
+    if (validInitialCategory && categoryRefs.current[validInitialCategory]) {
       setTimeout(() => {
-        categoryRefs.current[initialCategory]?.scrollIntoView({
+        categoryRefs.current[validInitialCategory]?.scrollIntoView({
           behavior: 'smooth',
           block: 'start',
         });
       }, 300);
     }
-  }, [initialCategory]);
+  }, [validInitialCategory]);
 
   const newlyAddedProducts = [...allProducts]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -70,7 +78,7 @@ export default function ViewCatalog() {
     : {
         His: 'Everyday comfort. Underwear made for him.',
         Hers: 'Intimate essentials chosen for comfort and confidence.',
-        Spaces: 'Sleepwear and relaxed essentials for winding down.',
+        Lounge: 'Sleepwear and relaxed essentials for winding down.',
       };
 
   return (
@@ -150,7 +158,7 @@ export default function ViewCatalog() {
               >
                 <div className="flex w-full items-center justify-between">
                   <h2 className="font-heading text-4xl italic text-[#4d4d4d] sm:text-5xl">
-                    {category === 'Spaces' ? (storeName === 'Yotaabo' ? 'Spaces & Home' : 'Lounge') : (category === 'His' && storeName !== 'Yotaabo' ? 'Him' : category === 'Hers' && storeName !== 'Yotaabo' ? 'Her' : category)}
+                    {category === 'Spaces' && storeName === 'Yotaabo' ? 'Spaces & Home' : category === 'His' && storeName !== 'Yotaabo' ? 'Him' : category === 'Hers' && storeName !== 'Yotaabo' ? 'Her' : category}
                   </h2>
                   <span className="text-2xl text-[#4d4d4d]/50 transition-transform duration-300 group-hover:text-[#4d4d4d]">
                     {isOpen ? <FiMinus size={28} /> : <FiPlus size={28} />}

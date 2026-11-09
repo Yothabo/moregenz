@@ -16,9 +16,6 @@ export default function AdminManagement({
   const [isInviting, setIsInviting] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'super_admin' | 'store_admin'>(
-    'store_admin',
-  );
   const [storeSlug, setStoreSlug] = useState<'yotaabo' | 'poshies'>(
     'yotaabo',
   );
@@ -82,8 +79,8 @@ export default function AdminManagement({
         },
         body: JSON.stringify({
           email: normalizedEmail,
-          role,
-          storeSlug: role === 'store_admin' ? storeSlug : null,
+          role: 'store_admin',
+          storeSlug,
         }),
       });
 
@@ -211,8 +208,6 @@ export default function AdminManagement({
       <AdminInviteForm
         email={email}
         setEmail={setEmail}
-        role={role}
-        setRole={setRole}
         storeSlug={storeSlug}
         setStoreSlug={setStoreSlug}
         isInviting={isInviting}

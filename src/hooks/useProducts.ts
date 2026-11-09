@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import useStorefront from './useStorefront';
 
-export type ProductCategory = 'His' | 'Hers' | 'Spaces';
+export type ProductCategory = 'His' | 'Hers' | 'Spaces' | 'Lounge';
 
 export type Product = {
   id: string;

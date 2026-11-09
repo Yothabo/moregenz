@@ -63,7 +63,7 @@ function isAdminRows(value: unknown): value is AdminRow[] {
         (item.storefront === 'yotaabo' || item.storefront === 'poshies') &&
         typeof item.name === 'string' &&
         typeof item.price === 'number' &&
-        ['His', 'Hers', 'Spaces'].includes(String(item.category)) &&
+        ['His', 'Hers', 'Spaces', 'Lounge'].includes(String(item.category)) &&
         typeof item.subcategory === 'string' &&
         (item.description === null || typeof item.description === 'string') &&
         (item.image_url === null || typeof item.image_url === 'string') &&

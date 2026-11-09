@@ -245,7 +245,7 @@ export default function DesignSystemTest() {
                 <label className="yds-field-label">Category</label>
                 <select className="yds-input" defaultValue="">
                   <option value="" disabled>Select category</option>
-                  <option>His</option><option>Hers</option><option>Spaces</option>
+                  <option>His</option><option>Hers</option><option>Spaces</option><option>Lounge</option>
                 </select>
                 <label className="yds-checkbox"><input type="checkbox" defaultChecked /> Available for purchase</label>
               </article>

@@ -20,6 +20,11 @@ export const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     accentColor: 'text-[#c8ad8d]',
     fillColor: 'fill-[#c8ad8d]',
   },
+  Lounge: {
+    placeholderColor: 'bg-[#c8ad8d]',
+    accentColor: 'text-[#c8ad8d]',
+    fillColor: 'fill-[#c8ad8d]',
+  },
 };
 
 export function getCategoryTheme(category: string): CategoryTheme {
