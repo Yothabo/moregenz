@@ -1,7 +1,7 @@
 # Product Lifecycle and Administration
 
 **Document status:** Architecture specification
-**Scope:** Current Yotaabo and Porschs stores, with provisions for future multi-store expansion
+**Scope:** Current Yotaabo and Poshies stores, with provisions for future multi-store expansion
 **Implementation status:** Requirements specification. The workflows and states described here must be verified against the live application before being classified as implemented.
 
 ## 1. Purpose
@@ -66,7 +66,7 @@ Changing a listing must not automatically change the source product or another s
 
 ### 3.1 Current two-store arrangement
 
-Yotaabo and Porschs use one shared product catalogue.
+Yotaabo and Poshies use one shared product catalogue.
 
 An authorised administrator of either store may submit a product for addition to the shared catalogue, subject to the application's actual permissions and validation rules.
 
@@ -156,7 +156,7 @@ The admission process may include:
 
 The exact approval requirements depend on the final catalogue governance model.
 
-For the current Yotaabo and Porschs arrangement, an accepted product is available to both stores' listing workflows.
+For the current Yotaabo and Poshies arrangement, an accepted product is available to both stores' listing workflows.
 
 A separate upload or duplicate admission by the second store should not be necessary.
 
@@ -251,7 +251,7 @@ The workflow must not create a duplicate source product when a valid shared cata
 
 ### 7.2 Independent listing records
 
-Yotaabo and Porschs must have separate listing records for their use of the same source product.
+Yotaabo and Poshies must have separate listing records for their use of the same source product.
 
 This allows each store to control:
 
@@ -271,7 +271,7 @@ The exact overrideable fields must be defined by the source-data ownership polic
 
 Pricing belongs to the individual store listing.
 
-The same source product may have different prices in Yotaabo and Porschs.
+The same source product may have different prices in Yotaabo and Poshies.
 
 A price update in one store must not change the other store's price.
 
@@ -317,8 +317,8 @@ Publication must be controlled independently by each store.
 
 For example:
 
-- Yotaabo may publish a product while Porschs leaves it unpublished.
-- Porschs may unpublish its listing without affecting Yotaabo.
+- Yotaabo may publish a product while Poshies leaves it unpublished.
+- Poshies may unpublish its listing without affecting Yotaabo.
 - A store may update its listing without changing the other store's publication status.
 
 A shared source-product status must not be used as a substitute for individual listing publication status.
@@ -520,7 +520,7 @@ Notification channels and delivery requirements remain separate implementation d
 
 | Capability | Current requirement | Future consideration |
 |---|---|---|
-| Shared Yotaabo and Porschs catalogue | Required | Extend to more stores |
+| Shared Yotaabo and Poshies catalogue | Required | Extend to more stores |
 | Product added by either store | Available to both listing workflows after acceptance | Configurable eligibility |
 | Duplicate upload by second store | Not required | Import and assignment workflows |
 | Independent store listings | Required | More detailed override policies |

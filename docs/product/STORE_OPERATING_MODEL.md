@@ -31,7 +31,7 @@ It does not define database tables, API contracts or detailed technical implemen
 The store operating model is based on the following principles:
 
 1. The platform provides the shared infrastructure and central oversight.
-2. Yotaabo and Porschs operate as two distinct stores on the same application.
+2. Yotaabo and Poshies operate as two distinct stores on the same application.
 3. One Super Admin has platform-wide authority over both stores.
 4. Each store has exactly one Store Admin responsible for that store's day-to-day operation.
 5. Each Store Admin is restricted to their own store; the Super Admin can administer both.
@@ -53,7 +53,7 @@ One Super Admin is responsible for:
 
 - Overall platform direction and administration.
 - Platform policies and operating standards.
-- Managing the Yotaabo and Porschs store records.
+- Managing the Yotaabo and Poshies store records.
 - Appointing, inviting, suspending and removing the two Store Admin accounts.
 - Managing platform-wide access and security.
 - Viewing and administering both stores within the Super Admin's authority.
@@ -88,7 +88,7 @@ Each store has one Store Admin account in the current application. Store Admins 
 
 Employee accounts, staff invitations, delegated duties, team structures and employee permission assignments belong to the broader future platform.
 
-They are not part of the current Yotaabo and Porschs application. The current application has only the Super Admin and the two Store Admin accounts described above.
+They are not part of the current Yotaabo and Poshies application. The current application has only the Super Admin and the two Store Admin accounts described above.
 
 The existing Role and Permission Model and organisational specifications preserve the future direction. They must not be interpreted as approval to build employee management, departments, nested leadership or delegated administration into the current release.
 
@@ -201,7 +201,7 @@ Detailed workflows belong in the Order Management specification.
 
 Employee management is not included in the current application.
 
-Store Admins cannot invite staff, create employee accounts, assign employee roles or delegate application access. The only invitations supported by the current operating model are invitations to the Yotaabo Store Admin and Porschs Store Admin positions, controlled by the Super Admin.
+Store Admins cannot invite staff, create employee accounts, assign employee roles or delegate application access. The only invitations supported by the current operating model are invitations to the Yotaabo Store Admin and Poshies Store Admin positions, controlled by the Super Admin.
 
 The broader platform may later support employee onboarding, role assignment, delegated responsibilities and store-level workforce administration. Those capabilities remain future scope and require a separate implementation decision.
 

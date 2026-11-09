@@ -11,7 +11,7 @@
 
 This document defines how product ownership, catalogue availability and store-level product usage must be distinguished.
 
-The product catalogue is shared between Yotaabo and Porschs. Both stores must be able to use valid products added to that catalogue without creating duplicate source product records.
+The product catalogue is shared between Yotaabo and Poshies. Both stores must be able to use valid products added to that catalogue without creating duplicate source product records.
 
 However, shared catalogue access does not mean that every store owns every product or has unrestricted authority to modify or delete source product information.
 
@@ -76,13 +76,13 @@ A shared source product does not create shared inventory.
 
 Each store must retain control of its own stock records and inventory operations.
 
-## 3. Current Yotaabo and Porschs ownership and sharing model
+## 3. Current Yotaabo and Poshies ownership and sharing model
 
 The initial two-store arrangement uses one shared product catalogue.
 
 The confirmed requirements are:
 
-1. Yotaabo and Porschs use the same source product catalogue.
+1. Yotaabo and Poshies use the same source product catalogue.
 2. An authorised administrator of either store can add a valid product to the shared catalogue, subject to applicable validation and permissions.
 3. Once accepted into the catalogue, the product is available to both stores' listing workflows.
 4. A second store does not need to upload a duplicate source product merely to use it.
@@ -133,7 +133,7 @@ Duplicate detection must not automatically merge records without an appropriate 
 
 ### 4.2 Catalogue availability after admission
 
-Once a product is accepted into the initial shared catalogue, it becomes available to both Yotaabo and Porschs listing workflows.
+Once a product is accepted into the initial shared catalogue, it becomes available to both Yotaabo and Poshies listing workflows.
 
 This does not mean:
 
@@ -208,10 +208,10 @@ Each store controls its own use of a shared product.
 For example, if a product is available in the shared catalogue:
 
 - Yotaabo may create a listing and publish it.
-- Porschs may leave the product unlisted.
-- Porschs may create its own listing later.
-- Yotaabo may change its price without changing Porschs' price.
-- Porschs may run a promotion without changing Yotaabo's promotion.
+- Poshies may leave the product unlisted.
+- Poshies may create its own listing later.
+- Yotaabo may change its price without changing Poshies' price.
+- Poshies may run a promotion without changing Yotaabo's promotion.
 - Either store may unpublish its listing without automatically unpublishing the other store's listing.
 
 A store-level listing operation must be scoped to the relevant store.
@@ -236,7 +236,7 @@ These values must not be unintentionally shared between stores.
 
 ### 7.1 Pricing independence
 
-A shared source product may have different selling prices in Yotaabo and Porschs.
+A shared source product may have different selling prices in Yotaabo and Poshies.
 
 Changing the price in one store must not change the price in the other.
 

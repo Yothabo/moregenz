@@ -1,7 +1,7 @@
 # Product Data Model
 
 **Document status:** Architecture specification
-**Scope:** Current Yotaabo and Porschs stores, with provisions for future multi-store expansion
+**Scope:** Current Yotaabo and Poshies stores, with provisions for future multi-store expansion
 **Implementation status:** Conceptual model. This document does not confirm that the proposed entities, fields, constraints, or relationships exist in the live database.
 
 ## 1. Purpose
@@ -17,7 +17,7 @@ It establishes the distinction between:
 - The inventory maintained by each store.
 - Product variants, SKUs, categories, attributes, and media.
 
-The model must support the current Yotaabo and Porschs arrangement without preventing a broader multi-store platform in the future.
+The model must support the current Yotaabo and Poshies arrangement without preventing a broader multi-store platform in the future.
 
 For the overall architecture and domain boundaries, see `PRODUCT_CATALOGUE_ARCHITECTURE.md`.
 
@@ -54,7 +54,7 @@ Potential information:
 - Store-specific presentation settings.
 - Store category display preferences.
 
-Yotaabo and Porschs are the initial participating stores.
+Yotaabo and Poshies are the initial participating stores.
 
 A store has its own commercial and operational context even when it uses shared catalogue records.
 
@@ -187,9 +187,9 @@ Potential information:
 
 The model must distinguish the underlying product classification from the order in which categories appear on a storefront.
 
-Yotaabo and Porschs may present categories in different orders without changing the underlying product classification.
+Yotaabo and Poshies may present categories in different orders without changing the underlying product classification.
 
-For example, Porschs may display Hers before His while Yotaabo retains its existing category order.
+For example, Poshies may display Hers before His while Yotaabo retains its existing category order.
 
 ### 3.8 Product Attribute
 
@@ -264,7 +264,7 @@ Possible future availability scopes include:
 
 These are future model capabilities. They must not be interpreted as proof that the current system supports all three scopes.
 
-For the initial Yotaabo and Porschs arrangement, an accepted source product in the shared catalogue is available to both stores' listing workflows.
+For the initial Yotaabo and Poshies arrangement, an accepted source product in the shared catalogue is available to both stores' listing workflows.
 
 That rule does not automatically publish the product in either store.
 
@@ -320,13 +320,13 @@ Conceptual relationship outline:
 
 This outline is conceptual. It does not prescribe physical database foreign keys or table names.
 
-## 5. Current Yotaabo and Porschs data requirements
+## 5. Current Yotaabo and Poshies data requirements
 
 The initial implementation must support the following behaviour.
 
 ### 5.1 Shared catalogue identity
 
-Yotaabo and Porschs use one shared product catalogue.
+Yotaabo and Poshies use one shared product catalogue.
 
 An authorised administrator of either store may add a valid product to the shared catalogue, subject to the applicable backend permissions and validation rules.
 
@@ -339,7 +339,7 @@ Each store controls its own listing.
 For the same source product:
 
 - Yotaabo may create and publish its listing.
-- Porschs may create and publish its listing independently.
+- Poshies may create and publish its listing independently.
 - One store may leave the product unpublished.
 - One store may change its price without changing the other store's price.
 - One store may run a promotion without changing the other store's promotion.
@@ -354,9 +354,9 @@ Each store maintains its own inventory relationship.
 For example:
 
 - Yotaabo may hold 10 units.
-- Porschs may hold 4 units.
-- A stock adjustment in Yotaabo must not automatically change Porschs' quantity.
-- A stock adjustment in Porschs must not automatically change Yotaabo's quantity.
+- Poshies may hold 4 units.
+- A stock adjustment in Yotaabo must not automatically change Poshies' quantity.
+- A stock adjustment in Poshies must not automatically change Yotaabo's quantity.
 
 Any future stock transfer or central inventory arrangement requires an explicit business process and separate authority.
 

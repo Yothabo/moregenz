@@ -2,7 +2,7 @@
 
 **Document status:** Architecture specification
 **Version:** 1.0
-**Scope:** Product catalogue architecture for the Yotaabo and Porschs stores, with provisions for the future multi-store platform
+**Scope:** Product catalogue architecture for the Yotaabo and Poshies stores, with provisions for the future multi-store platform
 **Last reviewed:** 9 November 2026
 
 ---
@@ -15,7 +15,7 @@ The catalogue provides a shared source of product information that participating
 
 It separates central product information from the commercial and operational decisions each store makes when presenting and selling a product.
 
-The architecture must support the current Yotaabo and Porschs arrangement while retaining a clear path towards the broader multi-store platform described in the platform documentation.
+The architecture must support the current Yotaabo and Poshies arrangement while retaining a clear path towards the broader multi-store platform described in the platform documentation.
 
 This document establishes the high-level architecture. Detailed specifications are maintained in the related documents listed at the end.
 
@@ -25,7 +25,7 @@ The architecture contains two distinct scopes. They must not be treated as if th
 
 ### 2.1 Current two-store scope
 
-The initial arrangement covers Yotaabo and Porschs.
+The initial arrangement covers Yotaabo and Poshies.
 
 The confirmed operating requirements are:
 
@@ -152,7 +152,7 @@ The product catalogue maintains the shared source product records.
 
 It is responsible for product identity and the source information used by participating stores.
 
-For the initial Yotaabo and Porschs arrangement, both stores use the same catalogue.
+For the initial Yotaabo and Poshies arrangement, both stores use the same catalogue.
 
 ### 5.2 Store product listings
 
@@ -193,16 +193,16 @@ The intended conceptual relationship is:
       |               |
     +---------+   +---------+
     |         |   |         |
-  Yotaabo  Porschs Other   ...
+  Yotaabo  Poshies Other   ...
   Listing  Listing Store
     |         |
-  Yotaabo  Porschs
+  Yotaabo  Poshies
    Data     Data
     |         |
-  Yotaabo  Porschs
+  Yotaabo  Poshies
    Stock    Stock
     |         |
-  Yotaabo  Porschs
+  Yotaabo  Poshies
  Storefront Storefront
 
 This is a conceptual model, not a declaration of the current database schema.
@@ -254,7 +254,7 @@ Likewise, the ability to create, update or remove a listing must not be interpre
 
 Inventory must remain independently scoped to the relevant store.
 
-For example, a product listed by both Yotaabo and Porschs may have:
+For example, a product listed by both Yotaabo and Poshies may have:
 
 - Different stock quantities.
 - Different stock movements.
@@ -276,13 +276,13 @@ The catalogue must support independent storefront experiences.
 
 Yotaabo remains an existing storefront and must retain its independent store configuration and presentation.
 
-### 10.2 Porschs
+### 10.2 Poshies
 
-Porschs is intended to operate under the `/porschs` path on the existing domain.
+Poshies is intended to operate under the `/poshies` path on the existing domain.
 
-The route must resolve the Porschs store context so that the application retrieves Porschs-specific listings, commercial information and presentation settings.
+The route must resolve the Poshies store context so that the application retrieves Poshies-specific listings, commercial information and presentation settings.
 
-This arrangement does not establish a separate catalogue, backend or platform for Porschs.
+This arrangement does not establish a separate catalogue, backend or platform for Poshies.
 
 A separate domain may be considered in the future, but it is not required by the current arrangement.
 
@@ -292,7 +292,7 @@ Category ordering is a storefront-level presentation concern.
 
 Yotaabo must retain its existing category ordering.
 
-Porschs may use a different order, including displaying Hers before His.
+Poshies may use a different order, including displaying Hers before His.
 
 Changing the category order for one store must not alter the other store's ordering.
 
@@ -486,7 +486,7 @@ The following distinctions must be maintained during implementation and document
 
 | Area | Current position |
 |---|---|
-| Initial catalogue | Shared between Yotaabo and Porschs |
+| Initial catalogue | Shared between Yotaabo and Poshies |
 | Product availability | Accepted shared products are available to both listing workflows |
 | Product publication | Independently controlled by each store |
 | Store pricing | Independently controlled by each store |
@@ -495,7 +495,7 @@ The following distinctions must be maintained during implementation and document
 | Inventory | Independently maintained by each store |
 | Source product ownership | Must be distinguished from store listing access |
 | Source product editing and deletion | Must be verified against approved permissions and backend implementation |
-| Porschs route | `/porschs` on the existing domain |
+| Poshies route | `/poshies` on the existing domain |
 | Category ordering | Independently configurable per store |
 | Broader platform ownership models | Future architecture |
 | Selected-store sharing | Future capability unless separately verified |

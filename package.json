@@ -1,5 +1,5 @@
 {
-  "name": "yotaabo",
+  "name": "simatu",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -61,10 +61,17 @@
     "vitest": "^0.34.6"
   },
   "keywords": [
-    "fragrance",
-    "perfume",
-    "fragrance-collection",
-    "shopping",
+    "simatu",
+    "commerce-platform",
+    "multi-store-commerce",
+    "ecommerce",
+    "online-store",
+    "storefront-management",
+    "retail-management",
+    "product-catalogue",
+    "inventory-management",
+    "order-management",
+    "business-administration",
     "react",
     "typescript",
     "vite"

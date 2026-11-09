@@ -1,7 +1,7 @@
 # Product Catalogue Migration and Testing
 
 **Document status:** Architecture and implementation specification
-**Scope:** Existing Yotaabo catalogue, Porschs integration, and future multi-store expansion
+**Scope:** Existing Yotaabo catalogue, Poshies integration, and future multi-store expansion
 **Implementation status:** Migration and testing requirements. Actual migration status must be established from database migrations, application code, deployment records, and test results.
 
 ## 1. Purpose
@@ -23,7 +23,7 @@ It covers:
 - Post-deployment verification.
 - Rollback and recovery.
 
-The objective is to establish a reliable shared catalogue for Yotaabo and Porschs while preserving existing product information and independent store operations.
+The objective is to establish a reliable shared catalogue for Yotaabo and Poshies while preserving existing product information and independent store operations.
 
 ## 2. Migration principles
 
@@ -46,7 +46,7 @@ Migration activities must follow these principles:
 
 ### 3.1 Initial scope
 
-The initial migration concerns the shared catalogue arrangement between Yotaabo and Porschs.
+The initial migration concerns the shared catalogue arrangement between Yotaabo and Poshies.
 
 The target behaviour is:
 
@@ -263,7 +263,7 @@ For each store, verify:
 - Movement history.
 - Reconciliation totals.
 
-Do not combine Yotaabo and Porschs stock quantities merely because both stores use the same source product.
+Do not combine Yotaabo and Poshies stock quantities merely because both stores use the same source product.
 
 ## 9. Media migration
 
@@ -469,14 +469,14 @@ Tests must verify:
 
 1. A product accepted into the shared catalogue is available to both stores' listing workflows.
 2. Yotaabo can create its own listing.
-3. Porschs can create its own listing.
+3. Poshies can create its own listing.
 4. Both listings reference the same source product.
-5. Yotaabo pricing changes do not affect Porschs pricing.
-6. Porschs pricing changes do not affect Yotaabo pricing.
+5. Yotaabo pricing changes do not affect Poshies pricing.
+6. Poshies pricing changes do not affect Yotaabo pricing.
 7. Publishing one listing does not publish the other.
 8. Unpublishing one listing does not unpublish the other.
-9. Yotaabo inventory changes do not affect Porschs inventory.
-10. Porschs inventory changes do not affect Yotaabo inventory.
+9. Yotaabo inventory changes do not affect Poshies inventory.
+10. Poshies inventory changes do not affect Yotaabo inventory.
 11. Store administrators cannot access another store's restricted records.
 12. Listing permissions do not bypass source-product permissions.
 
@@ -512,7 +512,7 @@ Examples:
 - Customers see only the appropriate storefront listing.
 - Inventory changes remain store-specific.
 
-Tests should cover the Yotaabo root storefront and the Porschs `/porschs` route.
+Tests should cover the Yotaabo root storefront and the Poshies `/poshies` route.
 
 ## 14. Data integrity validation
 
@@ -691,7 +691,7 @@ A successful database migration alone does not establish completion.
 | Area | Initial scope | Future consideration |
 |---|---|---|
 | Existing catalogue assessment | Required | Repeated for additional stores |
-| Shared Yotaabo and Porschs catalogue | Required | Expanded platform catalogue |
+| Shared Yotaabo and Poshies catalogue | Required | Expanded platform catalogue |
 | Independent listings | Required | More detailed store configuration |
 | Independent pricing | Required | Central commercial policy |
 | Independent publication | Required | Configurable approval workflows |

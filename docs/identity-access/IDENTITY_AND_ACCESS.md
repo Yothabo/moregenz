@@ -716,7 +716,7 @@ The current application access baseline comprises:
 2. Supabase Authentication.
 3. One Platform Super Admin account.
 4. One Store Admin account for Yotaabo.
-5. One Store Admin account for Porschs.
+5. One Store Admin account for Poshies.
 6. Store-scoped access for each Store Admin.
 7. Platform Super Admin control over Store Admin appointments and removals.
 8. Backend-enforced authorisation and protection against cross-store access.

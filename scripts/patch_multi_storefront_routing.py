@@ -59,9 +59,9 @@ const STOREFRONTS = {
     basePath: '/yotaabo',
     categoryOrder: ['His', 'Hers', 'Spaces'] as StorefrontCategory[],
   },
-  porschs: {
-    name: 'Porschs',
-    basePath: '/porschs',
+  poshies: {
+    name: 'Poshies',
+    basePath: '/poshies',
     categoryOrder: ['Hers', 'His', 'Spaces'] as StorefrontCategory[],
   },
 } as const;
@@ -69,8 +69,8 @@ const STOREFRONTS = {
 export default function useStorefront() {
   const { pathname } = useLocation();
 
-  const store = pathname === '/porschs' || pathname.startsWith('/porschs/')
-    ? STOREFRONTS.porschs
+  const store = pathname === '/poshies' || pathname.startsWith('/poshies/')
+    ? STOREFRONTS.poshies
     : STOREFRONTS.yotaabo;
 
   const pathFor = (path = '') => {
@@ -116,13 +116,13 @@ export default function useStorefront() {
           <Route path="/yotaabo/cart" element={<CartPage />} />
           <Route path="/yotaabo/*" element={<NotFound />} />
 
-          {/* Porschs storefront */}
-          <Route path="/porschs" element={<Home />} />
-          <Route path="/porschs/about" element={<About />} />
-          <Route path="/porschs/services" element={<ServicesPage />} />
-          <Route path="/porschs/catalog" element={<ViewCatalog />} />
-          <Route path="/porschs/cart" element={<CartPage />} />
-          <Route path="/porschs/*" element={<NotFound />} />
+          {/* Poshies storefront */}
+          <Route path="/poshies" element={<Home />} />
+          <Route path="/poshies/about" element={<About />} />
+          <Route path="/poshies/services" element={<ServicesPage />} />
+          <Route path="/poshies/catalog" element={<ViewCatalog />} />
+          <Route path="/poshies/cart" element={<CartPage />} />
+          <Route path="/poshies/*" element={<NotFound />} />
 
           {/* Shared operational routes */}
           <Route path="/admin" element={<Admin />} />

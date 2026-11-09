@@ -1,7 +1,7 @@
 # Product Catalogue Security and Governance
 
 **Document status:** Architecture specification
-**Scope:** Current Yotaabo and Porschs stores, with provisions for future multi-store expansion
+**Scope:** Current Yotaabo and Poshies stores, with provisions for future multi-store expansion
 **Implementation status:** Security and governance requirements. Actual permissions and enforcement must be verified against the live backend.
 
 ## 1. Purpose
@@ -200,7 +200,7 @@ These concepts must not be represented by one generic creator or store identifie
 
 ### 6.1 Current arrangement
 
-Yotaabo and Porschs use a shared catalogue.
+Yotaabo and Poshies use a shared catalogue.
 
 An authorised administrator of either store may add a valid product to that catalogue, subject to the verified backend permissions and validation rules.
 
@@ -277,7 +277,7 @@ Future stock transfers or central inventory arrangements must have separate busi
 
 Product eligibility determines which stores may use a source product.
 
-In the current two-store arrangement, accepted shared catalogue products are available to both Yotaabo and Porschs listing workflows.
+In the current two-store arrangement, accepted shared catalogue products are available to both Yotaabo and Poshies listing workflows.
 
 The broader future platform may require more detailed eligibility controls.
 
@@ -459,9 +459,9 @@ Required scenarios include:
 ### 15.2 Store isolation
 
 - Yotaabo administrators can manage authorised Yotaabo listings.
-- Porschs administrators can manage authorised Porschs listings.
-- Yotaabo administrators cannot change Porschs prices through ordinary store permissions.
-- Porschs administrators cannot change Yotaabo publication status.
+- Poshies administrators can manage authorised Poshies listings.
+- Yotaabo administrators cannot change Poshies prices through ordinary store permissions.
+- Poshies administrators cannot change Yotaabo publication status.
 - A store cannot access another store's private inventory.
 
 ### 15.3 Publication and pricing
@@ -542,7 +542,7 @@ A proposed rule must not be described as approved merely because it appears in a
 
 | Area | Current requirement | Future consideration |
 |---|---|---|
-| Shared catalogue | Yotaabo and Porschs | Additional stores |
+| Shared catalogue | Yotaabo and Poshies | Additional stores |
 | Catalogue availability | Accepted products available to both stores | Configurable eligibility |
 | Store listing control | Independent | More detailed delegated authority |
 | Store pricing | Independent | Central commercial policy |

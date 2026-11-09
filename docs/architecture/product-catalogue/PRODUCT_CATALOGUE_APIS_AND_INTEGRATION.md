@@ -1,7 +1,7 @@
 # Product Catalogue APIs and Integration
 
 **Document status:** Architecture specification
-**Scope:** Current Yotaabo and Porschs stores, with provisions for future multi-store expansion
+**Scope:** Current Yotaabo and Poshies stores, with provisions for future multi-store expansion
 **Implementation status:** API and integration requirements. Endpoint names, request contracts, and behaviours must be verified against the live application before being classified as implemented.
 
 ## 1. Purpose
@@ -43,7 +43,7 @@ The conceptual integration is:
                                 \
                                  Shared Backend API
                                 /        |
-    Porschs Storefront --------/         |
+    Poshies Storefront --------/         |
                                          |
                               Shared Product Catalogue
                                          |
@@ -58,7 +58,7 @@ Both storefronts use the shared backend and catalogue infrastructure.
 
 They do not require separate product catalogue databases merely because they have different storefront experiences.
 
-The Porschs storefront currently uses the `/porschs` route on the existing domain. This route establishes the Porschs storefront context; it does not represent a separate backend or catalogue.
+The Poshies storefront currently uses the `/poshies` route on the existing domain. This route establishes the Poshies storefront context; it does not represent a separate backend or catalogue.
 
 ## 4. API domain boundaries
 
@@ -157,7 +157,7 @@ The storefront route or domain may identify the intended store.
 For the current arrangement:
 
 - The existing root storefront resolves to Yotaabo.
-- The `/porschs` route resolves to Porschs.
+- The `/poshies` route resolves to Poshies.
 
 The backend must not rely solely on a client-supplied store name or route value for authorisation.
 
@@ -329,9 +329,9 @@ The same source product may appear differently in each storefront.
 For example:
 
 - Yotaabo may publish a listing at one price.
-- Porschs may publish a listing at a different price.
+- Poshies may publish a listing at a different price.
 - Yotaabo may use different presentation media.
-- Porschs may use a different description override.
+- Poshies may use a different description override.
 - One store may publish the product while the other does not.
 
 The API must resolve these differences using the relevant store listing rather than assuming that the source product contains all storefront information.
@@ -486,7 +486,7 @@ The API must never rely on obscured endpoint URLs or frontend-only checks as sec
 
 ## 16. Storefront integration
 
-Yotaabo and Porschs should consume the shared backend through documented API contracts.
+Yotaabo and Poshies should consume the shared backend through documented API contracts.
 
 Each storefront must resolve its own store context and request the corresponding listing data.
 
@@ -501,7 +501,7 @@ The integration must avoid:
 
 Store-specific configuration should be managed through the approved configuration architecture.
 
-The `/porschs` route must resolve the Porschs storefront context consistently across product listing, product detail, category, cart, and checkout workflows where those workflows are supported.
+The `/poshies` route must resolve the Poshies storefront context consistently across product listing, product detail, category, cart, and checkout workflows where those workflows are supported.
 
 ## 17. API versioning and contract management
 
@@ -557,7 +557,7 @@ Operational monitoring must make it possible to identify whether a failure affec
 
 - The shared catalogue.
 - Yotaabo.
-- Porschs.
+- Poshies.
 - Store listings.
 - Inventory.
 - Public storefront delivery.
@@ -631,7 +631,7 @@ API and integration tests must cover:
 
 Tests must verify both positive and negative access cases.
 
-A successful Yotaabo operation must not be treated as proof that Porschs isolation works, or vice versa.
+A successful Yotaabo operation must not be treated as proof that Poshies isolation works, or vice versa.
 
 ## 22. Current and future integration distinction
 
@@ -640,8 +640,8 @@ A successful Yotaabo operation must not be treated as proof that Porschs isolati
 | Shared backend | Required | Additional stores |
 | Shared product catalogue | Required | Expanded catalogue governance |
 | Yotaabo integration | Required | Additional channels |
-| Porschs integration | Required | Separate domain if approved |
-| Porschs `/porschs` route | Current storefront arrangement | Independent domain |
+| Poshies integration | Required | Separate domain if approved |
+| Poshies `/poshies` route | Current storefront arrangement | Independent domain |
 | Store-scoped listings | Required | More detailed listing policies |
 | Independent pricing | Required | Central commercial rules |
 | Independent publication | Required | Configurable review workflows |

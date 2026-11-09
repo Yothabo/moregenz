@@ -72,7 +72,7 @@ The current two-store application uses a deliberately limited administrator mode
 
 - One Super Admin account with platform-wide authority over both stores.
 - One Store Admin account for Yotaabo.
-- One Store Admin account for Porschs.
+- One Store Admin account for Poshies.
 - Invitations are restricted to creating or assigning the two Store Admin positions.
 - Store-scoped access ensures each Store Admin can administer only their own store, while the Super Admin can administer both.
 - Authentication, session management, account security and auditable access changes.
@@ -198,7 +198,7 @@ The following are foundational capabilities:
 
 - Exactly one Super Admin account for the current platform.
 - Exactly one Store Admin account for Yotaabo.
-- Exactly one Store Admin account for Porschs.
+- Exactly one Store Admin account for Poshies.
 - Invitations limited to the two Store Admin positions.
 - No employee accounts, employee invitations or delegated administrator accounts.
 - No departments, nested leadership or configurable organisational hierarchy.
@@ -304,7 +304,7 @@ The broader platform may later introduce:
 - Nested leadership and approval workflows.
 - Employee onboarding, role changes and offboarding.
 
-These capabilities are future platform proposals. They are explicitly outside the current Yotaabo and Porschs application scope.
+These capabilities are future platform proposals. They are explicitly outside the current Yotaabo and Poshies application scope.
 
 Each integration must have a defined purpose, security assessment and ownership of operational responsibilities.
 
@@ -354,7 +354,7 @@ They require an approved business purpose, scope and implementation decision.
 
 The current application does not include employee management, staff invitations, delegated administrators, department structures, nested leadership, multiple layers of platform administration or complex role hierarchies.
 
-The current administrator model is limited to one Super Admin and one Store Admin for each of the two stores, Yotaabo and Porschs. Invitations must be restricted to the two Store Admin positions.
+The current administrator model is limited to one Super Admin and one Store Admin for each of the two stores, Yotaabo and Poshies. Invitations must be restricted to the two Store Admin positions.
 
 The broader workforce and organisational capabilities remain preserved in the future-platform documentation. Their presence in those documents does not authorise their implementation in the current application.
 

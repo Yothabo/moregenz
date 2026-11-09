@@ -32,7 +32,7 @@ The documents are separated by responsibility to make the architecture easier to
 
 ## Current Operating Context
 
-The initial participating stores are Yotaabo and Porschs.
+The initial participating stores are Yotaabo and Poshies.
 
 They use one shared product catalogue through the platform backend.
 
@@ -52,7 +52,7 @@ The platform is intended to support additional stores and more flexible product 
 
 Future capabilities may include platform-owned products, store-owned products, selected-store sharing and platform-wide eligibility.
 
-These future arrangements must not silently change the current Yotaabo and Porschs operating rules.
+These future arrangements must not silently change the current Yotaabo and Poshies operating rules.
 
 Proposed capabilities must be distinguished from approved decisions and implemented functionality.
 

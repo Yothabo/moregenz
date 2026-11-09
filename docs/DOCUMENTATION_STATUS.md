@@ -1,17 +1,19 @@
 # Documentation Status and Development Handover
 
-**Project:** Yotaabo
-**Repository:** `Yothabo/moregenz`
-**Branch:** `perfume-business`
-**Last reviewed:** 9 November 2026
-**Status:** Documentation review checkpoint recorded
-**Document authority:** Single source of truth for documentation review progress and handover status.
+**Organisation:** Simatu Cooperative
+**Platform:** Simatu
+**Repository:** `Yothabo/simatu`
+**Local directory:** `~/simatu`
+**Branch:** `beta`
+**Last reviewed:** 10 November 2026
+**Status:** Documentation review and identity remediation in progress
+**Document authority:** Central record of documentation review progress, established decisions and development handover status.
 
 ---
 
 ## 1. Purpose
 
-This document records the current state of the project's documentation.
+This document records the current state of the project's documentation and development handover.
 
 It provides a central reference for:
 
@@ -20,29 +22,40 @@ It provides a central reference for:
 - What decisions have been established.
 - What remains outstanding.
 - Which documents are authoritative.
-- Where the next documentation or business-development session should resume.
+- Where the next documentation or development session should resume.
 
 Documentation work must not be restarted from the beginning without a specific reason.
 
 ## 2. Current Documentation Status
 
-The initial documentation review and remediation identified inconsistencies involving current application functionality, future platform architecture, access control and document scope.
+The documentation review has identified inconsistencies involving:
 
-The immediate access-model corrections have been applied.
+- Organisation, platform and storefront identity.
+- Current application functionality versus future platform architecture.
+- Access control and administrative responsibilities.
+- Store-specific product categories and catalogue ownership.
+- Product lifecycle, publication and cross-store visibility.
+- API, database and implementation responsibilities.
 
-The documentation review is paused at this checkpoint. This does not mean every document has received complete technical or business approval.
+The immediate access-model corrections were previously applied.
+
+The current working changes include identity corrections across the product catalogue, store architecture, identity and access, and product operating-model documentation.
+
+The documentation review remains in progress. This checkpoint does not represent complete technical or business approval of every document.
+
+The root `README.md` is the authoritative summary of the organisation, platform identity, application structure and deployment workflow.
 
 ## 3. Established Current Application Baseline
 
 The current application operates with:
 
 - One shared application.
-- Two stores: Yotaabo and Porschs.
-- One Platform Super Admin account.
-- One Store Admin account for Yotaabo.
-- One Store Admin account for Porschs.
+- Two independent storefronts: Yotaabo and Poshies.
+- One Platform Super Admin.
+- One Store Admin assigned to Yotaabo.
+- One Store Admin assigned to Poshies.
 - Store-scoped administration.
-- Backend-enforced authorisation and cross-store protection.
+- Backend-enforced authorisation and store boundaries.
 
 The current application does not support:
 
@@ -56,6 +69,18 @@ The current application does not support:
 The Platform Super Admin controls Store Admin appointments and removals.
 
 Each Store Admin manages operations within their assigned store.
+
+### Catalogue architecture clarification
+
+The intended business model and the current implementation must be reconciled before the catalogue architecture is treated as final.
+
+The business requirement previously established is that products uploaded by either administrator should appear on both storefronts, while Yotaabo and Poshies retain separate storefront identities.
+
+The current database migration introduces store-specific categories and product-to-store relationships.
+
+The implications for shared products, pricing, inventory, publication and administration remain subject to explicit architectural confirmation.
+
+Do not treat independent per-store product listings or independent commercial controls as approved requirements without confirmation.
 
 ## 4. Future Platform Architecture
 
@@ -74,56 +99,96 @@ Potential future capabilities include:
 
 These capabilities must not be presented as implemented functionality until approved, specified and developed.
 
-## 5. Documents Updated During This Review
+## 5. Documents Updated During the Current Review
 
-The following nine documents were modified:
+The current working tree contains changes to the following documentation:
 
-| Document | Remediation |
+| Document | Review area |
 |---|---|
-| `DOCUMENTATION_CONTROL_REMEDIATION_REPORT.md` | Added follow-up documentation inventory note |
-| `docs/architecture/STORE_OWNER_AND_STORE_ADMINISTRATION_ROLES.md` | Clarified future-state architecture |
-| `docs/architecture/UNIFIED_PLATFORM_ROLE_CATALOGUE_AND_PERMISSION_MATRIX.md` | Distinguished future roles from current roles |
-| `docs/identity-access/IDENTITY_AND_ACCESS.md` | Corrected current access baseline and future capabilities |
-| `docs/implementation/EMAIL_DELIVERY_AND_TEMPLATE_MANAGEMENT_STANDARDS.md` | Qualified future employee invitations |
-| `docs/operations/PLATFORM_ACCESS_REVIEW_PROCEDURE.md` | Qualified future delegated and employee accounts |
-| `docs/stores/STORE_ADMIN_GUIDE.md` | Corrected Store Admin responsibilities |
-| `docs/stores/STORE_EMPLOYEE_GUIDE.md` | Marked as a future-state guide |
-| `docs/stores/STORE_ONBOARDING_GUIDE.md` | Corrected future employee onboarding instructions |
+| `docs/architecture/PRODUCT_CATALOGUE_ARCHITECTURE.md` | Catalogue architecture and identity |
+| `docs/architecture/STORE_ARCHITECTURE.md` | Store architecture and identity |
+| `docs/architecture/product-catalogue/PRODUCT_CATALOGUE_APIS_AND_INTEGRATION.md` | API and integration documentation |
+| `docs/architecture/product-catalogue/PRODUCT_CATALOGUE_ARCHITECTURE.md` | Catalogue architecture |
+| `docs/architecture/product-catalogue/PRODUCT_CATALOGUE_MIGRATION_AND_TESTING.md` | Migration and testing documentation |
+| `docs/architecture/product-catalogue/PRODUCT_CATALOGUE_PERFORMANCE_AND_RELIABILITY.md` | Performance and reliability |
+| `docs/architecture/product-catalogue/PRODUCT_CATALOGUE_SECURITY_AND_GOVERNANCE.md` | Security and governance |
+| `docs/architecture/product-catalogue/PRODUCT_DATA_MODEL.md` | Product data model |
+| `docs/architecture/product-catalogue/PRODUCT_LIFECYCLE_AND_ADMINISTRATION.md` | Product lifecycle and administration |
+| `docs/architecture/product-catalogue/PRODUCT_OWNERSHIP_AND_SHARING.md` | Product ownership and sharing |
+| `docs/architecture/product-catalogue/README.md` | Catalogue documentation index |
+| `docs/identity-access/IDENTITY_AND_ACCESS.md` | Identity and access |
+| `docs/product/SCOPE_AND_EXCLUSIONS.md` | Product scope |
+| `docs/product/STORE_OPERATING_MODEL.md` | Store operating model |
+
+The original access-model review also covered:
+
+- `docs/architecture/STORE_OWNER_AND_STORE_ADMINISTRATION_ROLES.md`
+- `docs/architecture/UNIFIED_PLATFORM_ROLE_CATALOGUE_AND_PERMISSION_MATRIX.md`
+- `docs/implementation/EMAIL_DELIVERY_AND_TEMPLATE_MANAGEMENT_STANDARDS.md`
+- `docs/operations/PLATFORM_ACCESS_REVIEW_PROCEDURE.md`
+- `docs/stores/STORE_ADMIN_GUIDE.md`
+- `docs/stores/STORE_EMPLOYEE_GUIDE.md`
+- `docs/stores/STORE_ONBOARDING_GUIDE.md`
+
+These earlier changes are historical review records, not proof that the documents have been revalidated against the latest implementation.
 
 ## 6. Validation Status
 
-Last recorded validation:
+Previously recorded automated validation:
 
-- `git diff --check`: Passed.
-- Current-versus-future access scope: Corrected in the documents listed above.
-- README, this checkpoint, identity and access, and Store Admin changes: Reviewed through staged Git diffs.
-- The remaining staged documentation changes still require final review before commit.
+- Unit tests: 208 passed.
+- Direct PostgreSQL integration tests: 29 passed.
+- Combined automated test baseline: 237 passed.
+- TypeScript validation: passed.
+- Production build: passed, with existing bundle-size warnings.
+- `git diff --check`: passed at the earlier checkpoint.
 
-A complete revalidation of every document and implementation requirement has not been recorded.
+The PostgreSQL integration tests use an isolated local test database.
+
+Outstanding validation includes:
+
+1. Real API-handler-to-PostgreSQL integration.
+2. Authentication and administrator permission enforcement.
+3. Cross-store isolation.
+4. Product and category CRUD, including failure and rollback paths.
+5. API latency and database query performance.
+6. Concurrency and load testing.
+7. Yotaabo and Poshies storefront regression testing.
+8. Documentation-to-implementation reconciliation.
+
+The recorded test results are historical baselines and must be rerun before claiming current validation.
+
+Production database changes and production deployment require separate approval. Integration tests must use the isolated test database.
 
 ## 7. Outstanding Items
 
-The following items remain outside the completed remediation:
+The following work remains:
 
-1. Review the unrelated `package-lock.json` modification separately before deciding whether to commit it.
-2. Review documentation defects that become relevant during actual business development.
-3. Verify documentation against implementation whenever a related feature changes.
+1. Complete the documentation review and identify missing documents.
+2. Reconcile shared-product requirements with the current store-specific catalogue implementation.
+3. Verify database schema, constraints and migrations against the architecture documentation.
+4. Verify API authentication, authorisation and store-scoping behaviour.
+5. Review product ownership, category assignment, publication and storefront visibility.
+6. Review documentation references, terminology and outdated project identity.
+7. Revalidate the application and automated tests after relevant implementation changes.
+8. Record unresolved decisions rather than assuming intended behaviour.
 
-The temporary cross-reference output and one-off correction script were removed. They are not part of the repository deliverables.
-
-Minor wording improvements and non-blocking future architecture refinements are backlog items, not reasons to restart the documentation review.
+The legacy `/porschs` routes in `src/App.tsx` are temporary compatibility redirects to `/poshies`. Preserve them until legacy URL retirement is explicitly approved.
 
 ## 8. Git and Repository Handover
 
-At this checkpoint:
+Current repository:
 
-- Branch: `perfume-business`.
-- Eleven documentation files: Staged for review.
-- `package-lock.json`: Modified separately and unstaged.
-- Temporary review artifacts: Removed.
-- Documentation changes: Not yet committed or pushed.
+- Repository: `Yothabo/simatu`.
+- Local directory: `~/simatu`.
+- Active branch: `beta`.
+- Production branch: `main`.
+- Latest confirmed pushed commit: `8d41743d`.
+- Current documentation and routing changes: under review and not yet committed.
 
-The staged documentation must pass final content review and `git diff --cached --check` before committing.
+The working tree must be inspected before staging or committing.
+
+Do not stage or commit unrelated files. Review every changed file and run the applicable validation before requesting approval to commit.
 
 ## 9. Rules for Resuming Documentation Work
 
@@ -132,23 +197,31 @@ When returning to documentation:
 1. Read this document first.
 2. Check the current Git branch and working-tree status.
 3. Compare the actual repository state against this checkpoint.
-4. Review only documents relevant to the next business or implementation task.
-5. Correct material contradictions, missing requirements, broken references and implementation mismatches.
-6. Record new decisions and changes in this document.
-7. Avoid reopening previously settled matters without new evidence.
+4. Review the root README and relevant architecture documents.
+5. Inspect implementation and database evidence before declaring functionality complete.
+6. Correct material contradictions, missing requirements, broken references and implementation mismatches.
+7. Record new decisions and outstanding work in this document.
+8. Avoid reopening previously settled matters without new evidence.
+
+Architecture documents describe requirements. They do not prove implementation.
 
 ## 10. Next Development Direction
 
-The immediate documentation remediation is considered complete for this working session.
+Complete the documentation and identity review before moving into further catalogue refactoring.
 
-The next phase should return to application development and business implementation.
+The immediate priorities are:
 
-Documentation should support development rather than become a continuous blocker.
+1. Finalise organisation, platform and storefront identity across the repository.
+2. Restore and complete the documentation handover.
+3. Resolve the shared-product catalogue requirements.
+4. Reconcile architecture documents with database migrations and application code.
+5. Complete the remaining integration and regression tests.
+
+Documentation should support development without becoming a continuous blocker.
 
 Update this document whenever a significant documentation review, business decision, architectural change or implementation milestone changes the project's documented state.
 
 ---
-
 
 ## Branch and Deployment Workflow
 
@@ -156,23 +229,23 @@ The project follows a beta-to-production release workflow.
 
 | Branch | Purpose | Deployment |
 |---|---|---|
-| `perfume-business` | Development, feature work and beta testing | Netlify |
+| `beta` | Development, feature work and beta testing | Netlify |
 | `main` | Approved production releases | Vercel |
 
 ### Release Process
 
-1. Develop all changes on `perfume-business`.
+1. Develop changes on `beta`.
 2. Push changes to the beta branch.
-3. Deploy and test through Netlify.
+3. Deploy and test the beta version through Netlify.
 4. Resolve defects and verify functionality.
 5. Merge into `main` only when the release is fully tested and approved.
 6. Deploy the production release through Vercel.
 
-This workflow applies to the current Yotaabo fragrance business and future business functionality developed in this repository.
+The beta and production deployment pipelines remain separate.
 
-No unfinished or unapproved beta work may be merged into `main`. The two deployment pipelines remain separate.
+No unfinished or unapproved beta work may be merged into `main`.
 
-The root README describes this workflow and links to this documentation checkpoint.
+The root README describes this workflow and is the authoritative reference for the deployment arrangement.
 
 ---
 

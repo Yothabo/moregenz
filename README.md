@@ -107,12 +107,12 @@ The project follows a beta-to-production release workflow.
 
 | Branch | Purpose | Deployment |
 |---|---|---|
-| `perfume-business` | Development, feature work and beta testing | Netlify |
+| `beta` | Development, feature work and beta testing | Netlify |
 | `main` | Approved production releases | Vercel |
 
 ### Release Process
 
-1. Develop changes on `perfume-business`.
+1. Develop changes on `beta`.
 2. Push changes to the beta branch.
 3. Deploy and test the beta version through Netlify.
 4. Resolve defects and verify functionality.

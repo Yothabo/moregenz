@@ -1,7 +1,7 @@
 # Product Catalogue Performance and Reliability
 
 **Document status:** Architecture specification
-**Scope:** Current Yotaabo and Porschs stores, with provisions for future multi-store expansion
+**Scope:** Current Yotaabo and Poshies stores, with provisions for future multi-store expansion
 **Implementation status:** Performance and reliability requirements. Actual performance must be measured against the deployed application before requirements are classified as achieved.
 
 ## 1. Purpose
@@ -77,7 +77,7 @@ Store context must be included in store-specific database queries.
 Examples include:
 
 - Retrieving Yotaabo listings.
-- Retrieving Porschs listings.
+- Retrieving Poshies listings.
 - Retrieving store-specific prices.
 - Retrieving store-specific publication status.
 - Retrieving inventory for one store.
@@ -267,7 +267,7 @@ Potential cache targets include:
 
 Store-specific cache keys must include the relevant store context.
 
-For example, a Yotaabo listing response must not be returned as a Porschs listing response.
+For example, a Yotaabo listing response must not be returned as a Poshies listing response.
 
 Cache separation must also account for:
 
@@ -285,7 +285,7 @@ Examples:
 
 - Source-product changes may affect product detail responses in multiple stores.
 - A Yotaabo price change must affect Yotaabo listing caches only.
-- A Porschs publication change must not change Yotaabo publication state.
+- A Poshies publication change must not change Yotaabo publication state.
 - A store category ordering change must affect only that store's category presentation.
 
 Cache invalidation must not be treated as the authoritative persistence mechanism.

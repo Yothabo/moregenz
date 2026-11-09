@@ -342,13 +342,13 @@ A store's frontend must retrieve media through supported URLs or approved media 
 
 ## 7. Shared Product Catalogue and Store Eligibility
 
-The initial participating stores, Yotaabo and Porschs, use one shared product catalogue.
+The initial participating stores, Yotaabo and Poshies, use one shared product catalogue.
 
 An authorised administrator of either participating store may add a product to the shared catalogue. Once created and accepted under the applicable product validation rules, that product must be available for both stores to create or maintain their own listings. A second upload of the same product must not be required merely to make it available on the other storefront.
 
 Shared catalogue availability does not mean that a product is automatically published for sale. Each store retains control over its own listing status and storefront publication.
 
-This initial shared-catalogue rule applies to Yotaabo and Porschs. Any future store-specific restriction or exception must be explicitly authorised and documented rather than inferred from product ownership.
+This initial shared-catalogue rule applies to Yotaabo and Poshies. Any future store-specific restriction or exception must be explicitly authorised and documented rather than inferred from product ownership.
 
 ### 7.1 Shared catalogue eligibility
 
@@ -360,7 +360,7 @@ A product may be restricted from further use only through an authorised platform
 
 ### 7.2 Store participation
 
-Yotaabo and Porschs may each create and maintain a listing for a product in the shared catalogue.
+Yotaabo and Poshies may each create and maintain a listing for a product in the shared catalogue.
 
 The backend must verify the requesting user's authority, the target store's identity and active status, and the product's eligibility before allowing listing creation or modification.
 
@@ -380,7 +380,7 @@ Permission to use a shared product does not by itself grant permission to alter 
 
 Each store must maintain its own listing lifecycle and publication status.
 
-A product may be published on Yotaabo and unpublished on Porschs, or the reverse, without changing the other store's listing.
+A product may be published on Yotaabo and unpublished on Poshies, or the reverse, without changing the other store's listing.
 
 Each store's selling price, promotional terms, availability, presentation overrides and inventory relationship must remain independently managed.
 
@@ -426,7 +426,7 @@ Product publication determines whether a product is eligible for the relevant ca
 
 Product publication and store listing publication are separate states.
 
-Publishing a source product makes it available for eligible store listing workflows. It does not automatically publish the product on every storefront. Yotaabo and Porschs must each control their own listing publication status.
+Publishing a source product makes it available for eligible store listing workflows. It does not automatically publish the product on every storefront. Yotaabo and Poshies must each control their own listing publication status.
 
 ### 8.4 Product modification
 
