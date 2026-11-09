@@ -230,11 +230,11 @@ Provide account activation and access instructions through an approved secure ch
 
 The administrator must establish their own credentials and authentication controls.
 
-### 7.6 Additional Employees
+### 7.6 Future Capability: Additional Employees
 
-The Store Admin may invite employees and delegate permissions within the authorised store scope.
+Employee invitations and delegated employee permissions are not supported by the current application. This section describes a possible future workforce-management capability only.
 
-Platform approval is not required for every ordinary employee permission assignment unless the action crosses a defined platform-level authority boundary.
+If introduced, employee access must be restricted to the authorised store scope and governed by an approved permission-delegation model.
 
 ## 8. Automatic Integration Package Provisioning
 

@@ -221,3 +221,7 @@ None
 - Creation Date corrected to Not recorded: 186 documents.
 - Last Revision Date corrected to Not recorded: 114 documents.
 - Dates already documented in the original files were preserved.
+
+## Follow-up: Catalogue Documents Added After the Remediation Run
+
+The original remediation run covered 186 documents. The current documentation tree contains 9 additional product-catalogue architecture documents under `docs/architecture/product-catalogue/`. These were added after that run and were not part of its 186-document count. The current tree therefore contains 195 documents in total. This is a scope and timing difference, not a discrepancy in the original run's reported count.

@@ -48,7 +48,7 @@ The access model must follow these principles:
 7. **Traceability:** Important access changes and privileged actions must be attributable to an actor.
 8. **Revocability:** Access must be capable of being suspended or revoked without deleting historical business records.
 9. **Secure authentication:** Credentials, sessions and recovery processes must be protected.
-10. **Operational autonomy:** Store Admins must be able to manage ordinary store-level access within their authorised scope.
+10. **Controlled store access:** Store Admins operate within their assigned store scope. In the current application, appointment and removal of Store Admins are controlled by the Platform Super Admin.
 11. **Controlled platform authority:** Platform-level privileges must not be silently inherited by store users.
 12. **Provider independence:** Business identities and permissions must not depend entirely on one authentication provider.
 
@@ -276,7 +276,6 @@ Responsibilities may include:
 - Managing store inventory.
 - Managing store orders and fulfilment.
 - Managing authorised customer information.
-- Managing store employees and their permissions.
 - Viewing permitted store financial information.
 - Reviewing store activity and performance.
 
@@ -284,9 +283,9 @@ A Store Admin's authority is limited to the store or stores explicitly assigned 
 
 A Store Admin must not automatically receive access to platform administration or another store's private operational information.
 
-### 7.2 Store employees
+### 7.2 Future capability: Store employees
 
-Store employees receive permissions according to their assigned responsibilities.
+Future capability only: If employee accounts are introduced and implemented, store employees may receive permissions according to their assigned responsibilities. The current application does not support these accounts.
 
 Potential responsibility groups include:
 
@@ -302,28 +301,26 @@ These are responsibility categories, not a mandatory fixed list of employee role
 
 The platform should support configurable employee roles rather than requiring a separate hard-coded role for every job title.
 
-### 7.3 Store role assignment
+### 7.3 Future capability: Store role assignment
 
-Store Admins may manage ordinary employee memberships and permissions within their authorised store scope.
+Future capability only: A future implementation may allow Store Admins to manage approved employee memberships and permissions within their authorised store scope. This authority is not available in the current application.
 
-They must not be able to:
+If employee membership and permission delegation are introduced, the future implementation must prevent Store Admins from:
 
-- Grant platform-level privileges.
-- Assign themselves privileges outside their authority.
-- Grant another user permissions beyond their own delegated authority.
-- Create or modify roles to bypass permission boundaries.
-- Manage employees belonging exclusively to another store.
-- Bypass restrictions on sensitive platform or financial operations.
+- Granting platform-level privileges.
+- Assigning themselves privileges outside their authority.
+- Granting another user permissions beyond their own delegated authority.
+- Creating or modifying roles to bypass permission boundaries.
+- Managing employees belonging exclusively to another store.
+- Bypassing restrictions on sensitive platform or financial operations.
 
-Permission delegation must be limited to permissions the Store Admin is explicitly authorised to assign. Any exception must follow a separately approved delegation or governance rule.
+Any future permission delegation must be limited to permissions the Store Admin is explicitly authorised to assign. Exceptions must follow a separately approved delegation or governance rule.
 
-The backend must enforce these restrictions, including when roles or permission assignments are changed through APIs.
+The backend must enforce these restrictions if the capability is implemented. Store Admin appointment and removal remain controlled by the Platform Super Admin in the current application.
 
-The platform must define any additional restrictions on Store Admin appointment and removal through governance rules.
+### 7.4 Future capability: Multiple store memberships
 
-### 7.4 Multiple store memberships
-
-A user may have authorised memberships in more than one store.
+Future capability only: A future implementation may allow a user to have authorised memberships in more than one store. The current application uses one assigned Store Admin account per store.
 
 Each membership must be evaluated independently.
 
@@ -374,15 +371,15 @@ Examples of actions include:
 
 Not every resource must support every action.
 
-### 8.3 Configurable employee permissions
+### 8.3 Future capability: Configurable employee permissions
 
-The platform should allow authorised Store Admins to assign approved permissions to employee roles.
+The future workforce-management model may allow authorised Store Admins to assign approved permissions to employee roles. This functionality is not available in the current application.
 
-The permission catalogue and restrictions must be centrally defined and enforced by the backend.
+The future permission catalogue and its restrictions must be centrally defined and enforced by the backend.
 
-Store Admins may assign only permissions they are authorised to delegate.
+If this capability is implemented, Store Admins may assign only permissions they are explicitly authorised to delegate.
 
-They must not create permissions that bypass platform security or governance boundaries.
+The future implementation must prevent Store Admins from creating permissions that bypass platform security or governance boundaries.
 
 ### 8.4 Permission changes
 
@@ -395,7 +392,9 @@ Permission changes must:
 - Take effect according to the approved session and authorisation rules.
 - Produce an appropriate audit record.
 
-## 9. Store Membership Lifecycle
+## 9. Future Capability: Store Membership Lifecycle
+
+The membership lifecycle described below is a proposed future capability. The current application does not support general employee memberships, employee invitations or employee-level role assignments. Current Store Admin appointments are controlled by the Platform Super Admin.
 
 ### 9.1 Membership record
 
@@ -699,32 +698,30 @@ The final authentication and security controls must be documented in the securit
 
 The access model must preserve the approved operating relationship between the platform and participating stores.
 
-The Platform Owner is responsible for platform-level authority.
+The Platform Super Admin is responsible for platform-level authority and controls Store Admin appointments and removals.
 
-Store Admins manage ordinary store operations and delegated employee access.
+Each Store Admin manages ordinary operations within their assigned store. Store Admins cannot create additional administrator accounts or delegate their authority.
 
-Employees operate within their assigned responsibilities.
+Employee accounts, delegated employee access and routine employee permission management are future capabilities, not current operating functions.
 
-The platform must not require central approval for every routine employee permission change where the Store Admin is already authorised to make that change.
+Any future delegation model must define the authority boundaries before implementation.
 
 Material governance, ownership, financial and other reserved decisions must follow their respective approval processes rather than being treated as ordinary access-management actions.
 
-## 17. Initial Access Model
+## 17. Current Application Access Baseline
 
-The initial implementation must support:
+The current application access baseline comprises:
 
 1. Individual user identities.
-2. Secure authentication.
-3. Platform Super Admin access.
-4. Store Admin access.
-5. Store employee memberships.
-6. Store-scoped role and permission checks.
-7. Controlled store invitations.
-8. Membership suspension and revocation.
-9. Session and token validation.
-10. Backend-enforced authorisation.
-11. Access-related audit records.
-12. Protection against cross-store access.
+2. Supabase Authentication.
+3. One Platform Super Admin account.
+4. One Store Admin account for Yotaabo.
+5. One Store Admin account for Porschs.
+6. Store-scoped access for each Store Admin.
+7. Platform Super Admin control over Store Admin appointments and removals.
+8. Backend-enforced authorisation and protection against cross-store access.
+
+Employee accounts, employee invitations, delegated administrators, configurable employee permissions and general workforce membership lifecycle are not part of the current implementation. They remain future capabilities subject to approval and implementation.
 
 Advanced identity federation, enterprise single sign-on, complex approval workflows and extensive device-management capabilities may be deferred unless required by an approved business or security need.
 
@@ -738,18 +735,17 @@ The following decisions require further specification:
 4. Multi-factor authentication requirements.
 5. Initial platform role bootstrap and recovery process.
 6. Final platform permission catalogue.
-7. Final store employee role templates.
-8. Store Admin appointment and removal authority.
-9. Permission delegation boundaries.
-10. Invitation expiry and resend policy.
-11. Session duration and renewal policy.
-12. Session revocation implementation.
-13. Permission refresh behaviour during active sessions.
-14. Account recovery and identity verification procedures.
-15. Account deletion and anonymisation requirements.
-16. PostgreSQL Row-Level Security implementation.
-17. Privileged action re-authentication requirements.
-18. Access audit retention and review requirements.
+7. Future store employee role templates, if workforce management is approved.
+8. Future permission delegation boundaries, if delegated access is approved.
+9. Future employee invitation expiry and resend policy, if employee accounts are introduced.
+10. Session duration and renewal policy.
+11. Session revocation implementation.
+12. Permission refresh behaviour during active sessions.
+13. Account recovery and identity verification procedures.
+14. Account deletion and anonymisation requirements.
+15. PostgreSQL Row-Level Security implementation.
+16. Privileged action re-authentication requirements.
+17. Access audit retention and review requirements.
 
 These decisions must be resolved through the relevant business, security and technical specifications.
 
@@ -783,4 +779,4 @@ Changes must preserve:
 
 New roles and permissions must have an identified operational purpose and clearly defined scope.
 
-This document remains a target identity and access specification until approved and translated into implementation requirements.
+This document defines the approved identity and access baseline for the current application. Future identity, workforce-management and delegated-access capabilities remain subject to separate approval, specification and implementation.

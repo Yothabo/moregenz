@@ -16,11 +16,15 @@
 | Review Date | Not recorded |
 
 
-## 1. Purpose
+## 1. Purpose and Scope
 
-This document is the index and authority register for the platform's role and permission specifications.
+<escape>FUTURE-STATE ARCHITECTURE: This catalogue is not the current application's assignable role list.</escape>
 
-It applies to the parent company, its departments, every store, Store Owners, store personnel, contractors and platform administrators.
+The current application supports one Platform Super Admin and one Store Admin for each store. The parent-company departments, specialist roles, delegated store roles and workforce structures referenced in this catalogue are proposed future capabilities. They are not available for assignment unless separately approved and implemented.
+
+This document is the index and authority register for the proposed future platform role and permission specifications.
+
+Its proposed future scope includes the parent company, its departments, stores, Store Owners, store personnel, contractors and platform administrators.
 
 All specifications listed here MUST follow:
 
@@ -57,7 +61,7 @@ The role catalogue is divided into the following documents:
 
 ## 4. Document Authority
 
-Each listed specification is authoritative for its subject.
+Each listed specification defines a proposed future-state subject. Its inclusion in this catalogue does not mean that the role, permission or workflow currently exists in the application.
 
 Where specifications conflict, implementation MUST stop until the conflict is resolved.
 

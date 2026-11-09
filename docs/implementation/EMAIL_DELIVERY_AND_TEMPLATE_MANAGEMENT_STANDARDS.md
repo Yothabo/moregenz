@@ -36,7 +36,7 @@ These standards apply to:
 - Account verification and recovery emails.
 - Store administration notifications.
 - Platform administration notifications.
-- Employee invitations.
+- Employee invitations, if employee accounts are introduced in a future implementation.
 - Operational and security alerts.
 - Approved marketing email integrations.
 - Email templates and reusable content.

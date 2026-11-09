@@ -29,9 +29,9 @@ It supports the platform's identity and access architecture by establishing a re
 This procedure covers:
 
 - Platform Super Admin accounts.
-- Platform personnel and delegated administrators.
+- Platform personnel and, if introduced, future delegated administrators.
 - Store Admin accounts.
-- Store employee accounts.
+- Store employee accounts, if introduced as a future capability.
 - Technical and support personnel.
 - Service accounts.
 - API credentials and integration access.

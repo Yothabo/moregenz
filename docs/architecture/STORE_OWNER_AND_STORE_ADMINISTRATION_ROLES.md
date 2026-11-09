@@ -15,17 +15,21 @@
 | Review Date | Not recorded |
 
 
-**Status:** Authoritative role specification
-**Applies to:** All stores operating on the platform
+**Status:** Future-state architecture specification
+**Applies to:** Proposed future store-role architecture, subject to approval and implementation
 **Related documents:**
 - `UNIFIED_PLATFORM_ORGANISATION_RBAC_AND_AUTHORITY_SPECIFICATION.md`
 - `STORE_OWNERSHIP_HISTORY_SUCCESSION_AND_CLONING_ARCHITECTURE.md`
 - `STORE_OWNER_AGREEMENT_AND_GOVERNANCE_FRAMEWORK.md`
 - `STORE_OWNER_ONBOARDING_AND_STORE_LAUNCH_PROCEDURE.md`
 
-## 1. Purpose
+## 1. Purpose and Scope
 
-This document defines the roles responsible for store ownership, administration and delegated store-level management.
+<escape>FUTURE-STATE ARCHITECTURE: The roles in this document are not the current application's assignable role catalogue.</escape>
+
+The current application supports one Platform Super Admin and one Store Admin for each store. It does not currently support Store Owner accounts, Deputy Store Owners, specialist store administrators, employee accounts or delegated store personnel.
+
+This document defines a possible future role model for store ownership, administration and delegated store-level management. Any role described here requires separate approval and implementation before it can be used.
 
 All store roles use the unified platform identity, role, permission and scope model. A store is an organisational scope, not a separate authentication system.
 

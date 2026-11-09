@@ -22,9 +22,9 @@
 
 This guide explains the responsibilities, permissions and routine operational activities of a Store Admin using the multi-store platform.
 
-It establishes a consistent operating approach while recognising that each store has its own business identity, employees, products, inventory, customers, orders and financial records.
+It establishes a consistent operating approach while recognising that each store has its own business identity, products, inventory, customers, orders and financial records.
 
-This guide describes intended platform operations. It does not claim that functionality is already implemented.
+This guide describes the current Store Admin responsibilities and supported operating boundaries. It does not imply that planned workforce or delegated-administration capabilities are available.
 
 ## 2. Store Admin Role
 
@@ -39,8 +39,6 @@ A Store Admin does not automatically receive platform-wide administrative author
 The Store Admin is responsible for:
 
 - Maintaining accurate store information.
-- Managing authorised store employees.
-- Assigning permissions within delegated authority.
 - Managing store product listings and commercial terms.
 - Monitoring store inventory and stock movements.
 - Overseeing orders and fulfilment.
@@ -57,7 +55,7 @@ The Store Admin is responsible for:
 
 Store Admin access must be provided through an authorised account and active store membership.
 
-Users must not share login credentials or use another employee's account.
+Users must not share login credentials or use another person's account.
 
 ### 4.2 Authentication
 
@@ -70,19 +68,19 @@ Where multi-factor authentication is supported or required, it must be enabled a
 Store Admin permissions must remain within the authority assigned to the store.
 
 A Store Admin must not:
-
 - Grant platform Super Admin access.
-- Modify another store's records without explicit authority.
+- Modify another store's records.
+- Appoint or invite additional administrators.
+- Create employee accounts or delegate administrative access.
 - Bypass backend authorisation controls.
-- Grant employees permissions beyond delegated authority.
 - Use private integration credentials in browser-based applications.
 - Attempt to access restricted platform information.
 
 ### 4.4 Access Changes
 
-When an employee joins, changes responsibilities or leaves the store, the Store Admin must ensure that access is reviewed and updated promptly.
+Store Admin appointments, replacement and removal are controlled by the Platform Super Admin. A Store Admin cannot create additional administrator accounts or change another user's platform or store assignment.
 
-Privileged access must be removed when no longer required.
+Access must be removed promptly when an authorised administrator no longer requires it.
 
 ## 5. Store Information Management
 
@@ -176,20 +174,13 @@ Responsibilities include:
 
 Customer information must not be exported, shared or used for unrelated purposes without appropriate authority.
 
-## 10. Employee Administration
+## 10. Store Access Administration
 
-The Store Admin may manage employees assigned to the store within delegated authority.
+The current application does not support employee accounts, employee invitations or delegated store administrators.
 
-Activities may include:
+Each store has one assigned Store Admin. The Platform Super Admin controls the appointment and removal of Store Admin accounts. Store Admins operate only within their assigned store and cannot create additional users or delegate their authority.
 
-- Inviting authorised employees.
-- Assigning approved roles and permissions.
-- Updating employee responsibilities.
-- Suspending or removing access.
-- Reviewing privileged access.
-- Maintaining employee administration records.
-
-Employee permissions must reflect actual job responsibilities and follow least-privilege principles.
+Employee administration and configurable workforce permissions remain future platform capabilities.
 
 ## 11. Financial Administration
 
@@ -304,7 +295,7 @@ Reactivation must follow the applicable readiness and approval requirements.
 
 Store Admins should regularly review:
 
-- Employee access and permissions.
+- The assigned Store Admin account and its store scope.
 - Product listing accuracy.
 - Product availability and pricing.
 - Inventory discrepancies and low-stock conditions.
@@ -350,7 +341,7 @@ The following matters require further definition:
 - Standard Store Admin role and permission templates.
 - Mandatory access-review frequency.
 - Store-level financial approval thresholds.
-- Employee invitation and account recovery procedures.
+- Future workforce account and invitation procedures, if introduced.
 - Store-level reporting and review schedules.
 - Store-specific incident notification requirements.
 - Formal Store Admin training and acknowledgement requirements.

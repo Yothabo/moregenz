@@ -1,4 +1,4 @@
-# Store Employee Guide
+# Future Store Employee Guide
 
 ## Document Control
 
@@ -18,9 +18,13 @@
 | Effective Date | Not recorded |
 | Review Date | Not recorded |
 
-## 1. Purpose
+## 1. Purpose and Applicability
 
-This guide explains how employees of participating stores are expected to use the platform responsibly and within their assigned permissions.
+<escape>FUTURE-STATE DOCUMENT: This guide does not describe functionality available in the current application.</escape>
+
+The current application does not provide employee accounts, employee invitations or employee-level permissions. Each store has one assigned Store Admin. This guide is retained as preparation for a possible future workforce-management capability and must not be used as evidence that employee access is currently supported.
+
+If workforce accounts and permissions are approved and implemented in a future release, this guide may be reviewed and adapted for that release.
 
 It establishes common expectations for account security, daily operations, customer information, product handling, inventory, orders and incident reporting.
 
@@ -310,6 +314,6 @@ This guide must be read alongside:
 
 ## 22. Document Management
 
-This guide remains a draft until reviewed and approved through the applicable platform governance process.
+This future-state guide remains a draft. It must not be treated as an active operating procedure unless employee access is formally approved, implemented and this document is reviewed for that release.
 
 Changes must be version-controlled and communicated to affected store employees.
