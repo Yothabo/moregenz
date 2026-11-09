@@ -168,6 +168,8 @@ Customers must be able to distinguish which store they are browsing and which st
 
 Storefront routing must resolve to a valid store using a controlled mapping, such as an approved domain or public slug.
 
+For the initial two-store arrangement, Yotaabo remains the existing storefront and Porschs is served at the `/porschs` path on the existing domain. The Porschs route must resolve to the Porschs store context; it must not create a separate platform, backend or product catalogue. This path-based arrangement records the current implementation direction and does not prevent a separately approved domain arrangement in the future.
+
 ### 6.2 Standard storefront template
 
 The initial platform will use one standard storefront template across participating stores.
@@ -197,6 +199,8 @@ Configuration must be validated against supported values and must not allow arbi
 
 A store must not be able to modify another store's storefront configuration.
 
+Storefront configuration must support independent category display ordering. Yotaabo must retain its existing category order. Porschs must display Hers before His. A category-order change for one store must not change the other store's presentation.
+
 ### 6.4 Storefront resolution
 
 The storefront must resolve its store context from a trusted server-side mapping.
@@ -225,9 +229,9 @@ Product ownership must be explicitly recorded and must not be inferred from whic
 
 The product owner is responsible for the source product identity and descriptive information, subject to the platform's governance and applicable permissions.
 
-A product may be platform-owned or owned by a participating store. Platform ownership does not make the product a shared platform asset that every store may edit. Store ownership does not automatically make the product available to other stores.
+The initial Yotaabo and Porschs arrangement uses one shared product catalogue. A product added by either authorised store administrator must be available for both stores to list, without requiring a duplicate upload.
 
-The applicable owner controls authorised changes to source product information. Other stores may manage their own listings and commercial terms without acquiring ownership or unrestricted editing rights.
+The source product record must remain distinct from each store's listing. The platform must retain the creator and modification history and enforce explicit permissions for source-record editing and deletion. Shared catalogue availability does not grant either store unrestricted authority over the other store's listing or commercial records.
 
 ### 7.2 Store product listings
 
@@ -247,13 +251,11 @@ The listing must reference the relevant product and store.
 
 ### 7.3 Product sharing
 
-A product may be made available to more than one store where sharing is authorised.
+Yotaabo and Porschs share the same product catalogue. A product added by either authorised administrator must be available for listing by both stores without a second upload.
 
-Sharing a product does not transfer ownership or grant unrestricted rights to modify its source identity or descriptive information.
+Sharing catalogue availability does not publish the product automatically on both storefronts. Each store controls its own listing status, price, promotions, availability and presentation. Inventory remains store-specific.
 
-A participating store must manage its own commercial listing, price, promotion, availability and inventory.
-
-The platform must enforce the applicable ownership and editing permissions.
+Source product editing and deletion remain subject to explicit backend permissions and audit controls. A store's listing changes must not alter the other store's listing.
 
 ### 7.4 Product changes
 

@@ -445,3 +445,21 @@ It must be read alongside:
 - `../operations/FINANCIAL_REPORTING.md`
 - `../identity-access/ROLE_PERMISSION_MODEL.md`
 - `../governance/PLATFORM_GOVERNANCE.md`
+
+## Additional Operating Requirement: Direct Store-to-Platform Communication
+
+The operating model requires an in-house communication channel between platform administration and each participating store.
+
+This communication capability is intended for ordinary business operations, including:
+
+- Operational messages and enquiries.
+- Store support requests and responses.
+- Administrative announcements relevant to a store.
+- Marketing coordination and campaign-related communication.
+- Follow-ups on operational matters.
+
+Communication must respect store boundaries. Store-specific conversations and records must only be accessible to the relevant authorised participants and platform administrators with appropriate access.
+
+This requirement is separate from the Store Owner Community programme. It does not introduce community spaces, peer networking, mentorship, public discussions or community participation features.
+
+The precise technical implementation may be defined separately. This document records the operational requirement and its distinction from the future community programme.

@@ -387,3 +387,25 @@ This document must be read alongside:
 - `STORE_OPERATING_MODEL.md`
 
 Detailed implementation requirements belong in the relevant specifications covering architecture, identity and access, stores, operations, governance and implementation planning.
+
+## 12. Discussion Clarification: Community Capabilities
+
+The Store Owner Community documents describe capabilities intended for the broader future platform. Their inclusion in the documentation does not make them part of the current running application.
+
+The following capabilities are excluded from the current project scope and retained for future consideration:
+
+- Store-owner community spaces and discussion forums.
+- Peer networking and collaboration.
+- Mentorship and entrepreneur development programmes.
+- Community knowledge libraries and learning resources.
+- Community events and gatherings.
+- Business challenges, competitions and recognition programmes.
+- Community moderation and member-safety workflows.
+- Community programme funding and sponsorship.
+- Community-specific notifications and participation workflows.
+
+These ideas are preserved in their existing specifications. They are deferred, not rejected or deleted. Their implementation belongs to the broader platform and requires a separate future scope decision.
+
+Community functionality must not be confused with ordinary store operations or direct communication between platform administration and stores.
+
+Marketing, promotional activity and operational communication remain distinct business capabilities.

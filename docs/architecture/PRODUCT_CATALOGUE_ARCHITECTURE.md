@@ -340,64 +340,63 @@ Media storage, access control, upload validation, processing and delivery must f
 
 A store's frontend must retrieve media through supported URLs or approved media interfaces.
 
-## 7. Product Sharing and Store Eligibility
+## 7. Shared Product Catalogue and Store Eligibility
 
-Product sharing determines which stores may use a product in their own listings.
+The initial participating stores, Yotaabo and Porschs, use one shared product catalogue.
 
-It does not transfer product ownership or automatically create a store listing.
+An authorised administrator of either participating store may add a product to the shared catalogue. Once created and accepted under the applicable product validation rules, that product must be available for both stores to create or maintain their own listings. A second upload of the same product must not be required merely to make it available on the other storefront.
 
-### 7.1 Sharing eligibility
+Shared catalogue availability does not mean that a product is automatically published for sale. Each store retains control over its own listing status and storefront publication.
 
-A product may be:
+This initial shared-catalogue rule applies to Yotaabo and Porschs. Any future store-specific restriction or exception must be explicitly authorised and documented rather than inferred from product ownership.
 
-- Restricted to its owner.
-- Available to selected stores.
-- Available to all eligible stores.
-- Temporarily unavailable for new store listings.
+### 7.1 Shared catalogue eligibility
 
-The platform must support explicit eligibility rules rather than assuming that every product is globally available.
+Products created by either authorised store administrator enter the shared catalogue for the participating stores, subject to validation, lawful use of product information and applicable platform restrictions.
+
+The platform must not treat a product as private to the store through which it was first uploaded merely because that administrator created it.
+
+A product may be restricted from further use only through an authorised platform process. Any restriction must account for existing listings, active orders, inventory references and historical records.
 
 ### 7.2 Store participation
 
-A store may only list products for which it has valid access or eligibility.
+Yotaabo and Porschs may each create and maintain a listing for a product in the shared catalogue.
 
-The backend must verify the store's identity, active status and product eligibility before allowing listing creation or modification.
+The backend must verify the requesting user's authority, the target store's identity and active status, and the product's eligibility before allowing listing creation or modification.
 
-### 7.3 Sharing permissions
+The shared catalogue must not require duplicate source product records for the two stores.
 
-The product owner and platform governance rules determine the permissions available to a receiving store.
+### 7.3 Ownership and editing permissions
 
-At minimum, the architecture must distinguish permission to:
+The platform must retain the source product record and its creator and modification history.
 
-- View product information.
-- Create a store listing.
-- Publish or unpublish a store listing.
-- Manage permitted store-specific presentation information.
-- Manage store-specific commercial information.
+An administrator's authority to add a product to the shared catalogue must be distinguished from permissions to modify or delete source product information. Source-record editing and deletion must be governed by explicit permissions and auditable controls.
 
-Permission to use a product does not imply permission to edit its source identity or ownership.
+Each store may manage its own permitted listing information without changing the other store's listing.
 
-### 7.4 Sharing withdrawal
+Permission to use a shared product does not by itself grant permission to alter another store's commercial records.
 
-Product sharing may be withdrawn or restricted through an authorised process.
+### 7.4 Store-specific listing independence
+
+Each store must maintain its own listing lifecycle and publication status.
+
+A product may be published on Yotaabo and unpublished on Porschs, or the reverse, without changing the other store's listing.
+
+Each store's selling price, promotional terms, availability, presentation overrides and inventory relationship must remain independently managed.
+
+### 7.5 Restrictions and withdrawal
+
+A product may be restricted from future use through an authorised platform process.
 
 The platform must assess the effect on existing store listings and active commercial operations before applying a restriction.
 
-Withdrawal must not silently erase historical orders, transaction snapshots or inventory movement records.
+A restriction or withdrawal must not silently erase historical orders, transaction snapshots or inventory movement records.
 
 Any effect on existing listings, future sales and outstanding orders must follow explicit business rules.
 
-### 7.5 Store-specific listing independence
-
-Each store must maintain its own listing lifecycle.
-
-A product may be published by one store and unpublished by another.
-
-A store's listing status must not automatically change another store's listing status.
-
 ### 7.6 Eligibility enforcement
 
-Product eligibility must be checked by the backend for relevant catalogue and commerce operations.
+Product eligibility and listing permissions must be checked by the backend for relevant catalogue and commerce operations.
 
 A frontend must not be able to bypass eligibility restrictions by submitting a product identifier directly.
 
@@ -427,7 +426,7 @@ Product publication determines whether a product is eligible for the relevant ca
 
 Product publication and store listing publication are separate states.
 
-Publishing a source product must not automatically publish it on every store's storefront.
+Publishing a source product makes it available for eligible store listing workflows. It does not automatically publish the product on every storefront. Yotaabo and Porschs must each control their own listing publication status.
 
 ### 8.4 Product modification
 
@@ -867,6 +866,10 @@ Catalogue search and listing APIs must support controlled pagination.
 The backend must enforce reasonable limits to prevent excessive data retrieval.
 
 Pagination behaviour must remain consistent across supported storefront integrations.
+
+Catalogue search and browsing must execute as selective, bounded database queries. Store context, listing publication state, product eligibility and supported filters must be applied by the backend query before records are returned. The application must not retrieve the complete catalogue and then filter it in application memory or in the browser.
+
+Queries must return only the fields and related data required for the requested result. Search and listing endpoints must enforce a maximum page size and must not provide unbounded result sets. Cursor-based pagination should be used where offset pagination would become inefficient for deep result pages or frequently changing datasets.
 
 ### 13.8 Search result accuracy
 
@@ -1347,9 +1350,15 @@ A temporary catalogue failure must be distinguishable from an empty catalogue or
 
 ### 19.2 Performance
 
-Catalogue APIs must use appropriate database queries, indexes, pagination and response limits.
+Catalogue APIs must use selective database queries, appropriate indexes, pagination and response limits.
 
-The platform must avoid inefficient retrieval patterns that load large product collections or media assets unnecessarily.
+Indexes must support measured and expected access patterns, including common search fields, store/listing scope, publication state, frequently used filters, sorting and relationship lookups. Where queries combine store scope with other frequently filtered fields, suitable composite indexes should be evaluated.
+
+The platform must avoid full-catalogue retrieval for ordinary storefront search, unnecessary column and relationship loading, N+1 query patterns, repeated per-result lookups and loading media assets before they are needed. Related data should be fetched through appropriate joins, projections or bounded batch queries.
+
+Query plans and database performance must be inspected against representative catalogue sizes and search patterns. Full scans may be appropriate for controlled maintenance, migrations or explicitly authorised bulk operations, but must not be the default strategy for interactive customer search.
+
+A separate search engine or distributed search service must not be introduced solely by assumption. The platform should first use the capabilities of its selected database and add specialised search infrastructure only when measured relevance, scale or latency requirements justify the additional operational cost.
 
 ### 19.3 Storefront isolation under load
 

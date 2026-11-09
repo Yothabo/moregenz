@@ -592,6 +592,10 @@ Clients must not be able to inject arbitrary database expressions or query fragm
 
 Search endpoints must enforce the same authorisation and store-scoping rules as ordinary list endpoints.
 
+Search criteria and store scope must be applied by the backend query. Endpoints must not retrieve unrestricted collections and filter them after retrieval. Search requests must use validated, parameterised criteria, bounded result limits and only the fields required by the response.
+
+Search and list operations must avoid unbounded queries, unnecessary relationship loading and N+1 database access. Appropriate indexes must support common search, filter, sort and scope patterns. Query plans and index effectiveness should be verified against representative data volumes.
+
 Search results must not reveal records outside the caller's permitted scope.
 
 ## 13. File and Media APIs
