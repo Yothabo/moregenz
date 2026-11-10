@@ -24,6 +24,7 @@ import AdminBottomNavigation from '../features/admin/components/AdminBottomNavig
 import AdminOverview from '../features/admin/components/AdminOverview';
 import AdminActivities from '../features/admin/components/AdminActivities';
 import AdminManagement from '../features/admin/components/AdminManagement';
+import AdminCategories from '../features/admin/components/AdminCategories';
 import AdminProducts from '../features/admin/components/AdminProducts';
 import AdminOrders from '../features/admin/components/AdminOrders';
 import { useAdminAuth } from '../features/admin/hooks/useAdminAuth';
@@ -666,6 +667,18 @@ export default function Admin() {
                 </div>
               )}
             </section>
+
+            {session?.access_token && admin && (
+              <AdminCategories
+                accessToken={session.access_token}
+                adminRole={admin.role}
+                assignedStorefront={
+                  admin.storeSlug === 'yotaabo' || admin.storeSlug === 'poshies'
+                    ? admin.storeSlug
+                    : null
+                }
+              />
+            )}
 
             {admin?.role === 'super_admin' && session?.access_token && (
               <section className="space-y-4">

@@ -221,7 +221,7 @@ export default async (request) => {
       return await listOrders(admin);
     }
 
-    const body = method === 'DELETE' ? {} : await request.json();
+    const body = await request.json();
     const id = String(body.id || url.searchParams.get('id') || '');
 
     if (!uuidPattern.test(id)) return error('Invalid order ID.');
