@@ -1,27 +1,102 @@
+/**
+ * Canonical Admin typography contract.
+ * Font size, line height and weight are defined together.
+ */
+
+export const adminTypographyTokens = {
+  family: {
+    heading: "'Roboto', Arial, sans-serif",
+    body: "'Roboto', Arial, sans-serif",
+  },
+
+  styles: {
+    display: {
+      fontSize: '36px',
+      lineHeight: '44px',
+      fontWeight: 700,
+    },
+    pageTitle: {
+      fontSize: '30px',
+      lineHeight: '36px',
+      fontWeight: 700,
+    },
+    heading1: {
+      fontSize: '24px',
+      lineHeight: '30px',
+      fontWeight: 600,
+    },
+    heading2: {
+      fontSize: '20px',
+      lineHeight: '26px',
+      fontWeight: 600,
+    },
+    heading3: {
+      fontSize: '18px',
+      lineHeight: '24px',
+      fontWeight: 600,
+    },
+    bodyLarge: {
+      fontSize: '16px',
+      lineHeight: '25px',
+      fontWeight: 400,
+    },
+    body: {
+      fontSize: '14px',
+      lineHeight: '22px',
+      fontWeight: 400,
+    },
+    bodySmall: {
+      fontSize: '13px',
+      lineHeight: '20px',
+      fontWeight: 400,
+    },
+    label: {
+      fontSize: '12px',
+      lineHeight: '16px',
+      fontWeight: 500,
+    },
+    caption: {
+      fontSize: '11px',
+      lineHeight: '16px',
+      fontWeight: 400,
+    },
+    micro: {
+      fontSize: '10px',
+      lineHeight: '14px',
+      fontWeight: 500,
+    },
+  },
+} as const;
+
+/**
+ * Backwards-compatible interface for existing Admin styles.
+ * Values are derived from the canonical typography contract.
+ */
 export const adminTypography = {
-  heading: "'Roboto', sans-serif",
-  body: "'Roboto', sans-serif",
+  heading: adminTypographyTokens.family.heading,
+  body: adminTypographyTokens.family.body,
 
   size: {
-    pageTitle: "clamp(1.375rem, 1.8vw, 1.5rem)",
-    sectionTitle: "clamp(1.0625rem, 1.3vw, 1.125rem)",
-    cardTitle: "0.875rem",
-    subsectionTitle: "0.875rem",
-    body: "0.875rem",
-    supporting: "0.75rem",
-    micro: "0.625rem",
+    pageTitle: adminTypographyTokens.styles.pageTitle.fontSize,
+    sectionTitle: adminTypographyTokens.styles.heading1.fontSize,
+    cardTitle: adminTypographyTokens.styles.heading3.fontSize,
+    subsectionTitle: adminTypographyTokens.styles.heading3.fontSize,
+    body: adminTypographyTokens.styles.body.fontSize,
+    supporting: adminTypographyTokens.styles.bodySmall.fontSize,
+    micro: adminTypographyTokens.styles.caption.fontSize,
   },
 
   weight: {
     normal: 400,
     medium: 500,
     semibold: 600,
+    bold: 700,
   },
 
   lineHeight: {
-    tight: 1.1,
-    heading: 1.2,
-    body: 1.5,
-    compact: 1.35,
+    tight: 1.2,
+    heading: 1.25,
+    body: 22 / 14,
+    compact: 20 / 13,
   },
 } as const;

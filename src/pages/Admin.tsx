@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type * as React from 'react';
 
 import { adminTypography } from '../design-system/tokens/adminTypography';
+import { adminColors } from '../design-system/tokens/adminColors';
+import { getAdminThemeCssVariables } from '../design-system/themes/admin';
 import {
   adminText,
   colors,
@@ -9,6 +11,7 @@ import {
 } from '../design-system/tokens';
 import '../design-system/styles/admin-typography.css';
 import '../design-system/styles/admin-spacing.css';
+import '../design-system/styles/admin-theme.css';
 
 import AdminProductForm, {
   type AdminProduct,
@@ -107,6 +110,26 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [storefrontFilter, setStorefrontFilter] =
     useState<'all' | Storefront>('all');
+
+  const [adminTheme, setAdminTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      return localStorage.getItem('simatu-admin-theme') === 'dark'
+        ? 'dark'
+        : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  const themeColors = adminColors.themes[adminTheme];
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('simatu-admin-theme', adminTheme);
+    } catch {
+      // Theme remains usable when browser storage is unavailable.
+    }
+  }, [adminTheme]);
 
   useEffect(() => {
     if (admin?.role === 'store_admin' && admin.storeSlug) {
@@ -500,20 +523,41 @@ export default function Admin() {
   return (
     <main
       className="admin-scope min-h-screen bg-white"
+      data-theme={adminTheme}
       style={
         {
-          '--admin-text-primary': adminText.primary,
-          '--admin-text-secondary': adminText.secondary,
-          '--admin-text-supporting': adminText.supporting,
-          '--admin-text-muted': adminText.muted,
-          '--admin-text-disabled': adminText.disabled,
-          '--admin-charcoal-40': colors.opacity.charcoal40,
-          '--admin-charcoal-50': colors.opacity.charcoal50,
-          '--admin-charcoal-70': colors.opacity.charcoal70,
-          '--admin-surface': colors.neutral.surface,
-          '--admin-card-order-media-surface': colors.neutral.grey300,
-          '--admin-surface-subtle': colors.neutral.surfaceSubtle,
-          '--admin-border-subtle': colors.opacity.charcoal10,
+          ...getAdminThemeCssVariables(adminTheme),
+          '--admin-bg': themeColors.background,
+          '--admin-surface': themeColors.surface,
+          '--admin-surface-subtle': themeColors.surfaceSubtle,
+          '--admin-surface-raised': themeColors.surfaceRaised,
+          '--admin-text-primary': themeColors.text,
+          '--admin-text-secondary': themeColors.textSecondary,
+          '--admin-text-supporting': themeColors.textSecondary,
+          '--admin-text-muted': themeColors.textMuted,
+          '--admin-text-disabled': themeColors.textDisabled,
+          '--admin-border-subtle': themeColors.border,
+          '--admin-border-strong': themeColors.borderStrong,
+          '--admin-hover': themeColors.hover,
+          '--admin-accent': adminColors.accent.primary,
+          '--admin-accent-hover': adminColors.accent.hover,
+          '--admin-accent-text': themeColors.accentText,
+          '--admin-on-accent': adminColors.accent.onAccent,
+          '--admin-focus': themeColors.focus,
+          '--admin-shadow': themeColors.shadow,
+          '--admin-charcoal-40':
+            adminTheme === 'dark'
+              ? 'rgba(244, 241, 236, 0.4)'
+              : colors.opacity.charcoal40,
+          '--admin-charcoal-50':
+            adminTheme === 'dark'
+              ? 'rgba(244, 241, 236, 0.5)'
+              : colors.opacity.charcoal50,
+          '--admin-charcoal-70':
+            adminTheme === 'dark'
+              ? 'rgba(244, 241, 236, 0.7)'
+              : colors.opacity.charcoal70,
+          '--admin-card-order-media-surface': themeColors.surfaceSubtle,
           '--admin-status-amber': colors.statusPalette.amber,
           '--admin-status-green': colors.statusPalette.green,
           '--admin-status-red': colors.statusPalette.red,
@@ -624,10 +668,29 @@ export default function Admin() {
 
         {activeTab === 'settings' && (
           <div>
-            <div className="admin-section-header">
+            <div className="admin-section-header flex items-center justify-between gap-4">
               <h1 className="admin-section-header-title admin-type-page-title text-[#4d4d4d]">
                 Settings
               </h1>
+
+              <button
+                type="button"
+                className="admin-theme-toggle"
+                aria-label={`Switch to ${adminTheme === 'light' ? 'dark' : 'light'} mode`}
+                aria-pressed={adminTheme === 'dark'}
+                onClick={() =>
+                  setAdminTheme((current) =>
+                    current === 'light' ? 'dark' : 'light'
+                  )
+                }
+              >
+                <span aria-hidden="true">
+                  {adminTheme === 'light' ? '☾' : '☀'}
+                </span>
+                <span>
+                  {adminTheme === 'light' ? 'Dark mode' : 'Light mode'}
+                </span>
+              </button>
             </div>
 
             <section className="mb-8 border border-[#4d4d4d]/10 bg-white p-5">
