@@ -180,8 +180,25 @@ export default function AdminProductForm({
     setCategoryLoadError(null);
     setIsLoadingCategories(true);
 
-    fetch(`/api/categories?storefront=${encodeURIComponent(storefront)}`)
-      .then(async (response) => {
+    const loadCategories = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session?.access_token) {
+          throw new Error('Your session has expired. Please sign in again.');
+        }
+
+        const response = await fetch(
+          `/api/categories?storefront=${encodeURIComponent(storefront)}&scope=admin`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          }
+        );
+
         const data = await response.json();
 
         if (!response.ok) {
@@ -192,22 +209,24 @@ export default function AdminProductForm({
           throw new Error('The categories response is invalid.');
         }
 
-        return data.categories as CatalogueCategory[];
-      })
-      .then((data) => {
         if (cancelled) return;
-        setCategories(data);
+
+        setCategories(data.categories as CatalogueCategory[]);
         setCategoriesStorefront(storefront);
-      })
-      .catch((error) => {
+      } catch (error) {
         if (cancelled) return;
+
         setCategoryLoadError(
-          error instanceof Error ? error.message : 'Unable to load categories.'
+          error instanceof Error
+            ? error.message
+            : 'Unable to load categories.'
         );
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setIsLoadingCategories(false);
-      });
+      }
+    };
+
+    void loadCategories();
 
     return () => {
       cancelled = true;
