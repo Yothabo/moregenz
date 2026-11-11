@@ -28,6 +28,7 @@ import AdminOverview from '../features/admin/components/AdminOverview';
 import AdminActivities from '../features/admin/components/AdminActivities';
 import AdminManagement from '../features/admin/components/AdminManagement';
 import AdminCategories from '../features/admin/components/AdminCategories';
+import AdminSettingsTab from '../features/admin/components/AdminSettingsTab';
 import AdminProducts from '../features/admin/components/AdminProducts';
 import AdminOrders from '../features/admin/components/AdminOrders';
 import { useAdminAuth } from '../features/admin/hooks/useAdminAuth';
@@ -538,6 +539,10 @@ export default function Admin() {
           '--admin-text-disabled': themeColors.textDisabled,
           '--admin-border-subtle': themeColors.border,
           '--admin-border-strong': themeColors.borderStrong,
+          // HARDCODED — category header background.
+          // Light: #E2E2E2 (grey header on white card)
+          // Dark:  #3A3A3A (lighter grey header on #404040 card)
+          '--admin-category-header-bg': adminTheme === 'dark' ? '#3A3A3A' : '#E2E2E2',
           '--admin-hover': themeColors.hover,
           '--admin-accent': adminColors.accent.primary,
           '--admin-accent-hover': adminColors.accent.hover,
@@ -590,6 +595,8 @@ export default function Admin() {
         email={session?.user?.email?.split('@')[0] || 'Admin'}
         onLogout={logout}
         onBack={activeTab === 'activities' ? () => setActiveTab('overview') : undefined}
+        adminTheme={adminTheme}
+        onToggleTheme={() => setAdminTheme((c) => (c === 'light' ? 'dark' : 'light'))}
       />
 
       <div className="admin-page-shell mx-auto">
@@ -609,9 +616,10 @@ export default function Admin() {
             }}
             stats={stats}
             orderStats={orderStats}
-            activities={activities}
-            isLoadingActivities={isLoadingActivities}
-            onViewAllActivities={() => setActiveTab('activities')}
+            orders={storefrontOrders}
+            products={storefrontProducts}
+            activeFilter={storefrontFilter}
+            onFilterSelect={(filterId) => setStorefrontFilter(filterId as 'all' | Storefront)}
           />
         )}
 
@@ -667,97 +675,22 @@ export default function Admin() {
         )}
 
         {activeTab === 'settings' && (
-          <div>
-            <div className="admin-section-header flex items-center justify-between gap-4">
-              <h1 className="admin-section-header-title admin-type-page-title text-[#4d4d4d]">
-                Settings
-              </h1>
-
-              <button
-                type="button"
-                className="admin-theme-toggle"
-                aria-label={`Switch to ${adminTheme === 'light' ? 'dark' : 'light'} mode`}
-                aria-pressed={adminTheme === 'dark'}
-                onClick={() =>
-                  setAdminTheme((current) =>
-                    current === 'light' ? 'dark' : 'light'
-                  )
-                }
-              >
-                <span aria-hidden="true">
-                  {adminTheme === 'light' ? '☾' : '☀'}
-                </span>
-                <span>
-                  {adminTheme === 'light' ? 'Dark mode' : 'Light mode'}
-                </span>
-              </button>
-            </div>
-
-            <section className="mb-8 border border-[#4d4d4d]/10 bg-white p-5">
-              <div className="mb-4">
-                <h2 className="admin-type-section-title text-[#4d4d4d]">
-                  Storefront
-                </h2>
-                <p className="admin-type-supporting mt-1 text-sm text-[#4d4d4d]/60">
-                  Choose which storefront data appears across your dashboard.
-                </p>
-              </div>
-
-              {admin?.role === 'super_admin' ? (
-                <select
-                  id="admin-storefront-filter"
-                  value={storefrontFilter}
-                  onChange={(event) => {
-                    setStorefrontFilter(event.target.value as 'all' | Storefront);
-                    setViewingProduct(null);
-                    setViewingOrder(null);
-                    setConfirmDelete(null);
-                    setConfirmPermanentDelete(null);
-                    setConfirmDeleteOrder(null);
-                  }}
-                  className="w-full rounded-none border border-solid border-[#4d4d4d]/20 bg-white px-3 py-3 text-sm text-[#4d4d4d] outline-none focus:border-[#4d4d4d]"
-                >
-                  <option value="all">All Storefronts</option>
-                  <option value="yotaabo">Yotaabo</option>
-                  <option value="poshies">Poshies</option>
-                </select>
-              ) : (
-                <div className="border border-[#4d4d4d]/10 bg-[#f5f5f5] px-3 py-3 text-sm font-medium text-[#4d4d4d]">
-                  {admin?.storeSlug === 'poshies' ? 'Poshies' : 'Yotaabo'}
-                  <p className="mt-1 text-xs font-normal text-[#4d4d4d]/50">
-                    Your account is assigned to this storefront.
-                  </p>
-                </div>
-              )}
-            </section>
-
-            {session?.access_token && admin && (
-              <AdminCategories
-                accessToken={session.access_token}
-                adminRole={admin.role}
-                assignedStorefront={
-                  admin.storeSlug === 'yotaabo' || admin.storeSlug === 'poshies'
-                    ? admin.storeSlug
-                    : null
-                }
-              />
-            )}
-
-            {admin?.role === 'super_admin' && session?.access_token && (
-              <section className="space-y-4">
-                <div>
-                  <h2 className="admin-type-section-title text-[#4d4d4d]">
-                    Admin Management
-                  </h2>
-                  <p className="admin-type-supporting mt-1 text-sm text-[#4d4d4d]/60">
-                    Manage administrator access and storefront assignments.
-                  </p>
-                </div>
-
-                <AdminManagement accessToken={session.access_token} />
-              </section>
-            )}
-          </div>
+          <AdminSettingsTab
+            adminTheme={adminTheme}
+            toggleTheme={() => setAdminTheme((c) => (c === 'light' ? 'dark' : 'light'))}
+            storefrontFilter={storefrontFilter}
+            setStorefrontFilter={setStorefrontFilter}
+            adminRole={admin?.role}
+            adminStoreSlug={admin?.storeSlug ?? undefined}
+            accessToken={session?.access_token}
+            onStorefrontChange={() => {
+              setViewingProduct(null);
+              setViewingOrder(null);
+              setConfirmDelete(null);
+              setConfirmPermanentDelete(null);
+              setConfirmDeleteOrder(null);
+            }}
+          />
         )}
       </div>
 

@@ -6,6 +6,7 @@
 export const primitives = {
   neutral: {
     white: '#FFFFFF',
+    gray25: '#FAFAFA',
     gray50: '#F5F5F5',
     gray100: '#E5E5E5',
     gray200: '#D4D4D4',

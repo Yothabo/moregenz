@@ -69,6 +69,17 @@ export const adminTypographyTokens = {
 } as const;
 
 /**
+ * Greeting typography — hero line for the overview page.
+ * Uses clamp() so it scales fluidly between mobile and desktop.
+ * Change these three strings to restyle the greeting app-wide.
+ */
+export const greetingTokens = {
+  fontSize: 'clamp(1.125rem, 3vw + 0.5rem, 1.875rem)',
+  lineHeight: 'clamp(1.75rem, 3vw + 0.875rem, 2.625rem)',
+  fontWeight: 100,
+} as const;
+
+/**
  * Backwards-compatible interface for existing Admin styles.
  * Values are derived from the canonical typography contract.
  */
@@ -87,6 +98,8 @@ export const adminTypography = {
   },
 
   weight: {
+    thin: 100,
+    extraLight: 200,
     normal: 400,
     medium: 500,
     semibold: 600,

@@ -49,6 +49,7 @@ export default function Modal({
     >
       {/* Backdrop */}
       <div
+        data-modal-backdrop
         className={`absolute inset-0 bg-white/40 backdrop-blur-sm transition-opacity duration-300 ${
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
@@ -56,6 +57,7 @@ export default function Modal({
 
       {/* Panel */}
       <div
+        data-modal-panel
         className={`relative max-h-[85vh] w-full ${maxWidth} ${
           scrollable ? 'overflow-y-auto' : 'overflow-hidden'
         } bg-white shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${

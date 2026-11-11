@@ -16,7 +16,7 @@ const status = primitives.status;
 
 const light = {
   colorBg: n.white,
-  colorBgSurface: n.white,
+  colorBgSurface: n.gray50,
   colorBgSurfaceSecondary: n.gray50,
   colorBgSurfaceSecondaryHover: n.gray100,
 

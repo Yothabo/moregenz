@@ -28,6 +28,12 @@ export const layoutSpacing = {
   pageHeaderOffset: '65px',
 } as const;
 
+export const shadows = {
+  dropdown: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+  mobileNavigation: '0 8px 35px rgba(0, 0, 0, 0.14)',
+  modal: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+} as const;
+
 /** CSS variables consumed by Admin-only styles. */
 export const adminSpacingVariables = {
   '--admin-space-none': spacing.none,
@@ -48,6 +54,16 @@ export const adminSpacingVariables = {
   '--admin-layout-content-width': layoutSpacing.contentWidth,
   '--admin-layout-content-width-wide': layoutSpacing.contentWidthWide,
   '--admin-layout-page-header-offset': layoutSpacing.pageHeaderOffset,
+  '--admin-shadow-mobile-nav': shadows.mobileNavigation,
+  '--admin-bottom-nav-max-width': '28rem',
+  '--admin-control-width-wide': '88px',
+  '--admin-control-width-wider': '96px',
+  '--admin-chip-width': '140px',
+  '--admin-card-min-height': '240px',
+  '--admin-card-grid-size': '32px',
+  '--admin-chart-height': '220px',
+  '--admin-stat-card-min-height': '160px',
+  '--admin-control-height-compact': '32px',
 } as const;
 
 export const borderRadius = {
@@ -55,12 +71,6 @@ export const borderRadius = {
   large: '8px',
   extraLarge: '12px',
   circular: '50%',
-} as const;
-
-export const shadows = {
-  dropdown: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-  mobileNavigation: '0 8px 35px rgba(0, 0, 0, 0.14)',
-  modal: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
 } as const;
 
 export const borders = {
