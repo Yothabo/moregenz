@@ -167,6 +167,8 @@ async function saveProduct(body, isUpdate, admin) {
       storeId,
       category.id,
       subcategory.id,
+      product.supplier_cost,
+      product.sku,
     ];
 
     if (isUpdate) {
@@ -183,12 +185,15 @@ async function saveProduct(body, isUpdate, admin) {
              storefront = $9,
              store_id = $10,
              category_id = $11,
-             subcategory_id = $12
-         WHERE id = $13
-           AND ($14::text IS NULL OR storefront = $14)
-         RETURNING id, name, price, category, subcategory,
-                   description, image_url, is_active, sort_order,
-                   storefront, store_id, category_id, subcategory_id`,
+             subcategory_id = $12,
+             supplier_cost = $13,
+             sku = $14
+         WHERE id = $15
+           AND ($16::text IS NULL OR storefront = $16)
+         RETURNING id, name, price, supplier_cost, sku,
+                   category, subcategory, description, image_url,
+                   is_active, sort_order, storefront, store_id,
+                   category_id, subcategory_id`,
         [
           ...values,
           body.id,
@@ -200,11 +205,12 @@ async function saveProduct(body, isUpdate, admin) {
         `INSERT INTO public.products
            (name, price, category, subcategory, description, image_url,
             is_active, sort_order, storefront, store_id, category_id,
-            subcategory_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-         RETURNING id, name, price, category, subcategory,
-                   description, image_url, is_active, sort_order,
-                   storefront, store_id, category_id, subcategory_id`,
+            subcategory_id, supplier_cost, sku)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+         RETURNING id, name, price, supplier_cost, sku,
+                   category, subcategory, description, image_url,
+                   is_active, sort_order, storefront, store_id,
+                   category_id, subcategory_id`,
         values
       );
     }
@@ -261,8 +267,24 @@ async function listProducts(request) {
   }
 
   const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
+  const selectedColumns = isAdminRequest
+    ? '*'
+    : `
+        id,
+        name,
+        price,
+        category,
+        subcategory,
+        description,
+        image_url,
+        is_active,
+        sort_order,
+        order_count,
+        created_at
+      `;
+
   const result = await pool.query(
-    `SELECT *
+    `SELECT ${selectedColumns}
      FROM public.products
      ${whereClause}
      ORDER BY category ASC, sort_order ASC, created_at DESC`,
@@ -399,6 +421,16 @@ export default async (request) => {
 
     return await saveProduct(body, request.method === 'PATCH', admin);
   } catch (error) {
+    if (
+      error?.code === '23505' &&
+      error?.constraint === 'products_store_sku_unique'
+    ) {
+      return json(
+        { error: 'This SKU is already assigned to another product in this store.' },
+        409,
+      );
+    }
+
     console.error('Products function error:', error);
     return json({ error: 'Unable to process the product request right now.' }, 500);
   }

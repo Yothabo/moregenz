@@ -53,6 +53,16 @@ export function validateProduct(body) {
       : '__invalid__';
 
   const price = parseNumeric(body?.price);
+  const supplierCost = body?.supplier_cost == null ||
+    (typeof body.supplier_cost === 'string' && body.supplier_cost.trim() === '')
+    ? null
+    : parseNumeric(body.supplier_cost);
+
+  const sku = body?.sku == null || (typeof body.sku === 'string' && body.sku.trim() === '')
+    ? null
+    : typeof body.sku === 'string'
+      ? body.sku.trim().toUpperCase()
+      : '__invalid__';
 
   const category = typeof body?.category === 'string'
     ? body.category.trim()
@@ -117,6 +127,20 @@ export function validateProduct(body) {
     return { error: 'Please provide a valid product price.' };
   }
 
+  if (
+    supplierCost !== null &&
+    (!Number.isFinite(supplierCost) || supplierCost < 0 || supplierCost > 1000000)
+  ) {
+    return { error: 'Please provide a valid supplier cost.' };
+  }
+
+  if (
+    sku !== null &&
+    (sku === '__invalid__' || !/^[A-Z0-9][A-Z0-9._/-]{0,79}$/.test(sku))
+  ) {
+    return { error: 'SKU must contain 1–80 valid letters, numbers or . _ / - characters.' };
+  }
+
   if (storefront !== null && !['yotaabo', 'poshies'].includes(storefront)) {
     return { error: 'Please select a valid storefront.' };
   }
@@ -164,6 +188,10 @@ export function validateProduct(body) {
       name,
       storefront,
       price: roundedPrice,
+      supplier_cost: supplierCost === null
+        ? null
+        : Math.round(supplierCost * 100) / 100,
+      sku,
       category,
       category_id: categoryId,
       subcategory,

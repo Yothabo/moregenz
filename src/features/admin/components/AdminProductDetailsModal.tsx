@@ -164,6 +164,28 @@ export default function AdminProductDetailsModal({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
+                  Supplier Cost (R)
+                </span>
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
+                  {product.supplier_cost != null
+                    ? formatPrice(product.supplier_cost)
+                    : 'Not recorded'}
+                </div>
+              </div>
+
+              <div>
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
+                  SKU
+                </span>
+                <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
+                  {product.sku || 'Not assigned'}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[var(--admin-charcoal-40)]">
                   Subcategory
                 </span>
                 <div className="w-full bg-[var(--admin-surface)] px-4 py-3 admin-type-body admin-color-primary">
