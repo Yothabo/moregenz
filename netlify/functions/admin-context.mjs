@@ -109,6 +109,21 @@ export default async (request) => {
       );
     }
 
+    const storeResult = await client.query(
+      `SELECT slug, created_at
+       FROM public.stores
+       WHERE ($1::text IS NULL OR slug = $1)
+       ORDER BY created_at ASC`,
+      [admin.role === 'store_admin' ? admin.store_slug : null]
+    );
+
+    const storeCreatedAt = Object.fromEntries(
+      storeResult.rows.map((store) => [
+        store.slug,
+        new Date(store.created_at).toISOString(),
+      ])
+    );
+
     await client.query('COMMIT');
     databaseCommitted = true;
 
@@ -121,6 +136,7 @@ export default async (request) => {
         storeSlug: admin.store_slug,
       },
       sessionId: appSessionId,
+      storeCreatedAt,
     });
   } catch (error) {
     if (client && !databaseCommitted) {

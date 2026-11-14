@@ -24,13 +24,14 @@ import AdminProductDetailsModal from '../components/AdminProductDetailsModal';
 import AdminLoginScreen from '../features/admin/components/AdminLoginScreen';
 import AdminTopBar from '../features/admin/components/AdminTopBar';
 import AdminBottomNavigation from '../features/admin/components/AdminBottomNavigation';
-import AdminOverview from '../features/admin/components/AdminOverview';
+import AdminOverview from '../features/admin/components/overview';
 import AdminActivities from '../features/admin/components/AdminActivities';
 import AdminManagement from '../features/admin/components/AdminManagement';
 import AdminCategories from '../features/admin/components/AdminCategories';
 import AdminSettingsTab from '../features/admin/components/AdminSettingsTab';
 import AdminProducts from '../features/admin/components/AdminProducts';
 import AdminOrders from '../features/admin/components/AdminOrders';
+import AdminInventory from '../features/admin/components/inventory/AdminInventory';
 import { useAdminAuth } from '../features/admin/hooks/useAdminAuth';
 import { useAdminProducts } from '../features/admin/hooks/useAdminProducts';
 import { useAdminOrders } from '../features/admin/hooks/useAdminOrders';
@@ -62,6 +63,8 @@ export default function Admin() {
   const {
     products,
     hasLoadedProducts,
+    productsLoadError,
+    isLoading: isLoadingProducts,
     loadProducts,
     hideProduct,
     reactivateProduct,
@@ -78,6 +81,7 @@ export default function Admin() {
     orders,
     isLoadingOrders,
     hasLoadedOrders,
+    ordersLoadError,
     loadOrders,
     changeOrderStatus,
     deleteOrder,
@@ -602,7 +606,8 @@ export default function Admin() {
       <div className="admin-page-shell mx-auto">
         {activeTab === 'overview' && (
           <AdminOverview
-            email={session?.user?.email?.split('@')[0] || 'Admin'}
+            key={session?.user.id ?? 'admin-overview'}
+            userId={session?.user.id ?? ''}
             searchQuery={searchQuery}
             onSearchChange={(value) => {
               setSearchQuery(value);
@@ -614,12 +619,23 @@ export default function Admin() {
               setEditing(null);
               setFormOpen(true);
             }}
-            stats={stats}
-            orderStats={orderStats}
-            orders={storefrontOrders}
-            products={storefrontProducts}
-            activeFilter={storefrontFilter}
-            onFilterSelect={(filterId) => setStorefrontFilter(filterId as 'all' | Storefront)}
+            orders={orders}
+            products={products}
+            storefrontFilter={storefrontFilter}
+            onStorefrontChange={(value) => {
+              if (admin?.role === 'super_admin') {
+                setStorefrontFilter(value);
+              }
+            }}
+            canSwitchStore={admin?.role === 'super_admin'}
+            storeCreatedAt={admin?.storeCreatedAt ?? {}}
+            onRefresh={async () => {
+              await Promise.all([loadOrders(), loadProducts()]);
+            }}
+            ordersLoadError={ordersLoadError}
+            productsLoadError={productsLoadError}
+            isLoadingOrders={isLoadingOrders}
+            isLoadingProducts={isLoadingProducts}
           />
         )}
 
@@ -642,6 +658,13 @@ export default function Admin() {
               setFormOpen(true);
             }}
             onSelectProduct={setViewingProduct}
+          />
+        )}
+
+        {activeTab === 'inventory' && (
+          <AdminInventory
+            storefrontFilter={storefrontFilter}
+            accessToken={session?.access_token ?? ''}
           />
         )}
 

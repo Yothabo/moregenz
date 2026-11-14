@@ -9,6 +9,7 @@ type AdminContext = {
   role: 'super_admin' | 'store_admin';
   storeId: string | null;
   storeSlug: string | null;
+  storeCreatedAt: Partial<Record<'yotaabo' | 'poshies', string>>;
 };
 
 type UseAdminAuthResult = {
@@ -136,7 +137,14 @@ export function useAdminAuth(): UseAdminAuthResult {
             return;
           }
 
-          setAdmin(verifiedAdmin);
+          setAdmin({
+            ...verifiedAdmin,
+            storeCreatedAt:
+              payload?.storeCreatedAt &&
+              typeof payload.storeCreatedAt === 'object'
+                ? payload.storeCreatedAt
+                : {},
+          });
           setIsAdmin(true);
           setIsChecking(false);
           return;

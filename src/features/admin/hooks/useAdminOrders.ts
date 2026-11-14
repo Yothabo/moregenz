@@ -12,18 +12,9 @@ import {
 } from '../utils/adminSnapshot';
 
 function normalizeOrders(value: unknown): unknown {
-  if (!Array.isArray(value)) return value;
-
-  return value.map((order) => {
-    if (!order || typeof order !== 'object') return order;
-
-    const item = order as Record<string, unknown>;
-
-    return {
-      ...item,
-      storefront: item.storefront === 'poshies' ? 'poshies' : 'yotaabo',
-    };
-  });
+  // Preserve API data exactly. Invalid storefronts must be rejected,
+  // never silently assigned to another storefront.
+  return value;
 }
 
 function isOrders(value: unknown): value is Order[] {
@@ -43,8 +34,10 @@ function isOrders(value: unknown): value is Order[] {
 
       return (
         typeof item.id === 'string' &&
+        item.id.trim().length > 0 &&
         (item.storefront === 'yotaabo' || item.storefront === 'poshies') &&
         typeof item.order_number === 'string' &&
+        item.order_number.trim().length > 0 &&
         typeof item.customer_name === 'string' &&
         typeof item.customer_phone === 'string' &&
         Array.isArray(item.items) &&
@@ -54,15 +47,31 @@ function isOrders(value: unknown): value is Order[] {
           const line = orderItem as Record<string, unknown>;
 
           return (
+            (
+              line.product_id === null ||
+              (
+                typeof line.product_id === 'string' &&
+                line.product_id.trim().length > 0
+              )
+            ) &&
             typeof line.name === 'string' &&
+            line.name.trim().length > 0 &&
             typeof line.price === 'number' &&
-            typeof line.qty === 'number'
+            Number.isFinite(line.price) &&
+            line.price >= 0 &&
+            typeof line.qty === 'number' &&
+            Number.isInteger(line.qty) &&
+            line.qty > 0
           );
         }) &&
         typeof item.subtotal === 'number' &&
+        Number.isFinite(item.subtotal) &&
+        item.subtotal >= 0 &&
         validStatuses.includes(item.status as OrderStatus) &&
         typeof item.created_at === 'string' &&
-        typeof item.updated_at === 'string'
+        Number.isFinite(Date.parse(item.created_at)) &&
+        typeof item.updated_at === 'string' &&
+        Number.isFinite(Date.parse(item.updated_at))
       );
     })
   );
@@ -91,6 +100,7 @@ export function useAdminOrders(
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [hasLoadedOrders, setHasLoadedOrders] = useState(false);
+  const [ordersLoadError, setOrdersLoadError] = useState<string | null>(null);
 
   const ordersApi = useCallback(
     async (
@@ -145,6 +155,7 @@ export function useAdminOrders(
       userIdRef.current === requestUserId;
 
     setIsLoadingOrders(true);
+    setOrdersLoadError(null);
 
     try {
       const data = await ordersApi('GET');
@@ -165,11 +176,11 @@ export function useAdminOrders(
       );
     } catch (error) {
       if (isCurrentRequest()) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load orders.'
-        );
+        const message =
+          error instanceof Error ? error.message : 'Unable to load orders.';
+
+        setOrdersLoadError(message);
+        toast.error(message);
       }
     } finally {
       if (isCurrentRequest()) {
@@ -239,6 +250,7 @@ export function useAdminOrders(
       setOrders([]);
       setIsLoadingOrders(false);
       setHasLoadedOrders(false);
+      setOrdersLoadError(null);
       return;
     }
 
@@ -266,6 +278,7 @@ export function useAdminOrders(
     orders,
     isLoadingOrders,
     hasLoadedOrders,
+    ordersLoadError,
     loadOrders,
     changeOrderStatus,
     deleteOrder,

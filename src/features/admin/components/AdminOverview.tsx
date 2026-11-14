@@ -2,7 +2,6 @@ import type { Order, AdminRow } from '../types/admin.types';
 import OverviewHeader from './OverviewHeader';
 import StatsRow from './StatsRow';
 import StorePerformanceCard from './StorePerformanceCard';
-import BusinessInsights from './business/BusinessInsights';
 import SectionHeader from './SectionHeader';
 
 type AdminOverviewProps = {
@@ -76,7 +75,6 @@ export default function AdminOverview({
         />
         <StorePerformanceCard orders={orders} products={products} activeFilter={activeFilter} />
       </div>
-      <BusinessInsights activeFilter={activeFilter} />
     </section>
   );
 }

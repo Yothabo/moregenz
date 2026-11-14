@@ -1,4 +1,4 @@
-import { FiGrid, FiSettings } from 'react-icons/fi';
+import { FiGrid, FiPackage, FiSettings } from 'react-icons/fi';
 import { VscPackage } from 'react-icons/vsc';
 import { FaOpencart } from 'react-icons/fa';
 import type { Tab } from '../types/admin.types';
@@ -17,6 +17,7 @@ export default function AdminBottomNavigation({
     { tab: 'overview', label: 'Overview', Icon: FiGrid },
     { tab: 'products', label: 'Products', Icon: VscPackage },
     { tab: 'orders', label: 'Orders', Icon: FaOpencart },
+    { tab: 'inventory', label: 'Inventory', Icon: FiPackage },
     { tab: 'settings', label: 'Settings', Icon: FiSettings },
   ];
 

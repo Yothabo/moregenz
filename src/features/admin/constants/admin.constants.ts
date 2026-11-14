@@ -6,4 +6,5 @@ export const ADMIN_STORAGE_KEYS = {
   ordersCache: 'yotaabo-admin-orders-cache',
   productFormOpen: 'yotaabo-admin-product-form-open',
   productEditing: 'yotaabo-admin-product-editing',
+  overviewDateFilter: 'yotaabo-admin-overview-date-filter',
 } as const;

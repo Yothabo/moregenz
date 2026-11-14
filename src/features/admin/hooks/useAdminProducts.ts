@@ -98,6 +98,7 @@ export function useAdminProducts(
   const [products, setProducts] = useState<AdminRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadedProducts, setHasLoadedProducts] = useState(false);
+  const [productsLoadError, setProductsLoadError] = useState<string | null>(null);
 
   const productsApi = useCallback(
     async (
@@ -157,6 +158,7 @@ export function useAdminProducts(
       userIdRef.current === requestUserId;
 
     setIsLoading(true);
+    setProductsLoadError(null);
 
     try {
       const data = await productsApi('GET', undefined, true);
@@ -177,11 +179,11 @@ export function useAdminProducts(
       );
     } catch (error) {
       if (isCurrentRequest()) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load products.'
-        );
+        const message =
+          error instanceof Error ? error.message : 'Unable to load products.';
+
+        setProductsLoadError(message);
+        toast.error(message);
       }
     } finally {
       if (isCurrentRequest()) {
@@ -321,6 +323,7 @@ export function useAdminProducts(
       setProducts([]);
       setIsLoading(false);
       setHasLoadedProducts(false);
+      setProductsLoadError(null);
       return;
     }
 
@@ -348,6 +351,7 @@ export function useAdminProducts(
     products,
     isLoading,
     hasLoadedProducts,
+    productsLoadError,
     loadProducts,
     hideProduct,
     reactivateProduct,

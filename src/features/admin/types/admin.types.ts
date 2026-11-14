@@ -7,7 +7,7 @@ export type AdminRow = AdminProduct & {
   created_at: string;
 };
 
-export type Tab = 'overview' | 'products' | 'orders' | 'activities' | 'settings';
+export type Tab = 'overview' | 'products' | 'orders' | 'inventory' | 'activities' | 'settings';
 
 export type CategoryFilter = 'All' | 'His' | 'Hers' | 'Spaces' | 'Lounge' | 'Hidden';
 
@@ -25,6 +25,7 @@ export type OrderFilter =
   | 'Cancelled';
 
 export type OrderItem = {
+  product_id: string | null;
   name: string;
   price: number;
   qty: number;
