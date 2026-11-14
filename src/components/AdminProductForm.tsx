@@ -9,6 +9,8 @@ export type AdminProduct = {
   storefront: 'yotaabo' | 'poshies';
   name: string;
   price: number;
+  supplier_cost?: number | null;
+  sku?: string | null;
   category: string;
   category_id: string | null;
   subcategory: string;
@@ -67,6 +69,8 @@ const emptyProduct: AdminProduct = {
   storefront: 'yotaabo',
   name: '',
   price: 0,
+  supplier_cost: null,
+  sku: '',
   category: '',
   category_id: null,
   subcategory: '',
@@ -491,6 +495,7 @@ export default function AdminProductForm({
   const handleSubmit = async () => {
     if (!form.name.trim()) return toast.error('Name is required');
     if (form.price <= 0) return toast.error('Price must be greater than 0');
+    if (form.supplier_cost != null && (!Number.isFinite(form.supplier_cost) || form.supplier_cost < 0)) return toast.error('Supplier cost must be zero or greater');
     if (!statusValue) return toast.error('Status is required');
     if (isLoadingCategories) return toast.error('Categories are still loading');
     if (categoryLoadError) return toast.error('Categories could not be loaded');
@@ -502,6 +507,8 @@ export default function AdminProductForm({
       storefront: form.storefront,
       name: form.name.trim(),
       price: form.price,
+      supplier_cost: form.supplier_cost ?? null,
+      sku: form.sku?.trim().toUpperCase() || null,
       category: form.category,
       category_id: form.category_id,
       subcategory: form.subcategory,
@@ -652,6 +659,33 @@ export default function AdminProductForm({
                   { value: 'hidden', label: 'Hidden' },
                 ]}
                 placeholder="Select"
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">Supplier Cost (R)</span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.supplier_cost ?? ''}
+                onChange={(e) => handleChange('supplier_cost', e.target.value === '' ? null : Number(e.target.value))}
+                className={inputClass}
+                placeholder="0.00"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-1.5 block admin-type-micro font-semibold uppercase tracking-widest text-[#4d4d4d]/40">SKU</span>
+              <input
+                type="text"
+                value={form.sku ?? ''}
+                onChange={(e) => handleChange('sku', e.target.value)}
+                className={inputClass}
+                placeholder="e.g. YOT-001"
+                maxLength={80}
               />
             </label>
           </div>

@@ -181,6 +181,17 @@ describe('products API: public listing', () => {
 
     expect(result.status).toBe(200);
     expect(result.body.products).toHaveLength(1);
+
+    const sql = mocks.poolQuery.mock.calls[0][0];
+
+    expect(sql).toContain('id');
+    expect(sql).toContain('name');
+    expect(sql).toContain('price');
+    expect(sql).toContain('is_active = TRUE');
+    expect(sql).not.toContain('SELECT *');
+    expect(sql).not.toContain('supplier_cost');
+    expect(sql).not.toContain('sku');
+
     expect(mocks.poolQuery).toHaveBeenCalledWith(
       expect.stringContaining('is_active = TRUE'),
       ['yotaabo'],
@@ -227,6 +238,10 @@ describe('products API: admin listing', () => {
     );
 
     expect(response.headers.get('cache-control')).toBe('private, no-store');
+
+    const sql = mocks.poolQuery.mock.calls[0][0];
+
+    expect(sql).toContain('SELECT *');
     expect(mocks.poolQuery).toHaveBeenCalledWith(
       expect.not.stringContaining('WHERE'),
       [],
@@ -259,6 +274,47 @@ describe('products API: admin listing', () => {
 });
 
 describe('products API: product creation', () => {
+  it('returns 409 when a SKU already exists in the selected store', async () => {
+    const duplicateSkuError = Object.assign(
+      new Error('Duplicate SKU database detail'),
+      {
+        code: '23505',
+        constraint: 'products_store_sku_unique',
+      },
+    );
+
+    queueClientResponses(
+      emptyResult(), // BEGIN
+      emptyResult(), // set_config
+      { rowCount: 1, rows: [{ id: 'store-y' }] }, // Store
+      {
+        rowCount: 1,
+        rows: [{ id: 'category-y', name: 'His', is_active: true }],
+      }, // Category
+      {
+        rowCount: 1,
+        rows: [{ id: 'subcategory-y', name: 'Eau de Parfum' }],
+      }, // Subcategory
+      duplicateSkuError, // INSERT
+      emptyResult(), // ROLLBACK
+    );
+
+    const result = await readResponse(
+      await handler(makeRequest('POST', {
+        ...validProduct(),
+        sku: 'TEST-SKU-001',
+      })),
+    );
+
+    expect(result.status).toBe(409);
+    expect(result.body.error).toBe(
+      'This SKU is already assigned to another product in this store.',
+    );
+    expect(result.body.error).not.toContain('Duplicate SKU');
+    expect(mocks.clientQuery).toHaveBeenCalledWith('ROLLBACK');
+    expect(mocks.release).toHaveBeenCalledOnce();
+  });
+
   it('rejects invalid product data before connecting', async () => {
     const result = await readResponse(
       await handler(makeRequest('POST', {
@@ -542,7 +598,7 @@ describe('products API: product updates', () => {
     );
 
     expect(lookup?.[1]).toEqual([validId, 'yotaabo']);
-    expect(update?.[1][13]).toBe('yotaabo');
+    expect(update?.[1][15]).toBe('yotaabo');
     expect(mocks.clientQuery).toHaveBeenCalledWith('COMMIT');
     expect(mocks.release).toHaveBeenCalledOnce();
   });

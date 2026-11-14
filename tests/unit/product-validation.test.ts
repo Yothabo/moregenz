@@ -56,6 +56,8 @@ describe('validateProduct: valid input', () => {
         name: 'Test Fragrance',
         storefront: 'yotaabo',
         price: 199.99,
+        supplier_cost: null,
+        sku: null,
         category: 'His',
         category_id: null,
         subcategory: 'Eau de Parfum',
@@ -280,6 +282,117 @@ describe('validateProduct: price boundaries and types', () => {
       ...validProduct(),
       price: { value: 100 },
     }).error).toBe('Please provide a valid product price.');
+  });
+});
+
+describe('validateProduct: supplier cost', () => {
+  it('accepts a valid supplier cost', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      supplier_cost: 120.50,
+    }).product?.supplier_cost).toBe(120.5);
+  });
+
+  it('rounds supplier cost to two decimal places', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      supplier_cost: 19.999,
+    }).product?.supplier_cost).toBe(20);
+  });
+
+  it('accepts a numeric supplier cost supplied as a string', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      supplier_cost: '249.50',
+    }).product?.supplier_cost).toBe(249.5);
+  });
+
+  it('accepts zero supplier cost', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      supplier_cost: 0,
+    }).product?.supplier_cost).toBe(0);
+  });
+
+  it.each([undefined, null, '', '   '])(
+    'converts missing or blank supplier cost to null: %s',
+    (supplier_cost) => {
+      expect(validateProduct({
+        ...validProduct(),
+        supplier_cost,
+      }).product?.supplier_cost).toBeNull();
+    },
+  );
+
+  it.each([
+    ['negative', -1],
+    ['above maximum', 1000000.01],
+    ['invalid string', 'not-a-number'],
+    ['boolean', true],
+    ['array', [100]],
+    ['object', { value: 100 }],
+    ['infinity', Infinity],
+  ])('rejects %s supplier cost', (_label, supplier_cost) => {
+    expect(validateProduct({
+      ...validProduct(),
+      supplier_cost,
+    }).error).toBe('Please provide a valid supplier cost.');
+  });
+
+  it('accepts the maximum permitted supplier cost', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      supplier_cost: 1000000,
+    }).product?.supplier_cost).toBe(1000000);
+  });
+});
+
+describe('validateProduct: SKU', () => {
+  it('trims and uppercases SKU', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      sku: '  yot-001  ',
+    }).product?.sku).toBe('YOT-001');
+  });
+
+  it('converts missing and blank SKU to null', () => {
+    for (const sku of [undefined, null, '', '   ']) {
+      expect(validateProduct({
+        ...validProduct(),
+        sku,
+      }).product?.sku).toBeNull();
+    }
+  });
+
+  it('accepts permitted SKU punctuation', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      sku: 'yot_01.2/ab-3',
+    }).product?.sku).toBe('YOT_01.2/AB-3');
+  });
+
+  it('accepts an 80-character SKU', () => {
+    expect(validateProduct({
+      ...validProduct(),
+      sku: 'A'.repeat(80),
+    }).product?.sku).toHaveLength(80);
+  });
+
+  it.each([
+    ['contains spaces', 'YOT 001'],
+    ['contains unsupported punctuation', 'YOT@001'],
+    ['starts with punctuation', '-YOT001'],
+    ['exceeds 80 characters', 'A'.repeat(81)],
+    ['is a number', 123],
+    ['is a boolean', true],
+    ['is an object', { value: 'YOT-001' }],
+  ])('rejects SKU that %s', (_label, sku) => {
+    expect(validateProduct({
+      ...validProduct(),
+      sku,
+    }).error).toBe(
+      'SKU must contain 1–80 valid letters, numbers or . _ / - characters.',
+    );
   });
 });
 

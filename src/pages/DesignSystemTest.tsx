@@ -4,7 +4,6 @@ const metrics = [
   { label: 'Total revenue', value: 'R48,290.00', change: '+12.8%', note: 'Compared with last month' },
   { label: 'Orders', value: '284', change: '+8.2%', note: 'Compared with last month' },
   { label: 'Products', value: '36', change: '4 low', note: 'Products needing attention' },
-  { label: 'Customers', value: '192', change: '+16.4%', note: 'Compared with last month' },
 ];
 
 const orders = [
@@ -20,7 +19,7 @@ const products = [
   { name: 'Santal Essence', category: 'His', price: 'R1,850', stock: 0, status: 'Out of stock' },
 ];
 
-const navigation = ['Overview', 'Products', 'Orders', 'Customers', 'Settings'];
+const navigation = ['Overview', 'Products', 'Orders', 'Settings'];
 
 function Status({ value }: { value: string }) {
   const statusClass = value.toLowerCase().replace(/ /g, '-');
@@ -44,7 +43,7 @@ export default function DesignSystemTest() {
           {navigation.map((item, index) => (
             <button key={item} className={index === 0 ? 'yds-nav-item active' : 'yds-nav-item'}>
               <span className="yds-nav-icon">
-                {['◫', '◇', '▤', '♙', '⚙'][index]}
+                {['◫', '◇', '▤', '⚙'][index]}
               </span>
               {item}
               {item === 'Orders' && <span className="yds-nav-count">6</span>}
@@ -95,7 +94,7 @@ export default function DesignSystemTest() {
               <article className="yds-metric" key={metric.label}>
                 <div className="yds-metric-top">
                   <span>{metric.label}</span>
-                  <span className="yds-metric-icon">{['↗', '▤', '◇', '♙'][index]}</span>
+                  <span className="yds-metric-icon">{['↗', '▤', '◇'][index]}</span>
                 </div>
                 <strong>{metric.value}</strong>
                 <div className="yds-metric-foot">
@@ -153,7 +152,7 @@ export default function DesignSystemTest() {
                 ['＋', 'New order received', 'Order #YT-1048', '12 min ago'],
                 ['✓', 'Order delivered', 'Order #YT-1047', '1 hour ago'],
                 ['◇', 'Stock running low', 'Rose Élixir · 8 left', '3 hours ago'],
-                ['＋', 'New customer', 'Amara Nkosi', '5 hours ago'],
+                ['✓', 'Order confirmed', 'Order #YT-1045', '5 hours ago'],
               ].map(([icon, title, detail, time]) => (
                 <div className="yds-activity" key={title}>
                   <span className="yds-activity-icon">{icon}</span>

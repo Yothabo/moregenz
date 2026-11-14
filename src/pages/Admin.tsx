@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type * as React from 'react';
 
 import { adminTypography } from '../design-system/tokens/adminTypography';
+import { adminColors } from '../design-system/tokens/adminColors';
+import { getAdminThemeCssVariables } from '../design-system/themes/admin';
 import {
   adminText,
   colors,
@@ -9,6 +11,7 @@ import {
 } from '../design-system/tokens';
 import '../design-system/styles/admin-typography.css';
 import '../design-system/styles/admin-spacing.css';
+import '../design-system/styles/admin-theme.css';
 
 import AdminProductForm, {
   type AdminProduct,
@@ -21,12 +24,14 @@ import AdminProductDetailsModal from '../components/AdminProductDetailsModal';
 import AdminLoginScreen from '../features/admin/components/AdminLoginScreen';
 import AdminTopBar from '../features/admin/components/AdminTopBar';
 import AdminBottomNavigation from '../features/admin/components/AdminBottomNavigation';
-import AdminOverview from '../features/admin/components/AdminOverview';
+import AdminOverview from '../features/admin/components/overview';
 import AdminActivities from '../features/admin/components/AdminActivities';
 import AdminManagement from '../features/admin/components/AdminManagement';
 import AdminCategories from '../features/admin/components/AdminCategories';
+import AdminSettingsTab from '../features/admin/components/AdminSettingsTab';
 import AdminProducts from '../features/admin/components/AdminProducts';
 import AdminOrders from '../features/admin/components/AdminOrders';
+import AdminInventory from '../features/admin/components/inventory/AdminInventory';
 import { useAdminAuth } from '../features/admin/hooks/useAdminAuth';
 import { useAdminProducts } from '../features/admin/hooks/useAdminProducts';
 import { useAdminOrders } from '../features/admin/hooks/useAdminOrders';
@@ -58,6 +63,8 @@ export default function Admin() {
   const {
     products,
     hasLoadedProducts,
+    productsLoadError,
+    isLoading: isLoadingProducts,
     loadProducts,
     hideProduct,
     reactivateProduct,
@@ -74,6 +81,7 @@ export default function Admin() {
     orders,
     isLoadingOrders,
     hasLoadedOrders,
+    ordersLoadError,
     loadOrders,
     changeOrderStatus,
     deleteOrder,
@@ -107,6 +115,26 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [storefrontFilter, setStorefrontFilter] =
     useState<'all' | Storefront>('all');
+
+  const [adminTheme, setAdminTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      return localStorage.getItem('simatu-admin-theme') === 'dark'
+        ? 'dark'
+        : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  const themeColors = adminColors.themes[adminTheme];
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('simatu-admin-theme', adminTheme);
+    } catch {
+      // Theme remains usable when browser storage is unavailable.
+    }
+  }, [adminTheme]);
 
   useEffect(() => {
     if (admin?.role === 'store_admin' && admin.storeSlug) {
@@ -500,20 +528,45 @@ export default function Admin() {
   return (
     <main
       className="admin-scope min-h-screen bg-white"
+      data-theme={adminTheme}
       style={
         {
-          '--admin-text-primary': adminText.primary,
-          '--admin-text-secondary': adminText.secondary,
-          '--admin-text-supporting': adminText.supporting,
-          '--admin-text-muted': adminText.muted,
-          '--admin-text-disabled': adminText.disabled,
-          '--admin-charcoal-40': colors.opacity.charcoal40,
-          '--admin-charcoal-50': colors.opacity.charcoal50,
-          '--admin-charcoal-70': colors.opacity.charcoal70,
-          '--admin-surface': colors.neutral.surface,
-          '--admin-card-order-media-surface': colors.neutral.grey300,
-          '--admin-surface-subtle': colors.neutral.surfaceSubtle,
-          '--admin-border-subtle': colors.opacity.charcoal10,
+          ...getAdminThemeCssVariables(adminTheme),
+          '--admin-bg': themeColors.background,
+          '--admin-surface': themeColors.surface,
+          '--admin-surface-subtle': themeColors.surfaceSubtle,
+          '--admin-surface-raised': themeColors.surfaceRaised,
+          '--admin-text-primary': themeColors.text,
+          '--admin-text-secondary': themeColors.textSecondary,
+          '--admin-text-supporting': themeColors.textSecondary,
+          '--admin-text-muted': themeColors.textMuted,
+          '--admin-text-disabled': themeColors.textDisabled,
+          '--admin-border-subtle': themeColors.border,
+          '--admin-border-strong': themeColors.borderStrong,
+          // HARDCODED — category header background.
+          // Light: #E2E2E2 (grey header on white card)
+          // Dark:  #3A3A3A (lighter grey header on #404040 card)
+          '--admin-category-header-bg': adminTheme === 'dark' ? '#3A3A3A' : '#E2E2E2',
+          '--admin-hover': themeColors.hover,
+          '--admin-accent': adminColors.accent.primary,
+          '--admin-accent-hover': adminColors.accent.hover,
+          '--admin-accent-text': themeColors.accentText,
+          '--admin-on-accent': adminColors.accent.onAccent,
+          '--admin-focus': themeColors.focus,
+          '--admin-shadow': themeColors.shadow,
+          '--admin-charcoal-40':
+            adminTheme === 'dark'
+              ? 'rgba(244, 241, 236, 0.4)'
+              : colors.opacity.charcoal40,
+          '--admin-charcoal-50':
+            adminTheme === 'dark'
+              ? 'rgba(244, 241, 236, 0.5)'
+              : colors.opacity.charcoal50,
+          '--admin-charcoal-70':
+            adminTheme === 'dark'
+              ? 'rgba(244, 241, 236, 0.7)'
+              : colors.opacity.charcoal70,
+          '--admin-card-order-media-surface': themeColors.surfaceSubtle,
           '--admin-status-amber': colors.statusPalette.amber,
           '--admin-status-green': colors.statusPalette.green,
           '--admin-status-red': colors.statusPalette.red,
@@ -546,12 +599,15 @@ export default function Admin() {
         email={session?.user?.email?.split('@')[0] || 'Admin'}
         onLogout={logout}
         onBack={activeTab === 'activities' ? () => setActiveTab('overview') : undefined}
+        adminTheme={adminTheme}
+        onToggleTheme={() => setAdminTheme((c) => (c === 'light' ? 'dark' : 'light'))}
       />
 
       <div className="admin-page-shell mx-auto">
         {activeTab === 'overview' && (
           <AdminOverview
-            email={session?.user?.email?.split('@')[0] || 'Admin'}
+            key={session?.user.id ?? 'admin-overview'}
+            userId={session?.user.id ?? ''}
             searchQuery={searchQuery}
             onSearchChange={(value) => {
               setSearchQuery(value);
@@ -563,11 +619,23 @@ export default function Admin() {
               setEditing(null);
               setFormOpen(true);
             }}
-            stats={stats}
-            orderStats={orderStats}
-            activities={activities}
-            isLoadingActivities={isLoadingActivities}
-            onViewAllActivities={() => setActiveTab('activities')}
+            orders={orders}
+            products={products}
+            storefrontFilter={storefrontFilter}
+            onStorefrontChange={(value) => {
+              if (admin?.role === 'super_admin') {
+                setStorefrontFilter(value);
+              }
+            }}
+            canSwitchStore={admin?.role === 'super_admin'}
+            storeCreatedAt={admin?.storeCreatedAt ?? {}}
+            onRefresh={async () => {
+              await Promise.all([loadOrders(), loadProducts()]);
+            }}
+            ordersLoadError={ordersLoadError}
+            productsLoadError={productsLoadError}
+            isLoadingOrders={isLoadingOrders}
+            isLoadingProducts={isLoadingProducts}
           />
         )}
 
@@ -590,6 +658,13 @@ export default function Admin() {
               setFormOpen(true);
             }}
             onSelectProduct={setViewingProduct}
+          />
+        )}
+
+        {activeTab === 'inventory' && (
+          <AdminInventory
+            storefrontFilter={storefrontFilter}
+            accessToken={session?.access_token ?? ''}
           />
         )}
 
@@ -623,78 +698,22 @@ export default function Admin() {
         )}
 
         {activeTab === 'settings' && (
-          <div>
-            <div className="admin-section-header">
-              <h1 className="admin-section-header-title admin-type-page-title text-[#4d4d4d]">
-                Settings
-              </h1>
-            </div>
-
-            <section className="mb-8 border border-[#4d4d4d]/10 bg-white p-5">
-              <div className="mb-4">
-                <h2 className="admin-type-section-title text-[#4d4d4d]">
-                  Storefront
-                </h2>
-                <p className="admin-type-supporting mt-1 text-sm text-[#4d4d4d]/60">
-                  Choose which storefront data appears across your dashboard.
-                </p>
-              </div>
-
-              {admin?.role === 'super_admin' ? (
-                <select
-                  id="admin-storefront-filter"
-                  value={storefrontFilter}
-                  onChange={(event) => {
-                    setStorefrontFilter(event.target.value as 'all' | Storefront);
-                    setViewingProduct(null);
-                    setViewingOrder(null);
-                    setConfirmDelete(null);
-                    setConfirmPermanentDelete(null);
-                    setConfirmDeleteOrder(null);
-                  }}
-                  className="w-full rounded-none border border-solid border-[#4d4d4d]/20 bg-white px-3 py-3 text-sm text-[#4d4d4d] outline-none focus:border-[#4d4d4d]"
-                >
-                  <option value="all">All Storefronts</option>
-                  <option value="yotaabo">Yotaabo</option>
-                  <option value="poshies">Poshies</option>
-                </select>
-              ) : (
-                <div className="border border-[#4d4d4d]/10 bg-[#f5f5f5] px-3 py-3 text-sm font-medium text-[#4d4d4d]">
-                  {admin?.storeSlug === 'poshies' ? 'Poshies' : 'Yotaabo'}
-                  <p className="mt-1 text-xs font-normal text-[#4d4d4d]/50">
-                    Your account is assigned to this storefront.
-                  </p>
-                </div>
-              )}
-            </section>
-
-            {session?.access_token && admin && (
-              <AdminCategories
-                accessToken={session.access_token}
-                adminRole={admin.role}
-                assignedStorefront={
-                  admin.storeSlug === 'yotaabo' || admin.storeSlug === 'poshies'
-                    ? admin.storeSlug
-                    : null
-                }
-              />
-            )}
-
-            {admin?.role === 'super_admin' && session?.access_token && (
-              <section className="space-y-4">
-                <div>
-                  <h2 className="admin-type-section-title text-[#4d4d4d]">
-                    Admin Management
-                  </h2>
-                  <p className="admin-type-supporting mt-1 text-sm text-[#4d4d4d]/60">
-                    Manage administrator access and storefront assignments.
-                  </p>
-                </div>
-
-                <AdminManagement accessToken={session.access_token} />
-              </section>
-            )}
-          </div>
+          <AdminSettingsTab
+            adminTheme={adminTheme}
+            toggleTheme={() => setAdminTheme((c) => (c === 'light' ? 'dark' : 'light'))}
+            storefrontFilter={storefrontFilter}
+            setStorefrontFilter={setStorefrontFilter}
+            adminRole={admin?.role}
+            adminStoreSlug={admin?.storeSlug ?? undefined}
+            accessToken={session?.access_token}
+            onStorefrontChange={() => {
+              setViewingProduct(null);
+              setViewingOrder(null);
+              setConfirmDelete(null);
+              setConfirmPermanentDelete(null);
+              setConfirmDeleteOrder(null);
+            }}
+          />
         )}
       </div>
 

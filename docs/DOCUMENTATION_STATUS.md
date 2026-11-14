@@ -26,7 +26,27 @@ It provides a central reference for:
 
 Documentation work must not be restarted from the beginning without a specific reason.
 
-## 2. Current Documentation Status
+## 2. Documentation Scope and Launch Separation
+
+The documentation library under `docs/` describes the broader Simatu platform, its intended long-term architecture, governance, operational model and future capabilities.
+
+**This documentation library is separate from the implementation scope of the current launch.**
+
+The following boundaries apply:
+
+1. Existing architecture, governance, implementation, operations, product and store documentation must remain maintained as part of the broader platform documentation.
+2. These documents do not automatically define requirements or acceptance criteria for the current launch.
+3. Future platform capabilities, including expanded multi-store architecture, organisational structures, workforce management and centralised governance, remain outside the current launch unless explicitly approved.
+4. The current launch must follow its own approved implementation scope, requirements, acceptance criteria and verification evidence.
+5. References to broader platform documentation may provide context, but must not silently introduce additional implementation work into the current launch.
+6. The broader documentation library must not be deleted, merged into the launch-specific documentation or treated as an extension of the current implementation phase.
+7. Any future decision to bring a broader platform capability into a launch must be explicitly approved and documented before implementation.
+
+This separation is intentional. It allows the broader platform architecture to continue evolving independently while the current launch remains focused on its approved deliverables.
+
+The existence of a requirement in the broader documentation library does not establish that the requirement is approved, scheduled or required for the current launch.
+
+## 3. Current Documentation Status
 
 The documentation review has identified inconsistencies involving:
 
@@ -45,7 +65,7 @@ The documentation review remains in progress. This checkpoint does not represent
 
 The root `README.md` is the authoritative summary of the organisation, platform identity, application structure and deployment workflow.
 
-## 3. Established Current Application Baseline
+## 4. Established Current Application Baseline
 
 The current application operates with:
 
@@ -82,7 +102,7 @@ The implications for shared products, pricing, inventory, publication and admini
 
 Do not treat independent per-store product listings or independent commercial controls as approved requirements without confirmation.
 
-## 4. Future Platform Architecture
+## 5. Future Platform Architecture
 
 The future business and platform vision remains intact.
 
@@ -99,7 +119,7 @@ Potential future capabilities include:
 
 These capabilities must not be presented as implemented functionality until approved, specified and developed.
 
-## 5. Documents Updated During the Current Review
+## 6. Documents Updated During the Current Review
 
 The current working tree contains changes to the following documentation:
 
@@ -132,7 +152,7 @@ The original access-model review also covered:
 
 These earlier changes are historical review records, not proof that the documents have been revalidated against the latest implementation.
 
-## 6. Validation Status
+## 7. Validation Status
 
 Previously recorded automated validation:
 
@@ -160,7 +180,7 @@ The recorded test results are historical baselines and must be rerun before clai
 
 Production database changes and production deployment require separate approval. Integration tests must use the isolated test database.
 
-## 7. Outstanding Items
+## 8. Outstanding Items
 
 The following work remains:
 
@@ -175,7 +195,7 @@ The following work remains:
 
 The legacy `/porschs` routes in `src/App.tsx` are temporary compatibility redirects to `/poshies`. Preserve them until legacy URL retirement is explicitly approved.
 
-## 8. Git and Repository Handover
+## 9. Git and Repository Handover
 
 Current repository:
 
@@ -190,7 +210,7 @@ The working tree must be inspected before staging or committing.
 
 Do not stage or commit unrelated files. Review every changed file and run the applicable validation before requesting approval to commit.
 
-## 9. Rules for Resuming Documentation Work
+## 10. Rules for Resuming Documentation Work
 
 When returning to documentation:
 
@@ -205,7 +225,7 @@ When returning to documentation:
 
 Architecture documents describe requirements. They do not prove implementation.
 
-## 10. Next Development Direction
+## 11. Next Development Direction
 
 Complete the documentation and identity review before moving into further catalogue refactoring.
 

@@ -35,13 +35,13 @@ export default function AdminList({
   actionLoadingId,
 }: AdminListProps) {
   return (
-    <section className="border border-[#4d4d4d]/10 bg-white p-5">
+    <section className="border border-[var(--admin-border-subtle)] bg-[var(--admin-surface)] p-5">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <h3 className="admin-type-section-title text-[#4d4d4d]">
+          <h3 className="admin-type-section-title text-[var(--admin-text-primary)]">
             Administrators
           </h3>
-          <p className="admin-type-supporting mt-1 text-sm text-[#4d4d4d]/60">
+          <p className="admin-type-supporting mt-1 text-sm text-[var(--admin-text-secondary)]">
             Accounts with access to your administration system.
           </p>
         </div>
@@ -51,14 +51,14 @@ export default function AdminList({
           onClick={onRefresh}
           disabled={isLoading}
           aria-label="Refresh administrators"
-          className="border border-[#4d4d4d]/20 px-3 py-2 text-xs font-medium text-[#4d4d4d] hover:bg-[#f5f5f5] disabled:opacity-50"
+          className="border border-[var(--admin-border-strong)] px-3 py-2 text-xs font-medium text-[var(--admin-text-primary)] hover:bg-[var(--admin-surface-subtle)] disabled:opacity-50"
         >
           {isLoading ? 'Loading...' : 'Refresh'}
         </button>
       </div>
 
       {isLoading ? (
-        <p className="py-6 text-center text-sm text-[#4d4d4d]/50">
+        <p className="py-6 text-center text-sm text-[var(--admin-text-tertiary)]">
           Loading administrators...
         </p>
       ) : loadError ? (
@@ -67,17 +67,17 @@ export default function AdminList({
           <button
             type="button"
             onClick={onRefresh}
-            className="mt-3 text-sm font-medium text-[#4d4d4d] underline"
+            className="mt-3 text-sm font-medium text-[var(--admin-text-primary)] underline"
           >
             Try again
           </button>
         </div>
       ) : admins.length === 0 ? (
-        <p className="py-6 text-center text-sm text-[#4d4d4d]/50">
+        <p className="py-6 text-center text-sm text-[var(--admin-text-tertiary)]">
           No administrator accounts found.
         </p>
       ) : (
-        <div className="divide-y divide-[#4d4d4d]/10">
+        <div className="divide-y divide-[var(--admin-border-subtle)]">
           {admins.map((item) => {
             const status = item.is_active
               ? 'active'
@@ -93,12 +93,12 @@ export default function AdminList({
               ['pending', 'expired'].includes(status);
 
             const statusStyles: Record<string, string> = {
-              active: 'bg-[#e8f2e9] text-[#397447]',
-              pending: 'bg-[#fff4df] text-[#9a6818]',
-              expired: 'bg-[#fceaea] text-[#b33b3b]',
-              revoked: 'bg-[#fceaea] text-[#b33b3b]',
-              accepted: 'bg-[#e8f2e9] text-[#397447]',
-              inactive: 'bg-[#f5f5f5] text-[#4d4d4d]/60',
+              active: 'bg-[color-mix(in_srgb,var(--admin-status-green)_14%,transparent)] text-[var(--admin-status-green)]',
+              pending: 'bg-[color-mix(in_srgb,var(--admin-status-amber)_14%,transparent)] text-[var(--admin-status-amber)]',
+              expired: 'bg-[color-mix(in_srgb,var(--admin-status-red)_14%,transparent)] text-[var(--admin-status-red)]',
+              revoked: 'bg-[color-mix(in_srgb,var(--admin-status-red)_14%,transparent)] text-[var(--admin-status-red)]',
+              accepted: 'bg-[color-mix(in_srgb,var(--admin-status-green)_14%,transparent)] text-[var(--admin-status-green)]',
+              inactive: 'bg-[var(--admin-surface-subtle)] text-[var(--admin-text-secondary)]',
             };
 
             const statusLabels: Record<string, string> = {
@@ -117,10 +117,10 @@ export default function AdminList({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="break-all text-sm font-medium text-[#4d4d4d]">
+                    <p className="break-all text-sm font-medium text-[var(--admin-text-primary)]">
                       {item.email}
                     </p>
-                    <p className="mt-1 text-xs text-[#4d4d4d]/50">
+                    <p className="mt-1 text-xs text-[var(--admin-text-tertiary)]">
                       {item.role === 'super_admin'
                         ? 'Super Admin'
                         : 'Store Admin'}
@@ -141,7 +141,7 @@ export default function AdminList({
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs text-[#4d4d4d]/40">
+                    <p className="text-xs text-[var(--admin-text-primary)]/40">
                       Added{' '}
                       {item.created_at
                         ? new Date(item.created_at).toLocaleDateString()
@@ -151,7 +151,7 @@ export default function AdminList({
                     {item.invitation_expires_at &&
                       !item.is_active &&
                       item.invitation_status === 'pending' && (
-                        <p className="mt-1 text-xs text-[#4d4d4d]/50">
+                        <p className="mt-1 text-xs text-[var(--admin-text-tertiary)]">
                           Invitation expires{' '}
                           {new Date(
                             item.invitation_expires_at,
@@ -167,7 +167,7 @@ export default function AdminList({
                           type="button"
                           onClick={() => onResend(item)}
                           disabled={isActionLoading}
-                          className="text-xs font-medium text-[#4d4d4d] underline disabled:opacity-50"
+                          className="text-xs font-medium text-[var(--admin-text-primary)] underline disabled:opacity-50"
                         >
                           {isActionLoading ? 'Please wait...' : 'Resend invitation'}
                         </button>
@@ -177,7 +177,7 @@ export default function AdminList({
                             type="button"
                             onClick={() => onRevoke(item)}
                             disabled={isActionLoading}
-                            className="text-xs font-medium text-[#b33b3b] underline disabled:opacity-50"
+                            className="text-xs font-medium text-[var(--admin-status-red)] underline disabled:opacity-50"
                           >
                             Revoke
                           </button>
@@ -189,7 +189,7 @@ export default function AdminList({
                       type="button"
                       onClick={() => onDelete(item)}
                       disabled={isActionLoading}
-                      className="text-xs font-medium text-[#b33b3b] underline disabled:opacity-50"
+                      className="text-xs font-medium text-[var(--admin-status-red)] underline disabled:opacity-50"
                     >
                       {isActionLoading ? 'Please wait...' : 'Delete administrator'}
                     </button>
